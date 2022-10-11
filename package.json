@@ -1,0 +1,45 @@
+{
+  "name": "medusa-payment-paystack",
+  "version": "0.0.1",
+  "description": "Paystack Payment provider for Medusa Commerce",
+  "main": "index.js",
+  "repository": "",
+  "author": "Andrew Glago <andrewglago1@gmail.com>, Femi Akinyemi <akinfemi46@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/cli": "^7.7.5",
+    "@babel/core": "^7.7.5",
+    "@babel/node": "^7.7.4",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/plugin-transform-instanceof": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.7.6",
+    "@babel/preset-env": "^7.7.5",
+    "@babel/register": "^7.7.4",
+    "@babel/runtime": "^7.9.6",
+    "axios-mock-adapter": "^1.19.0",
+    "client-sessions": "^0.8.0",
+    "cross-env": "^5.2.1",
+    "jest": "^25.5.2"
+  },
+  "scripts": {
+    "build": "babel src -d ./dist --ignore **/__tests__",
+    "prepare": "cross-env NODE_ENV=production yarn run build",
+    "watch": "babel -w src --out-dir ./dist --ignore **/__tests__",
+    "test": "jest"
+  },
+  "peerDependencies": {
+    "medusa-interfaces": "1.3.3"
+  },
+  "dependencies": {
+    "@babel/plugin-transform-classes": "^7.9.5",
+    "axios": "^0.21.0",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "medusa-core-utils": "^1.1.32",
+    "medusa-test-utils": "^1.1.37"
+  },
+  "keywords": [
+    "medusa-plugin",
+    "medusa-plugin-payment"
+  ]
+}
