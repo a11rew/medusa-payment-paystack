@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Paystack Payment provider for Medusa Commerce",
   "main": "index.js",
-  "repository": "",
+  "repository": "https://github.com/a11rew/medusa-payment-paystack",
   "author": "Andrew Glago <andrewglago1@gmail.com>, Femi Akinyemi <akinfemi46@gmail.com>",
   "license": "MIT",
   "peerDependencies": {
