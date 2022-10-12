@@ -3,4 +3,6 @@ module.exports = {
   transform: {
     "^.+\\.[jt]s?$": `./jest-transformer.js`,
   },
+  collectCoverage: true,
+  collectCoverageFrom: ["src/**"],
 };
