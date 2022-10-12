@@ -37,9 +37,9 @@
     "typeorm": "^0.2.29"
   },
   "scripts": {
-    "build": "babel src -d ./dist --ignore **/__tests__,**/__mocks__",
+    "build": "babel src -d . --ignore **/__tests__,**/__mocks__",
     "prepare": "cross-env NODE_ENV=production yarn run build",
-    "watch": "babel -w src --out-dir ./dist --ignore **/__tests__,**/__mocks__  ",
+    "watch": "babel -w src --out-dir . --ignore **/__tests__,**/__mocks__  ",
     "test": "jest --watch",
     "test:ci": "jest --ci --coverage"
   },
