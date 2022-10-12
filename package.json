@@ -37,10 +37,11 @@
     "typeorm": "^0.2.29"
   },
   "scripts": {
-    "build": "babel src -d ./dist --ignore **/__tests__",
+    "build": "babel src -d ./dist --ignore **/__tests__,**/__mocks__",
     "prepare": "cross-env NODE_ENV=production yarn run build",
-    "watch": "babel -w src --out-dir ./dist --ignore **/__tests__",
-    "test": "jest"
+    "watch": "babel -w src --out-dir ./dist --ignore **/__tests__,**/__mocks__  ",
+    "test": "jest --watch",
+    "test:ci": "jest --ci --coverage"
   },
   "keywords": [
     "medusa-plugin",
