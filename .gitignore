@@ -1,5 +1,16 @@
+/lib
 node_modules
+.DS_store
 .env*
+/*.js
+!index.js
+yarn.lock
 
-dist
-coverage
+/dist
+
+/api
+/services
+/models
+/subscribers
+/__mocks__
+/coverage
