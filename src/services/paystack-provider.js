@@ -39,49 +39,7 @@ class PaystackProviderService extends PaymentService {
     };
   }
 
-  /**
-   * Creates a new transaction reference for this payment session.
-   * @param {object} sessionData - payment session data.
-   * @returns {object} same payment session data with new transaction reference.
-   */
-  async updatePayment(paymentSession) {
-    const reference = cuid();
 
-    console.log("updating payment", reference);
-
-    return {
-      ...paymentSession.data,
-      paystackTxRef: reference,
-    };
-  }
-
-  /**
-   * Status for Paystack transaction.
-   * @param {Object} paymentData - payment method data from cart
-   * @returns {string} "authorized"|"pending"|"requires_more"|"error"|"canceled"
-   */
-  async getStatus(paymentData) {
-    const { paystackTxId } = paymentData;
-
-    console.log("getting status", paystackTxId);
-
-    if (!paystackTxId) {
-      return "pending";
-    }
-
-    try {
-      const { data } = await this.paystack_.transaction.get(paystackTxId);
-
-      switch (data.status) {
-        case "success":
-          return "authorized";
-        default:
-          return "pending";
-      }
-    } catch (error) {
-      return "error";
-    }
-  }
 
   /**
    * Validates a transaction using this payment session's transaction ref.
@@ -89,11 +47,11 @@ class PaystackProviderService extends PaymentService {
    * @param {object} sessionData - payment session data.
    * @returns {string} "authorized"|"pending"|"requires_more"|"error"|"canceled"
    */
-  async authorizePayment(paymentSession, context) {
+   async authorizePayment(paymentSession, context) {
     try {
       const { paystackTxRef } = paymentSession.data;
 
-      const { data } = await this.paystack_.transaction.verify(paystackTxRef);
+      const { data } = await this.paystack_.transaction.verify({reference: paystackTxRef});
 
       console.log("authorizing", data);
 
@@ -139,6 +97,73 @@ class PaystackProviderService extends PaymentService {
       return { status: "error", data: paymentSession.data };
     }
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /**
+   * Creates a new transaction reference for this payment session.
+   * @param {object} sessionData - payment session data.
+   * @returns {object} same payment session data with new transaction reference.
+   */
+  async updatePayment(paymentSession) {
+    const reference = cuid();
+
+    console.log("updating payment", reference);
+
+    return {
+      ...paymentSession.data,
+      paystackTxRef: reference,
+    };
+  }
+
+  /**
+   * Status for Paystack transaction.
+   * @param {Object} paymentData - payment method data from cart
+   * @returns {string} "authorized"|"pending"|"requires_more"|"error"|"canceled"
+   */
+  async getStatus(paymentData) {
+    const { paystackTxId } = paymentData;
+
+    console.log("getting status", paystackTxId);
+
+    if (!paystackTxId) {
+      return "pending";
+    }
+
+    try {
+      const { data } = await this.paystack_.transaction.get(paystackTxId);
+
+      switch (data.status) {
+        case "success":
+          return "authorized";
+        default:
+          return "pending";
+      }
+    } catch (error) {
+      return "error";
+    }
+  }
+
+
+
+
+
+
+
+
 
   async getPaymentData(paymentSession) {
     console.log("getting payment data", paymentSession);
