@@ -39,80 +39,6 @@ class PaystackProviderService extends PaymentService {
     };
   }
 
-
-
-  /**
-   * Validates a transaction using this payment session's transaction ref.
-   * This also adds the transaction id to the payment session.
-   * @param {object} sessionData - payment session data.
-   * @returns {string} "authorized"|"pending"|"requires_more"|"error"|"canceled"
-   */
-   async authorizePayment(paymentSession, context) {
-    try {
-      const { paystackTxRef } = paymentSession.data;
-
-      const { data } = await this.paystack_.transaction.verify({reference: paystackTxRef});
-
-      console.log("authorizing", data);
-
-      switch (data.status) {
-        case "success":
-          // Successful transaction
-          return {
-            status: "authorized",
-            data: {
-              ...paymentSession.data,
-              paystackTxId: data.id,
-              paystackTxData: data,
-            },
-          };
-        case "failed":
-          // Failed transaction
-          return {
-            status: "error",
-            data: {
-              ...paymentSession.data,
-              paystackTxId: data.id,
-              paystackTxData: data,
-            },
-          };
-        case false:
-          // Invalid key error
-          return {
-            status: "error",
-            data: {
-              ...paymentSession.data,
-              paystackTxId: null,
-              paystackTxData: data,
-            },
-          };
-        default:
-          // Pending transaction
-          return {
-            status: "pending",
-            data: paymentSession.data,
-          };
-      }
-    } catch {
-      return { status: "error", data: paymentSession.data };
-    }
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   /**
    * Creates a new transaction reference for this payment session.
    * @param {object} sessionData - payment session data.
@@ -120,8 +46,6 @@ class PaystackProviderService extends PaymentService {
    */
   async updatePayment(paymentSession) {
     const reference = cuid();
-
-    console.log("updating payment", reference);
 
     return {
       ...paymentSession.data,
@@ -137,14 +61,14 @@ class PaystackProviderService extends PaymentService {
   async getStatus(paymentData) {
     const { paystackTxId } = paymentData;
 
-    console.log("getting status", paystackTxId);
-
     if (!paystackTxId) {
       return "pending";
     }
 
     try {
-      const { data } = await this.paystack_.transaction.get(paystackTxId);
+      const { data } = await this.paystack_.transaction.get({
+        id: paystackTxId,
+      });
 
       switch (data.status) {
         case "success":
@@ -157,19 +81,90 @@ class PaystackProviderService extends PaymentService {
     }
   }
 
+  /**
+   * Validates a transaction using this payment session's transaction ref.
+   * This also adds the transaction id to the payment session.
+   * @param {object} sessionData - payment session data.
+   * @returns {string} "authorized"|"pending"|"requires_more"|"error"|"canceled"
+   */
+  async authorizePayment(paymentSession, context) {
+    try {
+      const { paystackTxRef } = paymentSession.data;
 
+      const { data } = await this.paystack_.transaction.verify({
+        reference: paystackTxRef,
+      });
 
+      switch (data.status) {
+        case "success":
+          // Successful transaction
+          return {
+            status: "authorized",
+            data: {
+              paystackTxId: data.id,
+              paystackTxData: data,
+              ...paymentSession.data,
+            },
+          };
+        case "failed":
+          // Failed transaction
+          return {
+            status: "error",
+            data: {
+              paystackTxId: data.id,
+              paystackTxData: data,
+              ...paymentSession.data,
+            },
+          };
+        case false:
+          // Invalid key error
+          return {
+            status: "error",
+            data: {
+              paystackTxId: null,
+              paystackTxData: data,
+              ...paymentSession.data,
+            },
+          };
+        default:
+          // Pending transaction
+          return {
+            status: "pending",
+            data: paymentSession.data,
+          };
+      }
+    } catch (error) {
+      return { status: "error", data: { ...paymentSession.data, error } };
+    }
+  }
 
-
-
-
-
+  /**
+   * Gets transaction data from Paystack.
+   * @param {PaymentSession} paymentSession
+   * @return {object} payment session data
+   */
 
   async getPaymentData(paymentSession) {
-    console.log("getting payment data", paymentSession);
-    // https://docs.medusajs.com/advanced/backend/payment/how-to-create-payment-provider/#getpaymentdata
-    throw new Error("Method not implemented. - getPaymentData");
+    try {
+      const { paystackTxId } = paymentSession.data;
+
+      if (!paystackTxId) {
+        return null;
+      }
+
+      const { data } = await this.paystack_.transaction.get({
+        id: paystackTxId,
+      });
+
+      return {
+        ...paymentSession.data,
+        paystackTxData: data,
+      };
+    } catch (error) {
+      return { status: "error", data: { ...paymentSession.data, error } };
+    }
   }
+
   async updatePaymentData(paymentSessionData, data) {
     console.log("updating payment data", paymentSessionData, data);
     // https://docs.medusajs.com/advanced/backend/payment/how-to-create-payment-provider/#updatepaymentdata
