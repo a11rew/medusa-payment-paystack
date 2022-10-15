@@ -141,30 +141,37 @@ class PaystackProviderService extends PaymentService {
   }
 
   async getPaymentData(paymentSession) {
+    console.log("getting payment data", paymentSession);
     // https://docs.medusajs.com/advanced/backend/payment/how-to-create-payment-provider/#getpaymentdata
     throw new Error("Method not implemented. - getPaymentData");
   }
   async updatePaymentData(paymentSessionData, data) {
+    console.log("updating payment data", paymentSessionData, data);
     // https://docs.medusajs.com/advanced/backend/payment/how-to-create-payment-provider/#updatepaymentdata
     throw new Error("Method not implemented. - updatePaymentData");
   }
   async retrievePayment(paymentData) {
+    console.log("retrieving payment", paymentData);
     // https://docs.medusajs.com/advanced/backend/payment/how-to-create-payment-provider/#retrievepayment
     throw new Error("Method not implemented. - retrievePayment");
   }
   async capturePayment(payment) {
+    console.log("capturing payment", payment);
     // https://docs.medusajs.com/advanced/backend/payment/how-to-create-payment-provider/#capturepayment
     throw new Error("Method not implemented. - capturePayment");
   }
   async refundPayment(payment, refundAmount) {
+    console.log("refunding payment", payment, refundAmount);
     // https://docs.medusajs.com/advanced/backend/payment/how-to-create-payment-provider/#refundpayment
     throw new Error("Method not implemented. - refundPayment");
   }
   async cancelPayment(payment) {
+    console.log("canceling payment", payment);
     // https://docs.medusajs.com/advanced/backend/payment/how-to-create-payment-provider/#cancelpayment
     throw new Error("Method not implemented. - cancelPayment");
   }
   async deletePayment(paymentSession) {
+    console.log("deleting payment", paymentSession);
     // https://docs.medusajs.com/advanced/backend/payment/how-to-create-payment-provider/#deletepayment
     throw new Error("Method not implemented. - deletePayment");
   }
