@@ -1,0 +1,13 @@
+env:
+  browser: true
+  es2021: true
+- "jest/globals": true
+extends:
+  - eslint:recommended
+  - airbnb-base
+overrides: []
+plugins: ["jest"]
+parserOptions:
+  ecmaVersion: latest
+  sourceType: module
+rules: { quotes: ["error", "double"], no-underscore-dangle: ["off"] }

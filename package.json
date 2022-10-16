@@ -34,7 +34,14 @@
     "babel-preset-medusa-package": "^1.1.19",
     "client-sessions": "^0.8.0",
     "cross-env": "^5.2.1",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-jest": "^27.1.2",
+    "husky": "^8.0.1",
     "jest": "^25.5.2",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1",
     "typeorm": "^0.2.29"
   },
   "scripts": {
@@ -47,5 +54,21 @@
   "keywords": [
     "medusa-plugin",
     "medusa-plugin-payment"
-  ]
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{html,css,less,ejs}": [
+      "prettier --write",
+      "git add"
+    ]
+  }
 }
