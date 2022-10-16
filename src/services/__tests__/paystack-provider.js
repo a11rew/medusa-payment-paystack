@@ -11,6 +11,13 @@ function createPaystackProviderService() {
   );
 }
 
+
+
+beforeEach(async () => {
+  jest.clearAllMocks()
+})
+
+
 describe("Provider Service Initialization", () => {
   it("initializes the provider service", () => {
     const service = createPaystackProviderService();
@@ -27,10 +34,18 @@ describe("Provider Service Initialization", () => {
 describe("Create Payment", () => {
   it("creates a payment", async () => {
     const service = createPaystackProviderService();
-    const payment = await service.createPayment();
+     const payment = await service.createPayment();
+    console.log(payment, 'payment check')
+
+
+    // const payment = await service.updatePayment({
+    //   data: {
+    //     status: "pending",
+    //   },
+    // });
 
     expect(payment).toBeTruthy();
-    expect(payment.status).toEqual("pending");
+     expect(payment.paystackTxRef).not.toBe('');
   });
 });
 
@@ -45,5 +60,6 @@ describe("Update Payment", () => {
 
     expect(payment).toBeTruthy();
     expect(payment.status).toEqual("pending");
+    expect(payment.paystackTxRef).not.toBe('');
   });
 });
