@@ -88,6 +88,8 @@ class PaystackProviderService extends PaymentService {
    * @returns {string} "authorized"|"pending"|"requires_more"|"error"|"canceled"
    */
   async authorizePayment(paymentSession) {
+    // TODO: This should validate amount, currency, email, etc.
+    // Probably use the other services, cart, region etc.
     try {
       const { paystackTxRef } = paymentSession.data;
 
