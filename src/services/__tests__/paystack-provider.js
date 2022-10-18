@@ -1,14 +1,3 @@
-/* eslint-disable indent */
-/* eslint-disable comma-dangle */
-/* eslint-disable semi */
-/* eslint-disable padded-blocks */
-/* eslint-disable quotes */
-/* eslint-disable no-multiple-empty-lines */
-/* eslint-disable no-trailing-spaces */
-/* eslint-disable no-unused-vars */
-/* eslint-disable import/no-named-as-default-member */
-/* eslint-disable no-new */
-/* eslint-disable import/no-named-as-default */
 import PaystackProviderService from "../paystack-provider";
 
 // Helpers
@@ -30,7 +19,8 @@ describe("Provider Service Initialization", () => {
 
   it("throws error if api_key is not provided", () => {
     expect(() => {
-      new PaystackProviderService({}, {});
+      const paystackProvider = new PaystackProviderService({}, {});
+      paystackProvider.createPayment();
     }).toThrow();
   });
 });
@@ -172,6 +162,9 @@ describe("retrive payment", () => {
         paystackTxId: {},
       },
     });
+    console.log(payment, "pending");
+
+    expect(payment.paystackTxData.status).toEqual("pending");
   });
 
   it("Match Object", async () => {
@@ -236,17 +229,56 @@ describe("Capture payment", () => {
 
   it("capture payment", async () => {
     const service = createPaystackProviderService();
+
     const payment = await service.capturePayment({
-      // paymentSession: {
-      //   data: "",
-      // },
-      paymentSession: {
-        data: "",
-      },
+      data: {},
     });
+    console.log(payment, "payment capture");
+    expect(payment).toMatchObject({});
+  });
+});
 
-    console.log(payment, "capture payment");
+describe("Capture payment", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-    // expect(payment).toMatchObject({});
+  it("capture payment", async () => {
+    const service = createPaystackProviderService();
+
+    const payment = await service.capturePayment({
+      data: {},
+    });
+    expect(payment).toMatchObject({});
+  });
+});
+
+describe("Cancel payment", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("cancel payment", async () => {
+    const service = createPaystackProviderService();
+
+    const payment = await service.cancelPayment({
+      data: {},
+    });
+    expect(payment).toMatchObject({});
+  });
+});
+
+describe("delete payment", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("delete payment", async () => {
+    const service = createPaystackProviderService();
+
+    const payment = await service.deletePayment({
+      data: {},
+    });
+    expect(payment).toMatchObject({});
   });
 });
