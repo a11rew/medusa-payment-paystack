@@ -1,6 +1,3 @@
-/* eslint-disable consistent-return */
-/* eslint-disable function-paren-newline */
-/* eslint-disable implicit-arrow-linebreak */
 export const PaystackProviderServiceMock = {
   transaction: {
     verify: jest.fn().mockImplementation(({ reference }) => {
@@ -30,7 +27,13 @@ export const PaystackProviderServiceMock = {
             },
           });
         default:
-          break;
+          return Promise.resolve({
+            data: {
+              status: "pending",
+              paystackTxId: "123",
+              paystackTxData: "12345",
+            },
+          });
       }
     }),
 
@@ -57,12 +60,15 @@ export const PaystackProviderServiceMock = {
   },
 
   refund: {
-    create: jest.fn().mockImplementation(() =>
-      Promise.resolve({
-        transaction: "paystack_pay",
-        amount: "12000",
-        paystackTxData: "12345",
-      }),
+    create: jest.fn().mockImplementation(
+      () =>
+        // eslint-disable-next-line implicit-arrow-linebreak
+        Promise.resolve({
+          transaction: "paystack_pay",
+          amount: "12000",
+          paystackTxData: "12345",
+        }),
+      // eslint-disable-next-line function-paren-newline
     ),
   },
 };
