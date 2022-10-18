@@ -1,3 +1,8 @@
+/* eslint-disable space-in-parens */
+/* eslint-disable indent */
+/* eslint-disable semi */
+/* eslint-disable quotes */
+/* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
 export const PaystackProviderServiceMock = {
   transaction: {
@@ -31,13 +36,8 @@ export const PaystackProviderServiceMock = {
       }
     }),
 
-    get: jest.fn().mockImplementation(({ id }) => {
-      //   console.log(id, "id=gett");
-
+    get: jest.fn().mockImplementation(({ id, paystackTxId }) => {
       switch (id) {
-        case {}:
-          return null;
-
         case "success":
           return Promise.resolve({
             data: {

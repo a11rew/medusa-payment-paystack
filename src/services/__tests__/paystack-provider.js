@@ -1,3 +1,6 @@
+/* eslint-disable quotes */
+/* eslint-disable no-multiple-empty-lines */
+/* eslint-disable no-trailing-spaces */
 /* eslint-disable no-unused-vars */
 /* eslint-disable import/no-named-as-default-member */
 /* eslint-disable no-new */
@@ -98,39 +101,32 @@ describe("Authorize Payment", () => {
 });
 
 describe("getStatus", () => {
-  // afterEach(() => {
-  //   jest.clearAllMocks();
-  // });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
   it("returns pending if no PaystacktXId", async () => {
     const service = createPaystackProviderService();
     const payment = await service.getStatus({
-      // id: true,
-      // paystackTxId: true,
       paystackTxId: {
         data: "123-failed",
       },
     });
-    // console.log(payment, "payyyyyyyymmmm");
+
     expect(payment).toEqual("pending");
   });
 
   it("test success", async () => {
     const service = createPaystackProviderService();
     const payment = await service.getStatus({
-      // id: "success",
-      // paystackTxRef: {
-      //   status: "success",
-      // },
       paystackTxId: "success",
     });
 
-    // console.log(payment, "payyyyyyyymmmm");
     expect(payment)?.toEqual("authorized");
   });
 });
 
-describe("Get Payment Data", () => {
+describe("Retrive payment", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -138,8 +134,12 @@ describe("Get Payment Data", () => {
   it("returns pending if no PaystacktXId", async () => {
     const service = createPaystackProviderService();
     const payment = await service.getPaymentData({
-      paymentSession: "",
+      data: {
+        paystackTxId: {},
+      },
     });
+
+    console.log(payment, "payment to be Empty");
 
     // expect(payment).data.toEqual(null);
   });
@@ -147,11 +147,41 @@ describe("Get Payment Data", () => {
   it("Match Object", async () => {
     const service = createPaystackProviderService();
     const payment = await service.getPaymentData({
-      // data: {
-      //   paystackTxId: "123-undefined",
-      // },
+      data: {
+        paystackTxRef: "123-failed",
+      },
     });
-    console.log(payment, "paymenttttt");
+
+    expect(payment).toMatchObject({});
+  });
+});
+
+describe("retrive payment", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns pending if no PaystacktXId", async () => {
+    const service = createPaystackProviderService();
+    const payment = await service.getPaymentData({
+      data: {
+        paystackTxId: {},
+      },
+    });
+
+    console.log(payment, "payment to be Empty");
+
+    // expect(payment).data.toEqual(null);
+  });
+
+  it("Match Object", async () => {
+    const service = createPaystackProviderService();
+    const payment = await service.getPaymentData({
+      data: {
+        paystackTxRef: {},
+      },
+    });
+
     expect(payment).toMatchObject({});
   });
 });
