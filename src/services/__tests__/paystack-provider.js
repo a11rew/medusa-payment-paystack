@@ -208,4 +208,38 @@ describe("Update Payment data", () => {
   });
 });
 
-describe("", () => {});
+describe("refund payment", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("refund payment", async () => {
+    const service = createPaystackProviderService();
+    const payment = await service.getPaymentData({
+      data: {
+        transaction: "paystackTx",
+        amount: "amount",
+      },
+    });
+
+    expect(payment).toMatchObject({});
+  });
+});
+
+describe("Capture payment", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("capture payment", async () => {
+    const service = createPaystackProviderService();
+    const payment = await service.getPaymentData({
+      data: {
+        transaction: "paystackTx",
+        amount: "amount",
+      },
+    });
+
+    expect(payment).toMatchObject({});
+  });
+});
