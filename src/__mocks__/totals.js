@@ -1,3 +1,5 @@
+/* eslint-disable semi */
+/* eslint-disable arrow-body-style */
 export const TotalsServiceMock = {
   getTotal: jest.fn(),
   getTaxTotal: jest.fn(),
@@ -7,18 +9,18 @@ export const TotalsServiceMock = {
     return {
       total: 10,
       tax_lines: [],
-    }
+    };
   }),
   getShippingMethodTotals: jest.fn(() => {
     return {
       total: 10,
       tax_lines: [],
-    }
+    };
   }),
-}
+};
 
 const mock = jest.fn().mockImplementation(() => {
-  return TotalsServiceMock
-})
+  return TotalsServiceMock;
+});
 
-export default mock
+export default mock;

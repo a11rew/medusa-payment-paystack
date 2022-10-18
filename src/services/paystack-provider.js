@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 import Paystack from "paystack-api";
 import cuid from "cuid";
 import { PaymentService } from "medusa-interfaces";
@@ -154,61 +155,97 @@ class PaystackProviderService extends PaymentService {
    */
 
   async getPaymentData(paymentSession) {
-    try {
-      const { paystackTxId } = paymentSession.data;
+    const { paystackTxId } = paymentSession.data;
 
-      if (!paystackTxId) {
-        return null;
-      }
+    const { data } = await this.paystack_.transaction.get({
+      id: paystackTxId,
+    });
 
-      const { data } = await this.paystack_.transaction.get({
-        id: paystackTxId,
-      });
-
-      return {
-        ...paymentSession.data,
-        paystackTxData: data,
-      };
-    } catch (error) {
-      return { status: "error", data: { ...paymentSession.data, error } };
-    }
+    return {
+      ...paymentSession.data,
+      paystackTxData: data,
+    };
   }
 
-  async updatePaymentData(paymentSessionData, data) {
-    console.log("updating payment data", paymentSessionData, data);
-    // https://docs.medusajs.com/advanced/backend/payment/how-to-create-payment-provider/#updatepaymentdata
-    throw new Error("Method not implemented. - updatePaymentData");
-  }
-
+  /**
+   * Retrieve transaction data from Paystack.
+   * @param {object} paymentData payment session data
+   * @returns {object} transaction data
+   */
   async retrievePayment(paymentData) {
-    console.log("retrieving payment", paymentData);
+    const { paystackTxId } = paymentData;
 
-    // https://docs.medusajs.com/advanced/backend/payment/how-to-create-payment-provider/#retrievepayment
-    throw new Error("Method not implemented. - retrievePayment");
+    const { data } = await this.paystack_.transaction.get({
+      id: paystackTxId,
+    });
+
+    return {
+      ...paymentData,
+      paystackTxData: data,
+    };
   }
 
-  async capturePayment(payment) {
-    console.log("capturing payment", payment);
-    // https://docs.medusajs.com/advanced/backend/payment/how-to-create-payment-provider/#capturepayment
-    throw new Error("Method not implemented. - capturePayment");
+  /**
+   * Simply returns the payment session data with update - nothing needs to be done on Paystack end.
+   * @param {object} paymentSessionData - existing payment session data
+   * @param {object} data - new data to be updated
+   * @returns {Promise<object>} - payment session data
+   */
+  async updatePaymentData(paymentSessionData, data) {
+    return {
+      ...paymentSessionData,
+      ...data,
+    };
   }
 
+  /**
+   * Refunds payment for Paystack transaction.
+   * @param {Payment} payment - payment method data from cart
+   * @param {number} refundAmount - amount to refund
+   * @return {Promise<PaymentData>} refunded payment transaction data
+   */
   async refundPayment(payment, refundAmount) {
-    console.log("refunding payment", payment, refundAmount);
-    // https://docs.medusajs.com/advanced/backend/payment/how-to-create-payment-provider/#refundpayment
-    throw new Error("Method not implemented. - refundPayment");
+    const { paystackTxId } = payment.data;
+
+    const { data } = await this.paystack_.refund.create({
+      transaction: paystackTxId,
+      amount: refundAmount,
+    });
+
+    return {
+      ...payment.data,
+      paystackTxData: data,
+    };
   }
 
+  /**
+   * Marks payment as captured. Transactions are 'captured' by default in Paystack.
+   * So this just returns the payment session data.
+   * @param {Payment} paymentSession - payment method session data from cart
+   * @return {Promise<PaymentData>} same payment transaction data
+   */
+  async capturePayment(paymentSession) {
+    return paymentSession.data;
+  }
+
+  /**
+   * Cancel payment for Paystack payment intent.
+   * This is not supported by Paystack - transactions are stateless.
+   * @param {Payment} payment - payment method data from cart
+   * @return {Promise<PaymentData>} canceled payment intent data
+   */
   async cancelPayment(payment) {
-    console.log("canceling payment", payment);
-    // https://docs.medusajs.com/advanced/backend/payment/how-to-create-payment-provider/#cancelpayment
-    throw new Error("Method not implemented. - cancelPayment");
+    return payment.data;
   }
 
+  /**
+   * Delete payment for Paystack payment intent.
+   * This is not supported by Paystack - transactions are stateless.
+   * @param {Payment} payment - payment method data from cart
+   * @return {Promise<PaymentData>} canceled payment intent data
+   */
   async deletePayment(paymentSession) {
-    console.log("deleting payment", paymentSession);
-    // https://docs.medusajs.com/advanced/backend/payment/how-to-create-payment-provider/#deletepayment
-    throw new Error("Method not implemented. - deletePayment");
+    return paymentSession.data;
   }
 }
 

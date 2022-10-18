@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 export const PaystackProviderServiceMock = {
   transaction: {
     verify: jest.fn().mockImplementation(({ reference }) => {

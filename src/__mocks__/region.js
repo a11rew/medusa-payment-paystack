@@ -1,7 +1,11 @@
-import { IdMap } from "medusa-test-utils"
+/* eslint-disable arrow-parens */
+/* eslint-disable semi */
+/* eslint-disable no-unused-vars */
+/* eslint-disable arrow-body-style */
+import { IdMap } from "medusa-test-utils";
 
 export const RegionServiceMock = {
-  retrieve: jest.fn().mockImplementation((regionId) => {
+  retrieve: jest.fn().mockImplementation(regionId => {
     return Promise.resolve({
       _id: IdMap.getId("testRegion"),
       name: "Test Region",
@@ -10,12 +14,12 @@ export const RegionServiceMock = {
       payment_providers: ["default_provider", "unregistered"],
       fulfillment_providers: ["test_shipper"],
       currency_code: "usd",
-    })
+    });
   }),
-}
+};
 
 const mock = jest.fn().mockImplementation(() => {
-  return RegionServiceMock
-})
+  return RegionServiceMock;
+});
 
-export default mock
+export default mock;

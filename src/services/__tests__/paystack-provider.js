@@ -1,3 +1,7 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable no-new */
+/* eslint-disable import/no-named-as-default */
 import PaystackProviderService from "../paystack-provider";
 
 // Helpers
@@ -147,7 +151,7 @@ describe("Get Payment Data", () => {
       //   paystackTxId: "123-undefined",
       // },
     });
-    // console.log(payment, "paymenttttt");
+    console.log(payment, "paymenttttt");
     expect(payment).toMatchObject({});
   });
 });
