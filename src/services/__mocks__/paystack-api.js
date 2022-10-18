@@ -1,3 +1,7 @@
+/* eslint-disable arrow-body-style */
+/* eslint-disable padded-blocks */
+/* eslint-disable no-trailing-spaces */
+/* eslint-disable no-multiple-empty-lines */
 /* eslint-disable space-in-parens */
 /* eslint-disable indent */
 /* eslint-disable semi */
@@ -56,6 +60,15 @@ export const PaystackProviderServiceMock = {
           });
       }
     }),
+
+    create: jest
+      .fn()
+      .mockImplementation(({ refundAmount, payment, paystackTxId }) => {
+        return Promise.resolve({
+          transaction: "paystack_pay",
+          amount: "12000",
+        });
+      }),
   },
 };
 

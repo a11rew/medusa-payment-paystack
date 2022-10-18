@@ -1,3 +1,7 @@
+/* eslint-disable indent */
+/* eslint-disable comma-dangle */
+/* eslint-disable semi */
+/* eslint-disable padded-blocks */
 /* eslint-disable quotes */
 /* eslint-disable no-multiple-empty-lines */
 /* eslint-disable no-trailing-spaces */
@@ -169,7 +173,7 @@ describe("retrive payment", () => {
       },
     });
 
-    console.log(payment, "payment to be Empty");
+    // console.log(payment, "payment to be Empty");
 
     // expect(payment).data.toEqual(null);
   });
@@ -185,3 +189,23 @@ describe("retrive payment", () => {
     expect(payment).toMatchObject({});
   });
 });
+
+describe("Update Payment data", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("Update Paymentdata test", async () => {
+    const service = createPaystackProviderService();
+    const payment = await service.getPaymentData({
+      data: {
+        paymentSessionData: {},
+        data: "",
+      },
+    });
+
+    expect(payment).toMatchObject({});
+  });
+});
+
+describe("", () => {});
