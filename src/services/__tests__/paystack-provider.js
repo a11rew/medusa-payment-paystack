@@ -132,10 +132,7 @@ describe("Retrive payment", () => {
         paystackTxId: {},
       },
     });
-
-    console.log(payment, "payment to be Empty");
-
-    // expect(payment).data.toEqual(null);
+    expect(payment.paystackTxData.status).toEqual("pending");
   });
 
   it("Match Object", async () => {
@@ -162,7 +159,6 @@ describe("retrive payment", () => {
         paystackTxId: {},
       },
     });
-    console.log(payment, "pending");
 
     expect(payment.paystackTxData.status).toEqual("pending");
   });
@@ -233,7 +229,7 @@ describe("Capture payment", () => {
     const payment = await service.capturePayment({
       data: {},
     });
-    console.log(payment, "payment capture");
+
     expect(payment).toMatchObject({});
   });
 });
