@@ -1,5 +1,3 @@
-/* eslint-disable no-unsafe-optional-chaining */
-
 import Paystack from "paystack-api";
 import cuid from "cuid";
 import { PaymentService } from "medusa-interfaces";
@@ -72,7 +70,7 @@ class PaystackProviderService extends PaymentService {
         id: paystackTxId,
       });
 
-      switch (data.status) {
+      switch (data?.status) {
         case "success":
           return "authorized";
         default:
@@ -96,7 +94,7 @@ class PaystackProviderService extends PaymentService {
     try {
       const { paystackTxRef } = paymentSession.data;
 
-      const { data } = await this?.paystack_?.transaction?.verify({
+      const { data } = await this.paystack_.transaction.verify({
         reference: paystackTxRef,
       });
 

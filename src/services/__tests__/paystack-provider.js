@@ -59,8 +59,6 @@ describe("Authorize Payment", () => {
     jest.clearAllMocks();
   });
 
-  // clearAllMocks
-
   it("test error", async () => {
     const service = createPaystackProviderService();
     const payment = await service.authorizePayment({
@@ -116,7 +114,7 @@ describe("getStatus", () => {
       paystackTxId: "success",
     });
 
-    expect(payment)?.toEqual("authorized");
+    expect(payment).toEqual("authorized");
   });
 });
 
@@ -154,9 +152,9 @@ describe("retrive payment", () => {
 
   it("returns pending if no PaystacktXId", async () => {
     const service = createPaystackProviderService();
-    const payment = await service.getPaymentData({
+    const payment = await service.retrievePayment({
       data: {
-        paystackTxId: {},
+        id: "",
       },
     });
 
@@ -167,11 +165,11 @@ describe("retrive payment", () => {
     const service = createPaystackProviderService();
     const payment = await service.getPaymentData({
       data: {
-        paystackTxRef: {},
+        id: "123",
       },
     });
 
-    expect(payment).toMatchObject({});
+    expect(payment.paystackTxData.paystackTxId).toEqual("123");
   });
 });
 
@@ -204,17 +202,13 @@ describe("refund payment", () => {
       data: {
         transaction: "paystackTx",
         amount: "amount",
-        // paystackTxData: "12345",
       },
     });
 
-    const Expected = {
+    expect(payment).toMatchObject({
       transaction: "paystackTx",
       amount: "amount",
-      // paystackTxData: "12345",
-    };
-
-    expect(payment).toMatchObject(Expected);
+    });
   });
 });
 
