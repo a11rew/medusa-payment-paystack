@@ -60,6 +60,7 @@ class PaystackProviderService extends PaymentService {
    */
   async getStatus(paymentData) {
     const { paystackTxId } = paymentData;
+    // console.log(paystackTxId, "paystackTxId");
 
     if (!paystackTxId) {
       return "pending";
@@ -87,15 +88,19 @@ class PaystackProviderService extends PaymentService {
    * @param {object} sessionData - payment session data.
    * @returns {string} "authorized"|"pending"|"requires_more"|"error"|"canceled"
    */
+
   async authorizePayment(paymentSession) {
+    // console.log(paymentSession, "payment session");
     // TODO: This should validate amount, currency, email, etc.
     // Probably use the other services, cart, region etc.
     try {
       const { paystackTxRef } = paymentSession.data;
 
-      const { data } = await this.paystack_.transaction.verify({
+      const { data } = await this?.paystack_?.transaction?.verify({
         reference: paystackTxRef,
       });
+
+      // console.log(data, 'dataaaaa')
 
       switch (data.status) {
         case "success":
@@ -108,6 +113,7 @@ class PaystackProviderService extends PaymentService {
               ...paymentSession.data,
             },
           };
+
         case "failed":
           // Failed transaction
           return {
@@ -118,6 +124,7 @@ class PaystackProviderService extends PaymentService {
               ...paymentSession.data,
             },
           };
+
         case false:
           // Invalid key error
           return {
