@@ -172,10 +172,6 @@ describe("retrive payment", () => {
         paystackTxId: {},
       },
     });
-
-    // console.log(payment, "payment to be Empty");
-
-    // expect(payment).data.toEqual(null);
   });
 
   it("Match Object", async () => {
@@ -215,14 +211,21 @@ describe("refund payment", () => {
 
   it("refund payment", async () => {
     const service = createPaystackProviderService();
-    const payment = await service.getPaymentData({
+    const payment = await service.refundPayment({
       data: {
         transaction: "paystackTx",
         amount: "amount",
+        // paystackTxData: "12345",
       },
     });
 
-    expect(payment).toMatchObject({});
+    const Expected = {
+      transaction: "paystackTx",
+      amount: "amount",
+      // paystackTxData: "12345",
+    };
+
+    expect(payment).toMatchObject(Expected);
   });
 });
 
@@ -233,13 +236,17 @@ describe("Capture payment", () => {
 
   it("capture payment", async () => {
     const service = createPaystackProviderService();
-    const payment = await service.getPaymentData({
-      data: {
-        transaction: "paystackTx",
-        amount: "amount",
+    const payment = await service.capturePayment({
+      // paymentSession: {
+      //   data: "",
+      // },
+      paymentSession: {
+        data: "",
       },
     });
 
-    expect(payment).toMatchObject({});
+    console.log(payment, "capture payment");
+
+    // expect(payment).toMatchObject({});
   });
 });

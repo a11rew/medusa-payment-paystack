@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 /* eslint-disable arrow-body-style */
 /* eslint-disable padded-blocks */
 /* eslint-disable no-trailing-spaces */
@@ -60,13 +61,16 @@ export const PaystackProviderServiceMock = {
           });
       }
     }),
+  },
 
+  refund: {
     create: jest
       .fn()
       .mockImplementation(({ refundAmount, payment, paystackTxId }) => {
         return Promise.resolve({
           transaction: "paystack_pay",
           amount: "12000",
+          paystackTxData: "12345",
         });
       }),
   },
