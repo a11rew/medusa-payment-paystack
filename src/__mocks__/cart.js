@@ -1,4 +1,4 @@
-import { IdMap } from "medusa-test-utils"
+import { IdMap } from "medusa-test-utils";
 
 export const carts = {
   frCart: {
@@ -112,24 +112,18 @@ export const carts = {
     ],
     customer_id: IdMap.getId("lebron"),
   },
-}
+};
 
 export const CartServiceMock = {
-  retrieve: jest.fn().mockImplementation((cartId) => {
+  retrieve: jest.fn().mockImplementation(cartId => {
     if (cartId === IdMap.getId("fr-cart")) {
-      return Promise.resolve(carts.frCart)
+      return Promise.resolve(carts.frCart);
     }
-    return Promise.resolve(undefined)
+    return Promise.resolve(undefined);
   }),
-  updatePaymentSession: jest
-    .fn()
-    .mockImplementation((cartId, stripe, paymentIntent) => {
-      return Promise.resolve()
-    }),
-}
+  updatePaymentSession: jest.fn().mockImplementation(() => Promise.resolve()),
+};
 
-const mock = jest.fn().mockImplementation(() => {
-  return CartServiceMock
-})
+const mock = jest.fn().mockImplementation(() => CartServiceMock);
 
-export default mock
+export default mock;

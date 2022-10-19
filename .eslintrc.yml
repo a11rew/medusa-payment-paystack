@@ -5,6 +5,7 @@ env:
 extends:
   - eslint:recommended
   - airbnb-base
+  - prettier
 overrides: []
 plugins: ["jest"]
 parserOptions:

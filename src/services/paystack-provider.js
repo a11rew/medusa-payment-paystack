@@ -70,9 +70,13 @@ class PaystackProviderService extends PaymentService {
         id: paystackTxId,
       });
 
-      switch (data.status) {
+      switch (data?.status) {
         case "success":
           return "authorized";
+        case "failed":
+          return "error";
+        case false:
+          return "error";
         default:
           return "pending";
       }
@@ -87,52 +91,59 @@ class PaystackProviderService extends PaymentService {
    * @param {object} sessionData - payment session data.
    * @returns {string} "authorized"|"pending"|"requires_more"|"error"|"canceled"
    */
+
   async authorizePayment(paymentSession) {
     // TODO: This should validate amount, currency, email, etc.
     // Probably use the other services, cart, region etc.
-    const { paystackTxRef } = paymentSession.data;
+    try {
+      const { paystackTxRef } = paymentSession.data;
 
-    const { data } = await this.paystack_.transaction.verify({
-      reference: paystackTxRef,
-    });
+      const { data } = await this.paystack_.transaction.verify({
+        reference: paystackTxRef,
+      });
 
-    switch (data.status) {
-      case "success":
-        // Successful transaction
-        return {
-          status: "authorized",
-          data: {
-            paystackTxId: data.id,
-            paystackTxData: data,
-            ...paymentSession.data,
-          },
-        };
-      case "failed":
-        // Failed transaction
-        return {
-          status: "error",
-          data: {
-            paystackTxId: data.id,
-            paystackTxData: data,
-            ...paymentSession.data,
-          },
-        };
-      case false:
-        // Invalid key error
-        return {
-          status: "error",
-          data: {
-            paystackTxId: null,
-            paystackTxData: data,
-            ...paymentSession.data,
-          },
-        };
-      default:
-        // Pending transaction
-        return {
-          status: "pending",
-          data: paymentSession.data,
-        };
+      switch (data.status) {
+        case "success":
+          // Successful transaction
+          return {
+            status: "authorized",
+            data: {
+              paystackTxId: data.id,
+              paystackTxData: data,
+              ...paymentSession.data,
+            },
+          };
+
+        case "failed":
+          // Failed transaction
+          return {
+            status: "error",
+            data: {
+              paystackTxId: data.id,
+              paystackTxData: data,
+              ...paymentSession.data,
+            },
+          };
+
+        case false:
+          // Invalid key error
+          return {
+            status: "error",
+            data: {
+              paystackTxId: null,
+              paystackTxData: data,
+              ...paymentSession.data,
+            },
+          };
+        default:
+          // Pending transaction
+          return {
+            status: "pending",
+            data: paymentSession.data,
+          };
+      }
+    } catch (error) {
+      return { status: "error", data: { ...paymentSession.data, error } };
     }
   }
 
