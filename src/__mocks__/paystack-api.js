@@ -7,7 +7,7 @@ export const PaystackProviderServiceMock = {
             data: {
               status: "failed",
               paystackTxId: "123",
-              paystackTxData: "12345",
+              paystackTxData: {},
             },
           });
         case "123-passed":
@@ -15,23 +15,25 @@ export const PaystackProviderServiceMock = {
             data: {
               status: "success",
               paystackTxId: "123",
-              paystackTxData: "12345",
+              paystackTxData: {},
             },
           });
-        case "123-undefined":
+        case "123-false":
           return Promise.resolve({
             data: {
               status: false,
               paystackTxId: "123",
-              paystackTxData: "12345",
+              paystackTxData: {},
             },
           });
+        case "123-throw":
+          return Promise.reject(new Error("Paystack error"));
         default:
           return Promise.resolve({
             data: {
               status: "pending",
               paystackTxId: "123",
-              paystackTxData: "12345",
+              paystackTxData: {},
             },
           });
       }
@@ -39,20 +41,30 @@ export const PaystackProviderServiceMock = {
 
     get: jest.fn().mockImplementation(({ id }) => {
       switch (id) {
-        case "success":
+        case "123-success":
           return Promise.resolve({
             data: {
               status: "success",
-              paystackTxId: "123",
-              paystackTxData: "12345",
+              paystackTxId: id,
+              paystackTxData: {},
             },
           });
+
+        case "123-false":
+          return Promise.resolve({
+            data: {
+              status: false,
+              paystackTxId: id,
+              paystackTxData: {},
+            },
+          });
+
         default:
           return Promise.resolve({
             data: {
-              status: "pending",
-              paystackTxId: "123",
-              paystackTxData: "12345",
+              status: "failed",
+              paystackTxId: id,
+              paystackTxData: {},
             },
           });
       }
@@ -60,11 +72,11 @@ export const PaystackProviderServiceMock = {
   },
 
   refund: {
-    create: jest.fn().mockImplementation(() =>
+    create: jest.fn().mockImplementation(({ transaction, amount }) =>
       Promise.resolve({
-        transaction: "paystack_pay",
-        amount: "12000",
-        paystackTxData: "12345",
+        transaction,
+        amount,
+        paystackTxData: {},
       }),
     ),
   },

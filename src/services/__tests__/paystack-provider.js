@@ -1,7 +1,7 @@
+import cuid from "cuid";
 import PaystackProviderService from "../paystack-provider";
 
 // Helpers
-
 function createPaystackProviderService() {
   return new PaystackProviderService(
     {},
@@ -17,7 +17,7 @@ describe("Provider Service Initialization", () => {
     expect(service).toBeTruthy();
   });
 
-  it("throws error if api_key is not provided", () => {
+  it("fails initialization if api_key is not provided", () => {
     expect(() => {
       const paystackProvider = new PaystackProviderService({}, {});
       paystackProvider.createPayment();
@@ -25,18 +25,28 @@ describe("Provider Service Initialization", () => {
   });
 });
 
-describe("Create Payment", () => {
-  it("creates a payment", async () => {
+describe("createPayment", () => {
+  it("returns a payment session with a transaction reference", async () => {
     const service = createPaystackProviderService();
     const payment = await service.createPayment();
 
     expect(payment).toBeTruthy();
-    expect(payment.paystackTxRef).not.toBe("");
+    expect(payment.paystackTxRef).toBeTruthy();
+    expect(payment.paystackTxRef).toEqual(expect.any(String));
+  });
+
+  it("returns a valid cuid as reference", async () => {
+    const service = createPaystackProviderService();
+    const payment = await service.createPayment();
+
+    const ref = payment.paystackTxRef;
+    expect(ref).toEqual(expect.any(String));
+    expect(cuid.isCuid(ref)).toBeTruthy();
   });
 });
 
-describe("Update Payment", () => {
-  it("updates a payment", async () => {
+describe("updatePayment", () => {
+  it("returns a cuid when payment is updated", async () => {
     const service = createPaystackProviderService();
     const payment = await service.updatePayment({
       data: {
@@ -46,20 +56,13 @@ describe("Update Payment", () => {
 
     expect(payment).toBeTruthy();
     expect(payment.status).toEqual("pending");
-    expect(payment.paystackTxRef).not.toBe("");
+    expect(payment.paystackTxRef).toEqual(expect.any(String));
+    expect(cuid.isCuid(payment.paystackTxRef)).toBeTruthy();
   });
-});
-
-afterEach(() => {
-  jest.clearAllMocks();
 });
 
 describe("Authorize Payment", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("test error", async () => {
+  it("returns status error on Paystack tx authorization fail", async () => {
     const service = createPaystackProviderService();
     const payment = await service.authorizePayment({
       data: {
@@ -69,7 +72,7 @@ describe("Authorize Payment", () => {
     expect(payment.status).toEqual("error");
   });
 
-  it("test success", async () => {
+  it("returns status success on Paystack tx authorization pass", async () => {
     const service = createPaystackProviderService();
     const payment = await service.authorizePayment({
       data: {
@@ -80,11 +83,34 @@ describe("Authorize Payment", () => {
     expect(payment.status).toEqual("authorized");
   });
 
-  it("test undefined", async () => {
+  it("returns status error on Paystack invalid key error", async () => {
     const service = createPaystackProviderService();
     const payment = await service.authorizePayment({
       data: {
-        paystackTxRef: "123-undefined",
+        paystackTxRef: "123-false",
+      },
+    });
+
+    expect(payment.status).toEqual("error");
+  });
+
+  it("returns status pending on Paystack tx authorization pending", async () => {
+    // Never happens in practice, but just in case
+    const service = createPaystackProviderService();
+    const payment = await service.authorizePayment({
+      data: {
+        paystackTxRef: "123-pending",
+      },
+    });
+
+    expect(payment.status).toEqual("pending");
+  });
+
+  it("returns error when verify call throws", async () => {
+    const service = createPaystackProviderService();
+    const payment = await service.authorizePayment({
+      data: {
+        paystackTxRef: "123-throw",
       },
     });
 
@@ -93,51 +119,47 @@ describe("Authorize Payment", () => {
 });
 
 describe("getStatus", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
+  it("returns pending if no paystackTxId is provided", async () => {
+    const service = createPaystackProviderService();
+    const status = await service.getStatus({});
+
+    expect(status).toEqual("pending");
   });
 
-  it("returns pending if no PaystacktXId", async () => {
+  it("returns authorized if Paystack status is success", async () => {
     const service = createPaystackProviderService();
-    const payment = await service.getStatus({
-      paystackTxId: {
-        data: "123-failed",
-      },
+    const status = await service.getStatus({
+      paystackTxId: "123-success",
     });
 
-    expect(payment).toEqual("pending");
+    expect(status).toEqual("authorized");
   });
 
-  it("test success", async () => {
+  it("returns error if Paystack status is failed", async () => {
     const service = createPaystackProviderService();
-    const payment = await service.getStatus({
-      paystackTxId: "success",
+    const status = await service.getStatus({
+      paystackTxId: "123-failed",
     });
 
-    expect(payment).toEqual("authorized");
+    expect(status).toEqual("error");
+  });
+
+  it("returns error if Paystack status is false (invalid key error)", async () => {
+    const service = createPaystackProviderService();
+    const payment = await service.getStatus({
+      paystackTxId: "123-false",
+    });
+
+    expect(payment).toEqual("error");
   });
 });
 
-describe("Retrive payment", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("returns pending if no PaystacktXId", async () => {
+describe("getPaymentData", () => {
+  it("returns a data object", async () => {
     const service = createPaystackProviderService();
     const payment = await service.getPaymentData({
       data: {
-        paystackTxId: {},
-      },
-    });
-    expect(payment.paystackTxData.status).toEqual("pending");
-  });
-
-  it("Match Object", async () => {
-    const service = createPaystackProviderService();
-    const payment = await service.getPaymentData({
-      data: {
-        paystackTxRef: "123-failed",
+        paystackTxRef: "123-success",
       },
     });
 
@@ -145,45 +167,12 @@ describe("Retrive payment", () => {
   });
 });
 
-describe("retrive payment", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("returns pending if no PaystacktXId", async () => {
+describe("retrievePayment", () => {
+  it("returns a data object", async () => {
     const service = createPaystackProviderService();
     const payment = await service.retrievePayment({
       data: {
-        id: "",
-      },
-    });
-
-    expect(payment.paystackTxData.status).toEqual("pending");
-  });
-
-  it("Match Object", async () => {
-    const service = createPaystackProviderService();
-    const payment = await service.getPaymentData({
-      data: {
-        id: "123",
-      },
-    });
-
-    expect(payment.paystackTxData.paystackTxId).toEqual("123");
-  });
-});
-
-describe("Update Payment data", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("Update Paymentdata test", async () => {
-    const service = createPaystackProviderService();
-    const payment = await service.getPaymentData({
-      data: {
-        paymentSessionData: {},
-        data: "",
+        paystackTxRef: "123-success",
       },
     });
 
@@ -191,84 +180,91 @@ describe("Update Payment data", () => {
   });
 });
 
-describe("refund payment", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+describe("updatePaymentData", () => {
+  it("returns an updated payment data object", async () => {
+    const service = createPaystackProviderService();
+    const payment = await service.updatePaymentData(
+      {
+        data: {
+          paystackTxRef: "123-success",
+        },
+      }, // existing session data
+      {
+        // new data
+        status: "authorized",
+      },
+    );
 
-  it("refund payment", async () => {
+    expect(payment).toMatchObject({
+      status: "authorized",
+      data: {
+        paystackTxRef: "123-success",
+      },
+    });
+  });
+});
+
+describe("refundPayment", () => {
+  it("refunds payment, returns refunded amount and transaction", async () => {
     const service = createPaystackProviderService();
     const payment = await service.refundPayment({
       data: {
         transaction: "paystackTx",
-        amount: "amount",
+        amount: 4000,
       },
     });
 
     expect(payment).toMatchObject({
       transaction: "paystackTx",
-      amount: "amount",
+      amount: 4000,
     });
   });
 });
 
-describe("Capture payment", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("capture payment", async () => {
+describe("capturePayment", () => {
+  it("returns passed in object", async () => {
     const service = createPaystackProviderService();
 
     const payment = await service.capturePayment({
-      data: {},
+      data: {
+        paystackTxId: "123-capture",
+      },
     });
 
-    expect(payment).toMatchObject({});
+    expect(payment).toMatchObject({
+      paystackTxId: "123-capture",
+    });
   });
 });
 
-describe("Capture payment", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("capture payment", async () => {
-    const service = createPaystackProviderService();
-
-    const payment = await service.capturePayment({
-      data: {},
-    });
-    expect(payment).toMatchObject({});
-  });
-});
-
-describe("Cancel payment", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("cancel payment", async () => {
+describe("cancelPayment", () => {
+  it("returns passed in object", async () => {
     const service = createPaystackProviderService();
 
     const payment = await service.cancelPayment({
-      data: {},
+      data: {
+        paystackTxId: "123-cancel",
+      },
     });
-    expect(payment).toMatchObject({});
+
+    expect(payment).toMatchObject({
+      paystackTxId: "123-cancel",
+    });
   });
 });
 
-describe("delete payment", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("delete payment", async () => {
+describe("deletePayment", () => {
+  it("returns passed in object", async () => {
     const service = createPaystackProviderService();
 
     const payment = await service.deletePayment({
-      data: {},
+      data: {
+        paystackTxId: "123-delete",
+      },
     });
-    expect(payment).toMatchObject({});
+
+    expect(payment).toMatchObject({
+      paystackTxId: "123-delete",
+    });
   });
 });

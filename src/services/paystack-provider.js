@@ -73,6 +73,10 @@ class PaystackProviderService extends PaymentService {
       switch (data?.status) {
         case "success":
           return "authorized";
+        case "failed":
+          return "error";
+        case false:
+          return "error";
         default:
           return "pending";
       }
