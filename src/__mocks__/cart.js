@@ -1,6 +1,3 @@
-/* eslint-disable arrow-parens */
-/* eslint-disable no-unused-vars */
-/* eslint-disable arrow-body-style */
 import { IdMap } from "medusa-test-utils";
 
 export const carts = {
@@ -124,15 +121,9 @@ export const CartServiceMock = {
     }
     return Promise.resolve(undefined);
   }),
-  updatePaymentSession: jest
-    .fn()
-    .mockImplementation((cartId, stripe, paymentIntent) => {
-      return Promise.resolve();
-    }),
+  updatePaymentSession: jest.fn().mockImplementation(() => Promise.resolve()),
 };
 
-const mock = jest.fn().mockImplementation(() => {
-  return CartServiceMock;
-});
+const mock = jest.fn().mockImplementation(() => CartServiceMock);
 
 export default mock;
