@@ -1,6 +1,6 @@
 {
   "name": "medusa-payment-paystack",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Paystack Payment provider for Medusa Commerce",
   "main": "index.js",
   "repository": "https://github.com/a11rew/medusa-payment-paystack",
