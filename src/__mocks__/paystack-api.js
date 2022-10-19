@@ -60,15 +60,12 @@ export const PaystackProviderServiceMock = {
   },
 
   refund: {
-    create: jest.fn().mockImplementation(
-      () =>
-        // eslint-disable-next-line implicit-arrow-linebreak
-        Promise.resolve({
-          transaction: "paystack_pay",
-          amount: "12000",
-          paystackTxData: "12345",
-        }),
-      // eslint-disable-next-line function-paren-newline
+    create: jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        transaction: "paystack_pay",
+        amount: "12000",
+        paystackTxData: "12345",
+      }),
     ),
   },
 };
