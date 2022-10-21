@@ -111,4 +111,30 @@ GATSBY_STRIPE_KEY=pk_
 You might find this environment variable already available so you can just replace its value with your Publishable Key.
 
 
+### Add to Custom Storefront
+
+This section guides you to add Paystack into a React-based framework. The instructions are general instructions that you can use in your storefront.
+
+The integration with Paystack must have the following workflow:
+
+1. During checkout when the user reaches the payment section, you should create payment sessions. This will initialize the payment_sessions array in the cart object received. The payment_sessions list contains an array of available payment providers.
+
+2. If Paystack is available as a payment provider, you should select Paystack as the payment session for the current cart. This will initialize the payment_session object in the cart object to include data related to Paystack and the current payment session. The payment intent and client secret are included here.
+
+3. After the user enters their card details and submits the form, confirm the payment with Paystack.
+
+4. If the payment is successful, complete the order in Medusa. Otherwise show an error.
+
+In your storefront, you need to install the [React Paystack components library](https://www.npmjs.com/package/react-paystack) and the [Medusa JS Client library](https://www.npmjs.com/package/@medusajs/medusa-js) with the foloowing codes:
+
+```bash 
+npm install react-paystack --save
+```
+
+```bash 
+npm install @medusajs/medusa-js
+```
+
+
+
 
