@@ -1,3 +1,5 @@
+![Medusa Paystack Plugin](https://res.cloudinary.com/femakin/image/upload/v1666371662/Frame_59841_cuqbl1.png)
+
 # Paystack
 
 This document guides you through setting up Paystack as a payment provider in your Medusa server, admin, and storefront using the [Paystack plugin](https://github.com/femakin/medusa-payment-paystack/tree/master).
@@ -65,3 +67,48 @@ If you don’t have a Medusa admin installed, make sure to follow along with [th
 ### Add Paystack to Regions
 
 You can refer to [this documentation in the user guide](../user-guide/regions/providers.mdx#manage-payment-providers) to learn how to add a payment provider like Paystack to a region.
+
+
+
+## Storefront Setup
+
+This guide will take you through how to set up Paystack payments in your Medusa storefront. It includes the steps necessary when using one of Medusa’s official storefronts as well as your own custom React-based storefront.
+
+### Storefront Prerequisites
+
+All storefronts require that you obtain your Paystack’s Public Key. You can retrieve it from your Paystack’s dashboard.
+
+### Add to Next.js Storefront
+
+Medusa has a Next.js storefront that you can easily use with your Medusa server. If you don’t have the storefront installed, you can follow [this quickstart guide](../starters/nextjs-medusa-starter).
+
+In your `.env.local` file (or the file you’re using for your environment variables), add the following variable:
+
+```bash
+NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=<PAYSTACK_PUBLIC_KEY>
+```
+
+Make sure to replace `<PAYSTACK_PUBLIC_KEY>` with your Paystack Public Key.
+
+Now, if you run your Medusa server and your storefront, on checkout you’ll be able to use Stripe.
+
+![Next.js Stripe Form](https://res.cloudinary.com/femakin/image/upload/v1666371607/Screenshot_2022-10-21_at_17.57.32_fx2nnq.png)
+
+
+
+### Add to Gatsby Storefront
+
+Medusa also has a Gatsby storefront that you can use as your ecommerce store. If you don’t have the storefront installed, you can follow [this quickstart guide](../starters/gatsby-medusa-starter).
+
+In your `.env.development` file (or the file you’re using for your environment variables) add the following variable with the value set to the Public Key:
+
+```jsx
+GATSBY_STRIPE_KEY=pk_
+```
+
+:::note
+
+You might find this environment variable already available so you can just replace its value with your Publishable Key.
+
+
+
