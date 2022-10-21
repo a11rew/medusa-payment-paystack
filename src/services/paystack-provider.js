@@ -7,6 +7,10 @@ class PaystackProviderService extends PaymentService {
 
   constructor(services, options) {
     super(services, options);
+
+    this.totalsService_ = services;
+
+    console.log(services, "this.totalsService_");
     /**
      * Required options:
      * {
