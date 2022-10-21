@@ -1,7 +1,5 @@
 ![Medusa Paystack Plugin](https://res.cloudinary.com/femakin/image/upload/v1666371662/Frame_59841_cuqbl1.png)
 
-# Paystack
-
 This document guides you through setting up Paystack as a payment provider in your Medusa server, admin, and storefront using the [Paystack plugin](https://github.com/femakin/medusa-payment-paystack/tree/master).
 
 ## Overview
@@ -90,9 +88,9 @@ NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=<PAYSTACK_PUBLIC_KEY>
 
 Make sure to replace `<PAYSTACK_PUBLIC_KEY>` with your Paystack Public Key.
 
-Now, if you run your Medusa server and your storefront, on checkout you’ll be able to use Stripe.
+Now, if you run your Medusa server and your storefront, on checkout you’ll be able to use Paystack.
 
-![Next.js Stripe Form](https://res.cloudinary.com/femakin/image/upload/v1666371607/Screenshot_2022-10-21_at_17.57.32_fx2nnq.png)
+![Next.js Paystack Form](https://res.cloudinary.com/femakin/image/upload/v1666371607/Screenshot_2022-10-21_at_17.57.32_fx2nnq.png)
 
 
 
@@ -103,7 +101,7 @@ Medusa also has a Gatsby storefront that you can use as your ecommerce store. If
 In your `.env.development` file (or the file you’re using for your environment variables) add the following variable with the value set to the Public Key:
 
 ```jsx
-GATSBY_STRIPE_KEY=pk_
+GATSBY_PAYSTACK_KEY=pk_
 ```
 
 :::note
@@ -135,7 +133,13 @@ npm install react-paystack --save
 npm install @medusajs/medusa-js
 ```
 
+## Capture Payments
+
+After the customer places an order, you can see the order on the admin panel. In the payment information under the “Payment” section, you should see a “Capture” button.
 
 
+Clicking this button lets you capture the payment for an order. You can also refund payments if an order has captured payments.
+
+Refunding or Capturing payments is reflected in your Paystack dashboard as well.
 
 
