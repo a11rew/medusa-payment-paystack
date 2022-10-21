@@ -1,24 +1,41 @@
-<div align="center">
-  <p align="center">
-    <img alt="Medusa" src="https://uploads-ssl.webflow.com/61fba9f6deac297b7b22017d/62000006ce573a706c92546c_logo.svg" width="200" />
-  </p>
-  <h1>Medusa Payment Paystack</h1>
-  <p>Add support for Paystack payments in Medusa Commerce applications.</p>
-</div>
+# Paystack
 
-## Installation
+This document guides you through setting up Paystack as a payment provider in your Medusa server, admin, and storefront using the [Paystack plugin](https://github.com/femakin/medusa-payment-paystack/tree/master).
 
-In the root of your Medusa server, install the plugin:
+## Overview
 
-```bash
+Paystack allows Nigerian, Ghanaian, and South African businesses to accept secure payments from multiple local and global payment channels. Let your customers pay you with their choice of methods by integrating Paystack with your Medusa website.
+
+Using the `medusa-payment-paystack` plugin, this guide shows you how to set up your Medusa server with Paystack as a payment provider.
+
+
+## Prerequisites
+
+To begin this guide, you will need to create a [Paystack account](https://dashboard.paystack.com/#/signup?_id=01137601-d686-45ac-a3f5-dca9afce19c6R). By doing this, you will be able to obtain the [Paystack account's secret key](https://support.paystack.com/hc/en-us/articles/360009881600-Paystack-Test-Keys-Live-Keys-and-Webhooks) from the dashboard. The plugin uses this to verify purchases, issue refunds, and connect Medusa to Paystack.
+
+Additionally, you need a Medusa server installed and set up. If not, you can follow the [quickstart guide](https://docs.medusajs.com/quickstart/quick-start) to get started.
+
+You also need [Medusa Admin](https://docs.medusajs.com/admin/quickstart/) installed to enable Paystack as a payment provider. You can alternatively use the [REST APIs](https://docs.medusajs.com/api/admin).
+
+## Medusa Server
+
+This section guides you over the steps necessary to add Paystack as a payment provider to your Medusa server.
+
+If you don’t have a Medusa server installed yet, you must follow the [quickstart guide](../quickstart/quick-start) first.
+
+### Install the Paystack Plugin
+
+In the root of your Medusa server, run the following command to install the Paystack plugin:
+
+```bash 
 yarn add medusa-payment-paystack
 ```
 
-## Configuration
+### Configure the Paystack Plugin
 
-Obtain your [Paystack account's secret key](https://support.paystack.com/hc/en-us/articles/360009881600-Paystack-Test-Keys-Live-Keys-and-Webhooks) from the dashboard. This is used by the plugin to verify purchases and issue refunds.
+Next, you need to add configurations for your paystack plugin.
 
-Add the plugin to your list of plugins along with the secret key as a configuration option in `medusa-config.js`.
+In `medusa-config.js` add the following at the end of the `plugins` array:
 
 ```js
 const plugins = [
@@ -32,10 +49,19 @@ const plugins = [
 ];
 ```
 
-## Usage
+It's that simple to install Paystack on your Medusa server!
 
-The plugin will add a payment method to your Medusa application with the id `paystack`.
 
-### Admin
+## Admin Setup
 
-### Storefront
+This section will guide you through adding Paystack as a payment provider in a region using your Medusa admin dashboard.
+
+This step is required for you to be able to use Paystack as a payment provider in your storefront.
+
+### Admin Prerequisites
+
+If you don’t have a Medusa admin installed, make sure to follow along with [the guide on how to install it](https://github.com/medusajs/admin#-quickstart) before continuing with this section.
+
+### Add Paystack to Regions
+
+You can refer to [this documentation in the user guide](../user-guide/regions/providers.mdx#manage-payment-providers) to learn how to add a payment provider like Paystack to a region.
