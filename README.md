@@ -1,6 +1,6 @@
-![Medusa Paystack Plugin](https://res.cloudinary.com/femakin/image/upload/v1666371662/Frame_59841_cuqbl1.png)
+![Medusa Paystack Plugin](https://user-images.githubusercontent.com/46872764/197322473-fddbc659-d81e-4f19-b36c-d9f553433c8f.png)
 
-This document guides you through setting up Paystack as a payment provider in your Medusa server, admin, and storefront using the [Paystack plugin](https://github.com/femakin/medusa-payment-paystack/tree/master).
+This document guides you through setting up Paystack as a payment provider in your Medusa server, admin, and storefront using the [Paystack plugin](https://github.com/a11rew/medusa-payment-paystack).
 
 ## Overview
 
@@ -11,7 +11,7 @@ Using the `medusa-payment-paystack` plugin, this guide shows you how to set up y
 
 ## Prerequisites
 
-To begin this guide, you will need to create a [Paystack account](https://dashboard.paystack.com/#/signup?_id=01137601-d686-45ac-a3f5-dca9afce19c6R). By doing this, you will be able to obtain the [Paystack account's secret key](https://support.paystack.com/hc/en-us/articles/360009881600-Paystack-Test-Keys-Live-Keys-and-Webhooks) from the dashboard. The plugin uses this to verify purchases, issue refunds, and connect Medusa to Paystack.
+To begin this guide, you will need to create a [Paystack account](https://dashboard.paystack.com/#/signup). By doing this, you will be able to obtain the [Paystack account's secret key](https://support.paystack.com/hc/en-us/articles/360009881600-Paystack-Test-Keys-Live-Keys-and-Webhooks) from the dashboard. The plugin uses this to verify purchases, issue refunds, and connect Medusa to Paystack.
 
 Additionally, you need a Medusa server installed and set up. If not, you can follow the [quickstart guide](https://docs.medusajs.com/quickstart/quick-start) to get started.
 
@@ -21,7 +21,7 @@ You also need [Medusa Admin](https://docs.medusajs.com/admin/quickstart/) instal
 
 This section guides you over the steps necessary to add Paystack as a payment provider to your Medusa server.
 
-If you don’t have a Medusa server installed yet, you must follow the [quickstart guide](../quickstart/quick-start) first.
+If you don’t have a Medusa server installed yet, you must follow the [quickstart guide](https://docs.medusajs.com/quickstart/quick-start/) first.
 
 ### Install the Paystack Plugin
 
@@ -43,7 +43,7 @@ const plugins = [
   {
     resolve: `medusa-payment-paystack`,
     options: {
-      secret_key: "sk-...",
+      secret_key: "<PAYSTACK_SECRET_KEY>",
     },
   },
 ];
@@ -64,7 +64,7 @@ If you don’t have a Medusa admin installed, make sure to follow along with [th
 
 ### Add Paystack to Regions
 
-You can refer to [this documentation in the user guide](../user-guide/regions/providers.mdx#manage-payment-providers) to learn how to add a payment provider like Paystack to a region.
+You can refer to [this documentation in the user guide](https://docs.medusajs.com/user-guide/regions/providers/#manage-payment-providers) to learn how to add a payment provider like Paystack to a region.
 
 
 
@@ -90,7 +90,7 @@ Make sure to replace `<PAYSTACK_PUBLIC_KEY>` with your Paystack Public Key.
 
 Now, if you run your Medusa server and your storefront, on checkout you’ll be able to use Paystack.
 
-![Next.js Paystack Form](https://res.cloudinary.com/femakin/image/upload/v1666371607/Screenshot_2022-10-21_at_17.57.32_fx2nnq.png)
+![Medusa Paystack Plugin](https://user-images.githubusercontent.com/46872764/197323248-0312f3dd-0526-4064-a429-871925fa282f.png)
 
 
 
@@ -101,7 +101,7 @@ Medusa also has a Gatsby storefront that you can use as your ecommerce store. If
 In your `.env.development` file (or the file you’re using for your environment variables) add the following variable with the value set to the Public Key:
 
 ```jsx
-GATSBY_PAYSTACK_KEY=pk_
+GATSBY_PAYSTACK_KEY=PAYSTACK_PUBLIC_KEY
 ```
 
 :::note
@@ -123,15 +123,9 @@ The integration with Paystack must have the following workflow:
 
 4. If the payment is successful, complete the order in Medusa. Otherwise show an error.
 
-In your storefront, you need to install the [React Paystack components library](https://www.npmjs.com/package/react-paystack) and the [Medusa JS Client library](https://www.npmjs.com/package/@medusajs/medusa-js) with the foloowing codes:
+During checkout flow implementation, you need to follow the [PayStack Accept Payments](https://paystack.com/docs/payments/accept-payments)  and the 
+[Medusa Payment steps] (https://docs.medusajs.com/advanced/storefront/how-to-implement-checkout-flow/#payment-step)
 
-```bash 
-npm install react-paystack --save
-```
-
-```bash 
-npm install @medusajs/medusa-js
-```
 
 ## Capture Payments
 
