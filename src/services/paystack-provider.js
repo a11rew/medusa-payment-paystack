@@ -1,6 +1,7 @@
 import Paystack from "paystack-api";
 import cuid from "cuid";
 import { PaymentService } from "medusa-interfaces";
+import { MedusaError } from "medusa-core-utils";
 
 class PaystackProviderService extends PaymentService {
   static identifier = "paystack";
@@ -10,19 +11,24 @@ class PaystackProviderService extends PaymentService {
     /**
      * Required options:
      * {
-     *  api_key: "paystack_secret_key"
+     *  secret_key: "paystack_secret_key"
      * }
      */
     this.options_ = options;
+    this.cartService_ = services.cartService;
+    this.totalsService_ = services.totalsService;
 
-    this.PAYSTACK_API_KEY = this.options_?.api_key;
+    this.PAYSTACK_SECRET_KEY = this.options_?.secret_key;
 
-    if (!this.PAYSTACK_API_KEY) {
-      throw new Error("The Paystack provider requires the api_key option");
+    if (!this.PAYSTACK_SECRET_KEY) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_ARGUMENT,
+        "The Paystack provider requires the api_key option",
+      );
     }
 
-    /** @private @const {Paystack} */
-    this.paystack_ = new Paystack(this.PAYSTACK_API_KEY);
+    /** @private */
+    this.paystack_ = new Paystack(this.PAYSTACK_SECRET_KEY);
   }
 
   /**
@@ -95,16 +101,38 @@ class PaystackProviderService extends PaymentService {
   async authorizePayment(paymentSession) {
     // TODO: This should validate amount, currency, email, etc.
     // Probably use the other services, cart, region etc.
-    try {
-      const { paystackTxRef } = paymentSession.data;
+    const { paystackTxRef } = paymentSession.data;
 
-      const { data } = await this.paystack_.transaction.verify({
-        reference: paystackTxRef,
-      });
+    const { data } = await this.paystack_.transaction.verify({
+      reference: paystackTxRef,
+    });
 
-      switch (data.status) {
-        case "success":
-          // Successful transaction
+    switch (data.status) {
+      case "success": {
+        // Successful transaction
+
+        // Validate payment details
+        // Verify that the amount and transaction currency recieved is the same as in the cart
+
+        console.log("got", data);
+
+        // Rounded to the nearest currency unit
+        const paystackPaidAmount = Math.round(data.amount);
+        const paystackPaidCurrency = String(data.currency).toLowerCase();
+
+        const cart = await this.cartService_.retrieveWithTotals(
+          paymentSession?.cart_id,
+        );
+
+        // Rounded to the nearest currency unit
+        const cartTotal = Math.round(cart.total);
+        const cartCurrency = String(cart.region.currency_code).toLowerCase();
+
+        if (
+          paystackPaidAmount === cartTotal &&
+          paystackPaidCurrency === cartCurrency
+        ) {
+          // Payment is valid
           return {
             status: "authorized",
             data: {
@@ -113,37 +141,58 @@ class PaystackProviderService extends PaymentService {
               ...paymentSession.data,
             },
           };
+        }
 
-        case "failed":
-          // Failed transaction
-          return {
-            status: "error",
-            data: {
-              paystackTxId: data.id,
-              paystackTxData: data,
-              ...paymentSession.data,
-            },
-          };
+        // Payment is invalid
+        // At this point the user has already paid, but the payment is invalid
 
-        case false:
-          // Invalid key error
-          return {
-            status: "error",
-            data: {
-              paystackTxId: null,
-              paystackTxData: data,
-              ...paymentSession.data,
-            },
-          };
-        default:
-          // Pending transaction
-          return {
-            status: "pending",
-            data: paymentSession.data,
-          };
+        // Issue refund (reverse the payment)
+        await this.refundPayment({
+          data: {
+            paystackTxId: data.id,
+            paystackTxData: data,
+            ...paymentSession.data,
+          },
+        });
+
+        // Mark payment as failed
+        return {
+          status: "error",
+          data: {
+            paystackTxId: data.id,
+            paystackTxData: data,
+            ...paymentSession.data,
+          },
+        };
       }
-    } catch (error) {
-      return { status: "error", data: { ...paymentSession.data, error } };
+
+      case "failed":
+        // Failed transaction
+        return {
+          status: "error",
+          data: {
+            paystackTxId: data.id,
+            paystackTxData: data,
+            ...paymentSession.data,
+          },
+        };
+
+      case false:
+        // Invalid key error
+        return {
+          status: "error",
+          data: {
+            paystackTxId: null,
+            paystackTxData: data,
+            ...paymentSession.data,
+          },
+        };
+      default:
+        // Pending transaction
+        return {
+          status: "pending",
+          data: paymentSession.data,
+        };
     }
   }
 

@@ -6,24 +6,23 @@ export const PaystackProviderServiceMock = {
           return Promise.resolve({
             data: {
               status: "failed",
-              paystackTxId: "123",
-              paystackTxData: {},
+              id: "123",
             },
           });
         case "123-passed":
           return Promise.resolve({
             data: {
               status: "success",
-              paystackTxId: "123",
-              paystackTxData: {},
+              id: "123",
+              amount: 2000,
+              currency: "GHS",
             },
           });
         case "123-false":
           return Promise.resolve({
             data: {
               status: false,
-              paystackTxId: "123",
-              paystackTxData: {},
+              id: "123",
             },
           });
         case "123-throw":
@@ -32,8 +31,7 @@ export const PaystackProviderServiceMock = {
           return Promise.resolve({
             data: {
               status: "pending",
-              paystackTxId: "123",
-              paystackTxData: {},
+              id: "123",
             },
           });
       }

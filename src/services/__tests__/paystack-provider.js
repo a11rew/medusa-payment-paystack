@@ -1,12 +1,15 @@
 import cuid from "cuid";
+import { CartServiceMock } from "../../__mocks__/cart";
 import PaystackProviderService from "../paystack-provider";
 
 // Helpers
 function createPaystackProviderService() {
   return new PaystackProviderService(
-    {},
     {
-      api_key: "sk_test_123",
+      cartService: CartServiceMock,
+    },
+    {
+      secret_key: "sk_test_123",
     },
   );
 }
@@ -104,17 +107,6 @@ describe("Authorize Payment", () => {
     });
 
     expect(payment.status).toEqual("pending");
-  });
-
-  it("returns error when verify call throws", async () => {
-    const service = createPaystackProviderService();
-    const payment = await service.authorizePayment({
-      data: {
-        paystackTxRef: "123-throw",
-      },
-    });
-
-    expect(payment.status).toEqual("error");
   });
 });
 
