@@ -67,73 +67,60 @@ If you don’t have a Medusa admin installed, make sure to follow along with [th
 You can refer to [this documentation in the user guide](https://docs.medusajs.com/user-guide/regions/providers/#manage-payment-providers) to learn how to add a payment provider like Paystack to a region.
 
 
-
 ## Storefront Setup
 
-This guide will take you through how to set up Paystack payments in your Medusa storefront. It includes the steps necessary when using one of Medusa’s official storefronts as well as your own custom React-based storefront.
+Follow Medusa's [Checkout Flow](https://docs.medusajs.com/advanced/storefront/how-to-implement-checkout-flow/) guide using `paystack` as the `provider_id` to add Paystack to your checkout flow.
 
-### Storefront Prerequisites
+`medusa-payment-paystack` returns a transaction reference you should send to Paystack as the transaction's reference.
 
-All storefronts require that you obtain your Paystack’s Public Key. You can retrieve it from your Paystack’s dashboard.
+Using this returned reference as the Paystack transaction's reference allows the plugin to confirm the status of the transaction, verify that the paid amount and currency are correct before authorizing the payment.
 
-### Add to Next.js Storefront
+### Using Transaction Reference
 
-Medusa has a Next.js storefront that you can easily use with your Medusa server. If you don’t have the storefront installed, you can follow [this quickstart guide](../starters/nextjs-medusa-starter).
+`medusa-payment-paystack` inserts a `paystackTxRef` into the [`PaymentSession`](https://docs.medusajs.com/advanced/backend/payment/overview/#payment-session)'s data.
 
-In your `.env.local` file (or the file you’re using for your environment variables), add the following variable:
-
-```bash
-NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=<PAYSTACK_PUBLIC_KEY>
+```
+const { paystackTxRef } = paymentSession.data
 ```
 
-Make sure to replace `<PAYSTACK_PUBLIC_KEY>` with your Paystack Public Key.
+Provide this reference when initiating any of the Paystack [Accept Payment](https://paystack.com/docs/payments/accept-payments/) flows.
 
-Now, if you run your Medusa server and your storefront, on checkout you’ll be able to use Paystack.
+For example, when using the [Paystack Popup](https://paystack.com/docs/payments/accept-payments/#popup), provide this reference to the initialization method;
 
-![Medusa Paystack Plugin](https://user-images.githubusercontent.com/46872764/197323248-0312f3dd-0526-4064-a429-871925fa282f.png)
+```js
+const paymentForm = document.getElementById('paymentForm');
+paymentForm.addEventListener("submit", payWithPaystack, false);
 
+function payWithPaystack(e) {
+  e.preventDefault();
 
+  let handler = PaystackPop.setup({
+    key: 'pk_test_xxxxxxxxxx', 
+    email: document.getElementById("email-address").value,
+    amount: document.getElementById("amount").value * 100,
+    ref: paystackTxRef // Reference returned from plugin
+    onClose: function(){
+      alert('Window closed.');
+    },
+    callback: function(response){
+      // Call Medusa checkout complete here
+    }
+  });
 
-### Add to Gatsby Storefront
-
-Medusa also has a Gatsby storefront that you can use as your ecommerce store. If you don’t have the storefront installed, you can follow [this quickstart guide](../starters/gatsby-medusa-starter).
-
-In your `.env.development` file (or the file you’re using for your environment variables) add the following variable with the value set to the Public Key:
-
-```jsx
-GATSBY_PAYSTACK_KEY=PAYSTACK_PUBLIC_KEY
+  handler.openIframe();
+}
 ```
 
-:::note
+### Verify Payment
 
-You might find this environment variable already available so you can just replace its value with your Publishable Key.
+Call the Medusa [Complete Cart](https://docs.medusajs.com/advanced/storefront/how-to-implement-checkout-flow/#complete-cart) method in the payment completion callback of your chosen flow. 
 
+`medusa-payment-paystack` will check the status of the transaction with the reference it provided you, verify the amount matches the cart total and mark the cart as paid for in Medusa.  
 
-### Add to Custom Storefront
+## Refund Payments
 
-This section guides you to add Paystack into a React-based framework. The instructions are general instructions that you can use in your storefront.
+You can refund captured payments made with Paystack from the Admin dashboard. 
 
-The integration with Paystack must have the following workflow:
-
-1. During checkout when the user reaches the payment section, you should create payment sessions. This will initialize the payment_sessions array in the cart object received. The payment_sessions list contains an array of available payment providers.
-
-2. If Paystack is available as a payment provider, you should select Paystack as the payment session for the current cart. This will initialize the payment_session object in the cart object to include data related to Paystack and the current payment session. The payment intent and client secret are included here.
-
-3. After the user enters their card details and submits the form, confirm the payment with Paystack.
-
-4. If the payment is successful, complete the order in Medusa. Otherwise show an error.
-
-During checkout flow implementation, you need to follow the [PayStack Accept Payments](https://paystack.com/docs/payments/accept-payments)  and the 
-[Medusa Payment steps] (https://docs.medusajs.com/advanced/storefront/how-to-implement-checkout-flow/#payment-step)
-
-
-## Capture Payments
-
-After the customer places an order, you can see the order on the admin panel. In the payment information under the “Payment” section, you should see a “Capture” button.
-
-
-Clicking this button lets you capture the payment for an order. You can also refund payments if an order has captured payments.
-
-Refunding or Capturing payments is reflected in your Paystack dashboard as well.
+`medusa-payment-paystack` handles refunding the given amount using Paystack and marks the order in Medusa as refunded. 
 
 
