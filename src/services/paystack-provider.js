@@ -7,6 +7,8 @@ class PaystackProviderService extends PaymentService {
 
   constructor(services, options) {
     super(services, options);
+
+
     /**
      * Required options:
      * {
