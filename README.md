@@ -1,6 +1,6 @@
 ![Medusa Paystack Plugin](https://user-images.githubusercontent.com/46872764/197322473-fddbc659-d81e-4f19-b36c-d9f553433c8f.png)
 
-This document guides you through setting up Paystack as a payment provider in your Medusa server, admin, and storefront using the [Paystack plugin](https://github.com/a11rew/medusa-payment-paystack).
+[Medusa](https://medusajs.com/) plugin to add support for payments with [Paystack](https://paystack.com)
 
 ## Overview
 
