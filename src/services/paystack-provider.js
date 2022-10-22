@@ -9,7 +9,6 @@ class PaystackProviderService extends PaymentService {
   constructor(services, options) {
     super(services, options);
 
-
     /**
      * Required options:
      * {
@@ -115,8 +114,6 @@ class PaystackProviderService extends PaymentService {
 
         // Validate payment details
         // Verify that the amount and transaction currency recieved is the same as in the cart
-
-        console.log("got", data);
 
         // Rounded to the nearest currency unit
         const paystackPaidAmount = Math.round(data.amount);
