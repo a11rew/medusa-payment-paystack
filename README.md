@@ -10,25 +10,35 @@
 
 ## Participants
 
-Andrew(GitHub)- [@a11rew](https://github.com/a11rew)
-Andrew(Twitter)- [@a11rew](https://twitter.com/a11rew)
-Andrew(Discord)- AndrewHGA
+Andrew Glago
 
-Femakin(GitHub)- [@femakin](https://github.com/femakin)
-Femakin(Twitter)- [@akinyemi_t](https://twitter.com/akinyemi_t)
-Femakin(Discord)- Femi#3266
+- [Github](https://github.com/a11rew)
+- [Twitter](https://twitter.com/a11rew)
+- Discord - AndrewHGA#5383
+
+Femi Akinyemi
+
+- [GitHub](https://github.com/femakin)
+- [Twitter](https://twitter.com/akinyemi_t)
+- Discord - Femi#3266
 
 ## Description
 
-Paystack allows African businesses to accept secure payments from multiple local and global payment channels. Let your customers pay you with their choice of methods by integrating Paystack with your Medusa website.
+[Paystack](https://paystack.com) allows African businesses to accept payments in local and foreign currencies from multiple local and global payment channels.
 
-Using the `medusa-payment-paystack` plugin, this guide shows you how to set up your Medusa server with Paystack as a payment provider.
+Our submission, the `medusa-payment-paystack` plugin adds Paystack as a payment provider to Medusa ecommerce stores.
+
+Combined with [Medusa](https://medusajs.com), business owners in Africa will be able to setup ecommerce stores accepting payments in local currencies tailored towards the [236 million (2022)](https://www.statista.com/outlook/dmo/ecommerce/africa#users) and counting ecommerce users in Africa.
 
 ### Preview
 
-Demo video to be uploaded here
+<iframe src="https://player.vimeo.com/video/763132960?h=d377e220d3" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 ## Set up Project
+
+Clone the demo repository [a11rew/medusa-payment-paystack-demo](https://github.com/a11rew/medusa-paystack-demo) and follow the [setup instructions](https://github.com/a11rew/medusa-paystack-demo#set-up-project) to quickly get started.
+
+Or, setup Paystack in your Medusa server manually with the following instructions;
 
 ### Prerequisites
 
@@ -132,9 +142,19 @@ function payWithPaystack(e) {
 
 Call the Medusa [Complete Cart](https://docs.medusajs.com/advanced/storefront/how-to-implement-checkout-flow/#complete-cart) method in the payment completion callback of your chosen flow.
 
-`medusa-payment-paystack` will check the status of the transaction with the ref
+`medusa-payment-paystack` will check the status of the transaction with the reference it provided you, verify the amount matches the cart total and mark the cart as paid for in Medusa.
+
+## Refund Payments
+
+You can refund captured payments made with Paystack from the Admin dashboard.
+
+`medusa-payment-paystack` handles refunding the given amount using Paystack and marks the order in Medusa as refunded.
 
 ## Resources
 
+- [Medusa.js](https://medusajs.com)
+- [Paystack](https://paystack.com)
 - [Medusa Payment Architecture Overview](https://docs.medusajs.com/advanced/backend/payment/overview/)
 - [Medusa Create Plugin](https://docs.medusajs.com/advanced/backend/plugins/create/)
+- [Paystack Payment Docs](https://paystack.com/docs/payments)
+- [Paystack-API](https://www.npmjs.com/package/paystack-api)
