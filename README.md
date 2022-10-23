@@ -30,7 +30,9 @@ Combined with [Medusa](https://medusajs.com), business owners in Africa will be 
 
 ### Preview
 
-<iframe src="https://player.vimeo.com/video/763132960?h=d377e220d3" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+![GIF Demoing Paying with Paystack](https://user-images.githubusercontent.com/87580113/197406110-ff68bd20-60a1-4842-85c1-1a6ef46dd498.gif)
+
+![Full Video Demo](https://vimeo.com/763132960)
 
 ## Set up Project
 
