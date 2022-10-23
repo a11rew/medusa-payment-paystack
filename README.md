@@ -24,7 +24,7 @@ Femakin(GitHub)- [@femakin](https://github.com/femakin)
 
 ## Description
 
-Paystack allows Nigerian, Ghanaian, and South African businesses to accept secure payments from multiple local and global payment channels. Let your customers pay you with their choice of methods by integrating Paystack with your Medusa website.
+Paystack allows African businesses to accept secure payments from multiple local and global payment channels. Let your customers pay you with their choice of methods by integrating Paystack with your Medusa website.
 
 Using the `medusa-payment-paystack` plugin, this guide shows you how to set up your Medusa server with Paystack as a payment provider.
 
