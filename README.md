@@ -1,18 +1,50 @@
+## [Medusa](https://medusajs.com/) plugin to add support for payments with [Paystack](https://paystack.com)
+
 ![Medusa Paystack Plugin](https://user-images.githubusercontent.com/46872764/197322473-fddbc659-d81e-4f19-b36c-d9f553433c8f.png)
 
-[Medusa](https://medusajs.com/) plugin to add support for payments with [Paystack](https://paystack.com)
+# Demo link
 
-## Overview
+[medusa-payment-paystack](https://www.npmjs.com/package/medusa-payment-paystack)
 
-Paystack allows Nigerian, Ghanaian, and South African businesses to accept secure payments from multiple local and global payment channels. Let your customers pay you with their choice of methods by integrating Paystack with your Medusa website.
+# About
 
-Using the `medusa-payment-paystack` plugin, this guide shows you how to set up your Medusa server with Paystack as a payment provider.
+## Participants
 
-## Prerequisites
+Andrew Glago
+
+- [Github](https://github.com/a11rew)
+- [Twitter](https://twitter.com/a11rew)
+- Discord - AndrewHGA#5383
+
+Femi Akinyemi
+
+- [GitHub](https://github.com/femakin)
+- [Twitter](https://twitter.com/akinyemi_t)
+- Discord - Femi#3266
+
+## Description
+
+[Paystack](https://paystack.com) allows African businesses to accept payments in local and foreign currencies from multiple local and global payment channels.
+
+Our submission, the `medusa-payment-paystack` plugin adds Paystack as a payment provider to Medusa ecommerce stores.
+
+Combined with [Medusa](https://medusajs.com), business owners in Africa will be able to setup ecommerce stores accepting payments in local currencies tailored towards the [236 million (2022)](https://www.statista.com/outlook/dmo/ecommerce/africa#users) and counting ecommerce users in Africa.
+
+### Preview
+
+<iframe src="https://player.vimeo.com/video/763132960?h=d377e220d3" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+
+## Set up Project
+
+Clone the demo repository [a11rew/medusa-payment-paystack-demo](https://github.com/a11rew/medusa-paystack-demo) and follow the [setup instructions](https://github.com/a11rew/medusa-paystack-demo#set-up-project) to quickly get started.
+
+Or, setup Paystack in your Medusa server manually with the following instructions;
+
+### Prerequisites
 
 To begin this guide, you will need to create a [Paystack account](https://dashboard.paystack.com/#/signup). By doing this, you will be able to obtain the [Paystack account's secret key](https://support.paystack.com/hc/en-us/articles/360009881600-Paystack-Test-Keys-Live-Keys-and-Webhooks) from the dashboard. The plugin uses this to verify purchases, issue refunds, and connect Medusa to Paystack.
 
-Additionally, you need a Medusa server installed and set up. If not, you can follow the [quickstart guide](https://docs.medusajs.com/quickstart/quick-start) to get started.
+Additionally, you need a Medusa server installed and set up with at least `@medusajs/medusa^1.5.0`. Follow the [quickstart guide](https://docs.medusajs.com/quickstart/quick-start) to get started.
 
 You also need [Medusa Admin](https://docs.medusajs.com/admin/quickstart/) installed to enable Paystack as a payment provider. You can alternatively use the [REST APIs](https://docs.medusajs.com/api/admin).
 
@@ -47,8 +79,6 @@ const plugins = [
   },
 ];
 ```
-
-It's that simple to install Paystack on your Medusa server!
 
 ## Admin Setup
 
@@ -119,3 +149,12 @@ Call the Medusa [Complete Cart](https://docs.medusajs.com/advanced/storefront/ho
 You can refund captured payments made with Paystack from the Admin dashboard.
 
 `medusa-payment-paystack` handles refunding the given amount using Paystack and marks the order in Medusa as refunded.
+
+## Resources
+
+- [Medusa.js](https://medusajs.com)
+- [Paystack](https://paystack.com)
+- [Medusa Payment Architecture Overview](https://docs.medusajs.com/advanced/backend/payment/overview/)
+- [Medusa Create Plugin](https://docs.medusajs.com/advanced/backend/plugins/create/)
+- [Paystack Payment Docs](https://paystack.com/docs/payments)
+- [Paystack-API](https://www.npmjs.com/package/paystack-api)
