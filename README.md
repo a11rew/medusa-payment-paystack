@@ -34,7 +34,7 @@ Demo video to be uploaded here
 
 To begin this guide, you will need to create a [Paystack account](https://dashboard.paystack.com/#/signup). By doing this, you will be able to obtain the [Paystack account's secret key](https://support.paystack.com/hc/en-us/articles/360009881600-Paystack-Test-Keys-Live-Keys-and-Webhooks) from the dashboard. The plugin uses this to verify purchases, issue refunds, and connect Medusa to Paystack.
 
-Additionally, you need a Medusa server installed and set up. If not, you can follow the [quickstart guide](https://docs.medusajs.com/quickstart/quick-start) to get started.
+Additionally, you need a Medusa server installed and set up with at least `@medusajs/medusa^1.5.0`. Follow the [quickstart guide](https://docs.medusajs.com/quickstart/quick-start) to get started.
 
 You also need [Medusa Admin](https://docs.medusajs.com/admin/quickstart/) installed to enable Paystack as a payment provider. You can alternatively use the [REST APIs](https://docs.medusajs.com/api/admin).
 
@@ -69,8 +69,6 @@ const plugins = [
   },
 ];
 ```
-
-It's that simple to install Paystack on your Medusa server!
 
 ## Admin Setup
 
@@ -140,20 +138,3 @@ Call the Medusa [Complete Cart](https://docs.medusajs.com/advanced/storefront/ho
 
 - [Medusa Payment Architecture Overview](https://docs.medusajs.com/advanced/backend/payment/overview/)
 - [Medusa Create Plugin](https://docs.medusajs.com/advanced/backend/plugins/create/)
-
-<<<<<<< HEAD
-`medusa-payment-paystack` will check the status of the transaction with the ref
-
-## Resources
-
-- [Medusa Payment Architecture Overview](https://docs.medusajs.com/advanced/backend/payment/overview/)
-- # [Medusa Create Plugin](https://docs.medusajs.com/advanced/backend/plugins/create/)
-  `medusa-payment-paystack` will check the status of the transaction with the reference it provided you, verify the amount matches the cart total and mark the cart as paid for in Medusa.
-
-## Refund Payments
-
-You can refund captured payments made with Paystack from the Admin dashboard.
-
-`medusa-payment-paystack` handles refunding the given amount using Paystack and marks the order in Medusa as refunded.
-
-> > > > > > > af6b200eeee81a77400de2d48b736f1e84efa136
