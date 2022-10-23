@@ -11,8 +11,16 @@
 # About
 
 ## Participants
- - [@a11rew](https://github.com/a11rew)
- - [@femakin](https://github.com/femakin)
+ Andrew(GitHub)- [@a11rew](https://github.com/a11rew)
+ Andrew(Twitter)- [@a11rew](https://twitter.com/a11rew)
+ Andrew(Discord)- AndrewHGA
+
+Femakin(GitHub)- [@femakin](https://github.com/femakin)
+ Femakin(Twitter)- [@akinyemi_t](https://twitter.com/akinyemi_t)
+ Femakin(Discord)- Femi#3266
+
+ 
+
 
 ## Description
 
