@@ -16,8 +16,6 @@
 
 ## Medusa Server
 
-This section guides you over the steps necessary to add Paystack as a payment provider to your Medusa server.
-
 If you don’t have a Medusa server installed yet, you must follow the [quickstart guide](https://docs.medusajs.com/quickstart/quick-start/) first.
 
 ### Install the Paystack Plugin
@@ -48,13 +46,11 @@ const plugins = [
 
 ## Admin Setup
 
-This section will guide you through adding Paystack as a payment provider in a region using your Medusa admin dashboard.
-
 This step is required for you to be able to use Paystack as a payment provider in your storefront.
 
 ### Admin Prerequisites
 
-If you don’t have a Medusa admin installed, make sure to follow along with [the guide on how to install it](https://github.com/medusajs/admin#-quickstart) before continuing with this section.
+If you don’t have a Medusa admin installed, make sure to follow [the guide on how to install it](https://github.com/medusajs/admin#-quickstart) before continuing with this section.
 
 ### Add Paystack to Regions
 
