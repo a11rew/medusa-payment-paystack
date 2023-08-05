@@ -7,7 +7,7 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
-    "test": "turbo test:ci",
+    "test": "turbo test",
     "test:watch": "turbo test",
     "release": "pnpm run build && pnpm changeset publish",
     "postinstall": "manypkg check"
