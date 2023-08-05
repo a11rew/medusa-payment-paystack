@@ -1,15 +1,14 @@
-name: Release
+name: Build & Lint
 
 on:
   push:
-    branches:
-      - main
-
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  release:
-    name: Release
+  lint:
+    name: Build & Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -29,10 +28,8 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Create Release Pull Request
-        uses: changesets/action@v1
-        with:
-          publish: pnpm release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Build
+        run: pnpm run build
+
+      - name: Lint
+        run: pnpm run lint
