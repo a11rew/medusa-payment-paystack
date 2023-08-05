@@ -2,10 +2,13 @@
   "name": "medusa-payment-paystack",
   "version": "1.0.2",
   "description": "Paystack Payment provider for Medusa Commerce",
-  "main": "index.js",
+  "main": "dist/index.js",
   "repository": "https://github.com/a11rew/medusa-payment-paystack",
   "author": "Andrew Glago <andrewglago1@gmail.com>, Femi Akinyemi <akinfemi46@gmail.com>",
   "license": "MIT",
+  "files": [
+    "dist"
+  ],
   "peerDependencies": {
     "medusa-interfaces": "^1.3.3"
   },
@@ -37,7 +40,7 @@
     "typescript": "^5.1.6"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf dist && tsc",
     "prepare": "cross-env NODE_ENV=production pnpm run build",
     "dev": "tsc --watch",
     "test:watch": "jest --watch",
