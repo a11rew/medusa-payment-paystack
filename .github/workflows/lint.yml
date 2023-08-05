@@ -1,4 +1,4 @@
-name: Test
+name: Build & Lint
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint:
-    name: Run test suites
+    name: Build & Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -28,5 +28,8 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Test
-        run: pnpm run test
+      - name: Build
+        run: pnpm run build
+
+      - name: Lint
+        run: pnpm run lint
