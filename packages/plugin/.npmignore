@@ -11,3 +11,5 @@ src
 .babelrc
 .prettierrc
 /coverage
+.turbo
+.eslintrc.yml
