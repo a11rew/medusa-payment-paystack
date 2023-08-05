@@ -9,9 +9,11 @@
     "lint": "turbo lint",
     "test": "turbo test:ci",
     "test:watch": "turbo test",
+    "release": "pnpm run build && pnpm changeset publish",
     "postinstall": "manypkg check"
   },
   "dependencies": {
+    "@changesets/cli": "^2.26.2",
     "@manypkg/cli": "^0.21.0",
     "turbo": "^1.10.12"
   }
