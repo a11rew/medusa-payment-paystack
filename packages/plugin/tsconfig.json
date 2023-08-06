@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["es5", "es6", "es2019"],
+    "types": ["jest", "node"],
     "target": "es5",
     "rootDir": "src",
     "outDir": "./dist",
@@ -19,12 +20,6 @@
     "skipLibCheck": true,
     "downlevelIteration": true
   },
-  "include": ["src", "index.js"],
-  "exclude": [
-    "dist",
-    "src/**/__tests__",
-    "src/**/__mocks__",
-    "src/**/__fixtures__",
-    "node_modules"
-  ]
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"]
 }

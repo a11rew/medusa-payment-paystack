@@ -60,9 +60,14 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   /**
    * Called when a user selects Paystack as their payment method during checkout
    */
-  async initiatePayment(
-    context: PaymentProcessorContext,
-  ): Promise<PaymentProcessorError | PaymentProcessorSessionResponse> {
+  async initiatePayment(): Promise<
+    | PaymentProcessorError
+    | (PaymentProcessorSessionResponse & {
+        session_data: {
+          paystackTxRef: string;
+        };
+      })
+  > {
     const reference = createId();
 
     return {
@@ -79,7 +84,14 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   async updatePaymentData(
     sessionId: string,
     data: Record<string, unknown>,
-  ): Promise<Record<string, unknown> | PaymentProcessorError> {
+  ): Promise<
+    | {
+        session_data: {
+          paystackTxRef: string;
+        };
+      }
+    | PaymentProcessorError
+  > {
     const reference = createId();
 
     return {
@@ -93,9 +105,14 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   /**
    * Called when a cart item is added or shipping address is updated
    */
-  async updatePayment(
-    context: PaymentProcessorContext,
-  ): Promise<void | PaymentProcessorError | PaymentProcessorSessionResponse> {
+  async updatePayment(context: PaymentProcessorContext): Promise<
+    | PaymentProcessorError
+    | (PaymentProcessorSessionResponse & {
+        session_data: {
+          paystackTxRef: string;
+        };
+      })
+  > {
     const reference = createId();
 
     return {
@@ -269,7 +286,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
    * Returns Paystack transaction status
    */
   async getPaymentStatus(
-    paymentSessionData: Record<string, unknown> & { paystackTxId: string },
+    paymentSessionData: Record<string, unknown> & { paystackTxId?: string },
   ): Promise<PaymentSessionStatus> {
     const { paystackTxId } = paymentSessionData;
 

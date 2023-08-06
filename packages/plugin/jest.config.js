@@ -1,8 +1,16 @@
 module.exports = {
   testEnvironment: "node",
   transform: {
-    "^.+\\.[jt]s?$": "./jest-transformer.js",
+    "^.+\\.js?$": "./jest-transformer.js",
+    "^.+\\.ts?$": [
+      "ts-jest",
+      {
+        tsconfig: "tsconfig.json",
+        isolatedModules: false,
+      },
+    ],
   },
+  moduleFileExtensions: ["js", "jsx", "ts", "tsx", "json"],
   collectCoverage: true,
   collectCoverageFrom: ["src/**"],
 };
