@@ -37,7 +37,7 @@ importers:
         specifier: ^29.5.3
         version: 29.5.3
       '@types/node':
-        specifier: '16'
+        specifier: ^16.18.39
         version: 16.18.39
       cross-env:
         specifier: ^5.2.1
