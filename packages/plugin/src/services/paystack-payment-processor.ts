@@ -12,7 +12,16 @@ import {
 } from "@medusajs/medusa";
 import { MedusaError } from "@medusajs/utils";
 
-interface PaystackPaymentProcessorConfig {
+export interface PaystackPaymentProcessorConfig {
+  /**
+   * Paystack Secret Key
+   *
+   * Should be in the format sk_test-... or sk_live-...
+   *
+   * Obtainable from the Paystack dashboard - Settings -> API Keys & Webhooks
+   *
+   * https://dashboard.paystack.com/#/settings/developers
+   */
   secret_key: string;
 }
 
@@ -44,6 +53,10 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
     options: PaystackPaymentProcessorConfig,
   ) {
     super(container);
+
+    console.log("Initializing Paystack payment processor with id: paystack", {
+      ...options,
+    });
 
     if (!options.secret_key) {
       throw new MedusaError(
