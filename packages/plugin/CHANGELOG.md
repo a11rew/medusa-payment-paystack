@@ -1,8 +1,8 @@
 # medusa-payment-paystack
 
-## 2.0.0
+## 1.1.0
 
-### Major Changes
+### Minor Changes
 
 - Updates plugin to support new Payment Processor standard in Medusa v1.8
 
