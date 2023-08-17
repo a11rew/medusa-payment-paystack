@@ -32,31 +32,11 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   protected readonly cartService: CartService;
   protected readonly paystack: Paystack;
 
-  protected buildError(
-    message: string,
-    e:
-      | {
-          code: string;
-          detail: string;
-        }
-      | Error,
-  ): PaymentProcessorError {
-    return {
-      error: message,
-      code: "code" in e ? e.code : "",
-      detail: "detail" in e ? e.detail : e.message ?? "",
-    };
-  }
-
   constructor(
     container: MedusaContainer,
     options: PaystackPaymentProcessorConfig,
   ) {
     super(container);
-
-    console.log("Initializing Paystack payment processor with id: paystack", {
-      ...options,
-    });
 
     if (!options.secret_key) {
       throw new MedusaError(
@@ -67,7 +47,11 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
 
     this.configuration = options;
     this.paystack = new Paystack(this.configuration.secret_key);
-    this.cartService = container.resolve("cartService");
+    this.cartService = container["cartService"];
+  }
+
+  get paymentIntentOptions() {
+    return {};
   }
 
   /**
@@ -354,6 +338,22 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
     paymentSessionData: Record<string, unknown>,
   ): Promise<Record<string, unknown> | PaymentProcessorError> {
     return paymentSessionData;
+  }
+
+  protected buildError(
+    message: string,
+    e:
+      | {
+          code: string;
+          detail: string;
+        }
+      | Error,
+  ): PaymentProcessorError {
+    return {
+      error: message,
+      code: "code" in e ? e.code : "",
+      detail: "detail" in e ? e.detail : e.message ?? "",
+    };
   }
 }
 

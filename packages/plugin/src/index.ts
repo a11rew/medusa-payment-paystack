@@ -1,3 +1,1 @@
-import type { PaystackPaymentProcessorConfig } from "./services/paystack-payment-processor";
-
-export type PluginOptions = PaystackPaymentProcessorConfig;
+export { PaystackPaymentProcessorConfig as PluginOptions } from "./services/paystack-payment-processor";
