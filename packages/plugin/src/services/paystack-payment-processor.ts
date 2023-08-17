@@ -146,54 +146,9 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
       switch (data.status) {
         case "success": {
           // Successful transaction
-
-          // Validate payment details
-          // Verify that the amount and transaction currency recieved is the same as in the cart
-
-          // Rounded to the nearest currency unit
-          const paystackPaidAmount = Math.round(data.amount);
-          const paystackPaidCurrency = String(data.currency).toLowerCase();
-
-          const cart = await this.cartService.retrieveWithTotals(
-            context.cart_id,
-          );
-
-          // Rounded to the nearest currency unit
-          const cartTotal = Math.round(cart.total);
-          const cartCurrency = String(cart.region.currency_code).toLowerCase();
-
-          if (
-            paystackPaidAmount === cartTotal &&
-            paystackPaidCurrency === cartCurrency
-          ) {
-            // Payment is valid
-            return {
-              status: PaymentSessionStatus.AUTHORIZED,
-              data: {
-                paystackTxId: data.id,
-                paystackTxData: data,
-              },
-            };
-          }
-
-          // Payment is invalid
-          // At this point the user has already paid, but the payment is invalid
-
-          // Issue refund (reverse the payment)
-          await this.refundPayment(
-            {
-              ...paymentSessionData,
-              paystackTxId: data.id,
-              paystackTxData: data,
-            },
-            data.amount,
-          );
-
-          // Mark payment as failed
           return {
-            status: PaymentSessionStatus.ERROR,
+            status: PaymentSessionStatus.AUTHORIZED,
             data: {
-              ...paymentSessionData,
               paystackTxId: data.id,
               paystackTxData: data,
             },
