@@ -1,5 +1,4 @@
 import { isCuid } from "@paralleldrive/cuid2";
-import { CartServiceMock } from "../../__mocks__/cart";
 import PaystackPaymentProcessor from "../paystack-payment-processor";
 import {
   PaymentProcessorContext,
@@ -8,22 +7,18 @@ import {
 } from "@medusajs/medusa";
 
 interface ProviderServiceMockOptions {
-  cartMock?: typeof CartServiceMock;
   secretKey?: string | undefined;
 }
 
 // Helpers
 function createPaystackProviderService(
-  { cartMock, secretKey }: ProviderServiceMockOptions = {
-    cartMock: CartServiceMock,
+  { secretKey }: ProviderServiceMockOptions = {
     secretKey: "sk_test_123",
   },
 ) {
   return new PaystackPaymentProcessor(
     // @ts-expect-error - We don't need to mock all the methods
-    {
-      resolve: () => cartMock,
-    },
+    {},
     {
       secret_key: secretKey,
     },

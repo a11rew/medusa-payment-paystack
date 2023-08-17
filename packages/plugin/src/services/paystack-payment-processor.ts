@@ -8,7 +8,6 @@ import {
   PaymentProcessorSessionResponse,
   PaymentSessionStatus,
   MedusaContainer,
-  CartService,
 } from "@medusajs/medusa";
 import { MedusaError } from "@medusajs/utils";
 
@@ -29,7 +28,6 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   static identifier = "paystack";
 
   protected readonly configuration: PaystackPaymentProcessorConfig;
-  protected readonly cartService: CartService;
   protected readonly paystack: Paystack;
 
   constructor(
@@ -47,7 +45,6 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
 
     this.configuration = options;
     this.paystack = new Paystack(this.configuration.secret_key);
-    this.cartService = container["cartService"];
   }
 
   get paymentIntentOptions() {
