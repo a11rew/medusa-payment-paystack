@@ -1,6 +1,3 @@
-// import { Paystack } from "@paystack/paystack-sdk";
-// import type { Transaction } from "@paystack/paystack-sdk/lib/types/apis/Transaction";
-
 import Paystack, { PaystackTransactionAuthorisation } from "../lib/paystack";
 
 import {
