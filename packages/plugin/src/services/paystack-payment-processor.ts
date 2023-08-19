@@ -72,7 +72,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
 
     const { data, status, message } =
       await this.paystack.transaction.initialize({
-        amount,
+        amount: amount * 100, // Paystack expects amount in lowest denomination - https://paystack.com/docs/payments/accept-payments/#initialize-transaction-1
         email,
         currency: validatedCurrencyCode,
       });
@@ -163,7 +163,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
       }
 
       switch (data.status) {
-        case "success": {
+        case "success":
           // Successful transaction
           return {
             status: PaymentSessionStatus.AUTHORIZED,
@@ -172,7 +172,6 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
               paystackTxData: data,
             },
           };
-        }
 
         case "failed":
           // Failed transaction
