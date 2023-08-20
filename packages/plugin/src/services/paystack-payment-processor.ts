@@ -90,7 +90,6 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
 
   /**
    * Called when a user updates their cart after `initiatePayment` has been called
-   * We build a new reference here to ensure that the user is not charged twice
    */
   async updatePaymentData(
     _: string,

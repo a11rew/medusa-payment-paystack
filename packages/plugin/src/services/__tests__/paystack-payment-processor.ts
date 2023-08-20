@@ -191,7 +191,20 @@ describe("retrievePayment", () => {
 });
 
 describe("updatePaymentData", () => {
-  it("errors out if we try to update the amount", async () => {});
+  it("errors out if we try to update the amount", async () => {
+    expect.assertions(1);
+    const service = createPaystackProviderService();
+
+    try {
+      await service.updatePaymentData("1", {
+        amount: 100,
+      });
+    } catch (error) {
+      expect(error.message).toEqual(
+        "Cannot update amount from updatePaymentData",
+      );
+    }
+  });
 
   it("returns the same payment data object", async () => {
     const service = createPaystackProviderService();

@@ -13,6 +13,12 @@ type HTTPMethod =
   | "OPTIONS"
   | "HEAD";
 
+type PaystackResponse<T> = {
+  status: boolean;
+  message: string;
+  data: T;
+};
+
 interface Request {
   path: string;
   method: HTTPMethod;
@@ -20,12 +26,6 @@ interface Request {
   body?: Record<string, unknown>;
   query?: Record<string, string>;
 }
-
-type PaystackResponse<T> = {
-  status: boolean;
-  message: string;
-  data: T;
-};
 
 export interface PaystackTransactionAuthorisation {
   reference: string;
@@ -65,9 +65,7 @@ export default class Paystack {
 
         res.on("end", () => {
           try {
-            const response = JSON.parse(Buffer.concat(data).toString()) as T;
-
-            resolve(response as T);
+            resolve(JSON.parse(Buffer.concat(data).toString()) as T);
           } catch (e) {
             reject(e);
           }
