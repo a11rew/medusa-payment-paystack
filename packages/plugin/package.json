@@ -13,9 +13,7 @@
     "@medusajs/medusa": "^1.13.0"
   },
   "dependencies": {
-    "@medusajs/utils": "^1.9.4",
-    "@paralleldrive/cuid2": "^2.2.1",
-    "paystack-api": "^2.0.6"
+    "@medusajs/utils": "^1.9.4"
   },
   "devDependencies": {
     "@medusajs/medusa": "^1.13.0",

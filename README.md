@@ -12,7 +12,7 @@
 
 - [Paystack account](https://dashboard.paystack.com/#/signup)
 - [Paystack account's secret key](https://support.paystack.com/hc/en-us/articles/360009881600-Paystack-Test-Keys-Live-Keys-and-Webhooks)
-- Medusa server running at least `@medusajs/medusa^1.5.0`
+- Medusa server
 
 ## Medusa Server
 
@@ -67,15 +67,13 @@ Using this returned reference as the Paystack transaction's reference allows the
 
 ### Using Transaction Reference
 
-`medusa-payment-paystack` inserts a `paystackTxRef` into the [`PaymentSession`](https://docs.medusajs.com/advanced/backend/payment/overview/#payment-session)'s data.
+`medusa-payment-paystack` inserts a reference named `paystackTxRef` into the [`PaymentSession`](https://docs.medusajs.com/advanced/backend/payment/overview/#payment-session)'s data.
 
 ```
 const { paystackTxRef } = paymentSession.data
 ```
 
-Provide this reference when initiating any of the Paystack [Accept Payment](https://paystack.com/docs/payments/accept-payments/) flows.
-
-For example, when using the [Paystack Popup](https://paystack.com/docs/payments/accept-payments/#popup), provide this reference to the initialization method;
+Provide this reference when initiating the Paystack [Popup](https://paystack.com/docs/payments/accept-payments/#popup) payment flow.
 
 ```js
 const paymentForm = document.getElementById('paymentForm');

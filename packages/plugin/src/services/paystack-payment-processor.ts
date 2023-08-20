@@ -1,5 +1,4 @@
-import Paystack from "paystack-api";
-import { createId } from "@paralleldrive/cuid2";
+import Paystack, { PaystackTransactionAuthorisation } from "../lib/paystack";
 
 import {
   AbstractPaymentProcessor,
@@ -9,7 +8,8 @@ import {
   PaymentSessionStatus,
   MedusaContainer,
 } from "@medusajs/medusa";
-import { MedusaError } from "@medusajs/utils";
+import { MedusaError, MedusaErrorTypes } from "@medusajs/utils";
+import { validateCurrencyCode } from "../utils/currencyCode";
 
 export interface PaystackPaymentProcessorConfig {
   /**
@@ -54,44 +54,59 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   /**
    * Called when a user selects Paystack as their payment method during checkout
    */
-  async initiatePayment(): Promise<
+  async initiatePayment(context: PaymentProcessorContext): Promise<
     | PaymentProcessorError
     | (PaymentProcessorSessionResponse & {
         session_data: {
           paystackTxRef: string;
+          paystackTxAuthData: PaystackTransactionAuthorisation;
         };
       })
   > {
-    const reference = createId();
+    const { amount, email, currency_code } = context;
+
+    const validatedCurrencyCode = validateCurrencyCode(currency_code);
+
+    const { data, status, message } =
+      await this.paystack.transaction.initialize({
+        amount: amount * 100, // Paystack expects amount in lowest denomination - https://paystack.com/docs/payments/accept-payments/#initialize-transaction-1
+        email,
+        currency: validatedCurrencyCode,
+      });
+
+    if (status === false) {
+      return this.buildError("Failed to initiate Paystack payment", {
+        detail: message,
+      });
+    }
 
     return {
       session_data: {
-        paystackTxRef: reference,
+        paystackTxRef: data.reference,
+        paystackTxAuthData: data,
       },
     };
   }
 
   /**
    * Called when a user updates their cart after `initiatePayment` has been called
-   * We build a new reference here to ensure that the user is not charged twice
    */
   async updatePaymentData(
-    sessionId: string,
+    _: string,
     data: Record<string, unknown>,
   ): Promise<
-    | {
-        session_data: {
-          paystackTxRef: string;
-        };
-      }
-    | PaymentProcessorError
+    PaymentProcessorSessionResponse["session_data"] | PaymentProcessorError
   > {
-    const reference = createId();
+    if (data.amount) {
+      throw new MedusaError(
+        MedusaErrorTypes.INVALID_DATA,
+        "Cannot update amount from updatePaymentData",
+      );
+    }
 
     return {
       session_data: {
-        ...data, // We return the previous data as well
-        paystackTxRef: reference,
+        ...data, // We just return the data as is
       },
     };
   }
@@ -107,14 +122,8 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
         };
       })
   > {
-    const reference = createId();
-
-    return {
-      ...context,
-      session_data: {
-        paystackTxRef: reference,
-      },
-    };
+    // Re-initialize the payment
+    return this.initiatePayment(context);
   }
 
   /**
@@ -123,9 +132,6 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
    */
   async authorizePayment(
     paymentSessionData: Record<string, unknown> & { paystackTxRef: string },
-    context: {
-      cart_id: string;
-    },
   ): Promise<
     | PaymentProcessorError
     | {
@@ -136,12 +142,24 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
     try {
       const { paystackTxRef } = paymentSessionData;
 
-      const { data } = await this.paystack.transaction.verify({
+      const { status, data } = await this.paystack.transaction.verify({
         reference: paystackTxRef,
       });
 
+      if (status === false) {
+        // Invalid key error
+        return {
+          status: PaymentSessionStatus.ERROR,
+          data: {
+            ...paymentSessionData,
+            paystackTxId: null,
+            paystackTxData: data,
+          },
+        };
+      }
+
       switch (data.status) {
-        case "success": {
+        case "success":
           // Successful transaction
           return {
             status: PaymentSessionStatus.AUTHORIZED,
@@ -150,7 +168,6 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
               paystackTxData: data,
             },
           };
-        }
 
         case "failed":
           // Failed transaction
@@ -163,16 +180,6 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
             },
           };
 
-        case false:
-          // Invalid key error
-          return {
-            status: PaymentSessionStatus.ERROR,
-            data: {
-              ...paymentSessionData,
-              paystackTxId: null,
-              paystackTxData: data,
-            },
-          };
         default:
           // Pending transaction
           return {
@@ -181,7 +188,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
           };
       }
     } catch (error) {
-      return this.buildError("Error authorizing payment", error);
+      return this.buildError("Failed to authorize payment", error);
     }
   }
 
@@ -194,16 +201,22 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
     try {
       const { paystackTxId } = paymentSessionData;
 
-      const { data } = await this.paystack.transaction.get({
+      const { data, status, message } = await this.paystack.transaction.get({
         id: paystackTxId,
       });
+
+      if (status === false) {
+        return this.buildError("Failed to retrieve payment", {
+          detail: message,
+        });
+      }
 
       return {
         ...paymentSessionData,
         paystackTxData: data,
       };
     } catch (error) {
-      return this.buildError("Error retrieving payment", error);
+      return this.buildError("Failed to retrieve payment", error);
     }
   }
 
@@ -211,23 +224,29 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
    * Refunds payment for Paystack transaction
    */
   async refundPayment(
-    paymentSessionData: Record<string, unknown>,
+    paymentSessionData: Record<string, string>,
     refundAmount: number,
   ): Promise<Record<string, unknown> | PaymentProcessorError> {
     try {
       const { paystackTxId } = paymentSessionData;
 
-      const { data } = await this.paystack.refund.create({
+      const { data, status, message } = await this.paystack.refund.create({
         transaction: paystackTxId,
         amount: refundAmount,
       });
+
+      if (status === false) {
+        return this.buildError("Failed to refund payment", {
+          detail: message,
+        });
+      }
 
       return {
         ...paymentSessionData,
         paystackTxData: data,
       };
     } catch (error) {
-      return this.buildError("Error refunding payment", error);
+      return this.buildError("Failed to refund payment", error);
     }
   }
 
@@ -244,16 +263,18 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
     }
 
     try {
-      const { data } = await this.paystack.transaction.get({
+      const { data, status } = await this.paystack.transaction.get({
         id: paystackTxId,
       });
+
+      if (status === false) {
+        return PaymentSessionStatus.ERROR;
+      }
 
       switch (data?.status) {
         case "success":
           return PaymentSessionStatus.AUTHORIZED;
         case "failed":
-          return PaymentSessionStatus.ERROR;
-        case false:
           return PaymentSessionStatus.ERROR;
         default:
           return PaymentSessionStatus.PENDING;
@@ -296,14 +317,14 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
     message: string,
     e:
       | {
-          code: string;
+          code?: string;
           detail: string;
         }
       | Error,
   ): PaymentProcessorError {
     return {
-      error: message,
-      code: "code" in e ? e.code : "",
+      error: "Paystack Payment error: " + message,
+      code: "code" in e ? e.code : "PAYSTACK_PAYMENT_ERROR",
       detail: "detail" in e ? e.detail : e.message ?? "",
     };
   }

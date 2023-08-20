@@ -1,4 +1,3 @@
-import { isCuid } from "@paralleldrive/cuid2";
 import PaystackPaymentProcessor from "../paystack-payment-processor";
 import {
   PaymentProcessorContext,
@@ -37,12 +36,14 @@ function checkForPaymentProcessorError<T>(response: T | PaymentProcessorError) {
 
 const demoSessionContext = {
   amount: 100,
-  currency_code: "ghc",
+  currency_code: "GHS",
   email: "andrew@a11rew.dev",
   resource_id: "123",
   context: {},
   paymentSessionData: {},
 } satisfies PaymentProcessorContext;
+
+jest.mock("../../lib/paystack");
 
 describe("Provider Service Initialization", () => {
   it("initializes the provider service", () => {
@@ -64,20 +65,12 @@ describe("createPayment", () => {
     const service = createPaystackProviderService();
     const {
       session_data: { paystackTxRef },
-    } = checkForPaymentProcessorError(await service.initiatePayment());
+    } = checkForPaymentProcessorError(
+      await service.initiatePayment(demoSessionContext),
+    );
 
     expect(paystackTxRef).toBeTruthy();
     expect(paystackTxRef).toEqual(expect.any(String));
-  });
-
-  it("returns a valid cuid as reference", async () => {
-    const service = createPaystackProviderService();
-    const {
-      session_data: { paystackTxRef },
-    } = checkForPaymentProcessorError(await service.initiatePayment());
-
-    expect(paystackTxRef).toEqual(expect.any(String));
-    expect(isCuid(paystackTxRef)).toBeTruthy();
   });
 });
 
@@ -86,7 +79,9 @@ describe("updatePayment", () => {
     const service = createPaystackProviderService();
     const {
       session_data: { paystackTxRef: oldRef },
-    } = checkForPaymentProcessorError(await service.initiatePayment());
+    } = checkForPaymentProcessorError(
+      await service.initiatePayment(demoSessionContext),
+    );
 
     const {
       session_data: { paystackTxRef: newRef },
@@ -95,10 +90,6 @@ describe("updatePayment", () => {
         ...demoSessionContext,
       }),
     );
-
-    // Both refs should be valid cuids
-    expect(isCuid(oldRef)).toBeTruthy();
-    expect(isCuid(newRef)).toBeTruthy();
 
     // The refs should be different
     expect(oldRef).not.toEqual(newRef);
@@ -109,14 +100,9 @@ describe("Authorize Payment", () => {
   it("returns status error on Paystack tx authorization fail", async () => {
     const service = createPaystackProviderService();
     const payment = checkForPaymentProcessorError(
-      await service.authorizePayment(
-        {
-          paystackTxRef: "123-failed",
-        },
-        {
-          cart_id: "123",
-        },
-      ),
+      await service.authorizePayment({
+        paystackTxRef: "123-failed",
+      }),
     );
     expect(payment.status).toEqual(PaymentSessionStatus.ERROR);
   });
@@ -125,14 +111,9 @@ describe("Authorize Payment", () => {
     const service = createPaystackProviderService();
 
     const payment = checkForPaymentProcessorError(
-      await service.authorizePayment(
-        {
-          paystackTxRef: "123-passed",
-        },
-        {
-          cart_id: "123",
-        },
-      ),
+      await service.authorizePayment({
+        paystackTxRef: "123-passed",
+      }),
     );
 
     expect(payment.status).toEqual(PaymentSessionStatus.AUTHORIZED);
@@ -141,14 +122,9 @@ describe("Authorize Payment", () => {
   it("returns status error on Paystack invalid key error", async () => {
     const service = createPaystackProviderService();
     const payment = checkForPaymentProcessorError(
-      await service.authorizePayment(
-        {
-          paystackTxRef: "123-false",
-        },
-        {
-          cart_id: "123",
-        },
-      ),
+      await service.authorizePayment({
+        paystackTxRef: "123-false",
+      }),
     );
 
     expect(payment.status).toEqual(PaymentSessionStatus.ERROR);
@@ -158,14 +134,9 @@ describe("Authorize Payment", () => {
     // Never happens in practice, but just in case
     const service = createPaystackProviderService();
     const payment = checkForPaymentProcessorError(
-      await service.authorizePayment(
-        {
-          paystackTxRef: "123-pending",
-        },
-        {
-          cart_id: "123",
-        },
-      ),
+      await service.authorizePayment({
+        paystackTxRef: "123-pending",
+      }),
     );
 
     expect(payment.status).toEqual(PaymentSessionStatus.PENDING);
@@ -220,7 +191,22 @@ describe("retrievePayment", () => {
 });
 
 describe("updatePaymentData", () => {
-  it("returns an updated payment data object", async () => {
+  it("errors out if we try to update the amount", async () => {
+    expect.assertions(1);
+    const service = createPaystackProviderService();
+
+    try {
+      await service.updatePaymentData("1", {
+        amount: 100,
+      });
+    } catch (error) {
+      expect(error.message).toEqual(
+        "Cannot update amount from updatePaymentData",
+      );
+    }
+  });
+
+  it("returns the same payment data object", async () => {
     const service = createPaystackProviderService();
     const existingRef = "123-pending";
     const payment = checkForPaymentProcessorError(
@@ -229,11 +215,14 @@ describe("updatePaymentData", () => {
       }),
     );
 
-    // The ref should be different
-    expect(payment.session_data.paystackTxRef).not.toEqual(existingRef);
-
-    // The ref should be a valid cuid
-    expect(isCuid(payment.session_data.paystackTxRef)).toBeTruthy();
+    // The ref should be the same
+    expect(
+      (
+        payment.session_data as {
+          paystackTxRef: string;
+        }
+      )?.paystackTxRef,
+    ).toEqual(existingRef);
   });
 });
 

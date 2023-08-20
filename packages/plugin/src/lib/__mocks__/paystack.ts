@@ -20,8 +20,9 @@ export const PaystackProviderServiceMock = {
           });
         case "123-false":
           return Promise.resolve({
+            status: false,
             data: {
-              status: false,
+              status: "failed",
               id: "123",
             },
           });
@@ -37,6 +38,15 @@ export const PaystackProviderServiceMock = {
       }
     }),
 
+    initialize: jest.fn().mockImplementation(({ amount, email }) => {
+      return Promise.resolve({
+        data: {
+          reference: "ref-" + Math.random() * 1000,
+          authorization_url: "https://paystack.com/123",
+        },
+      });
+    }),
+
     get: jest.fn().mockImplementation(({ id }) => {
       switch (id) {
         case "123-success":
@@ -50,8 +60,9 @@ export const PaystackProviderServiceMock = {
 
         case "123-false":
           return Promise.resolve({
+            status: false,
             data: {
-              status: false,
+              status: "failed",
               paystackTxId: id,
               paystackTxData: {},
             },
@@ -80,6 +91,4 @@ export const PaystackProviderServiceMock = {
   },
 };
 
-const paystackapi = jest.fn(() => PaystackProviderServiceMock);
-
-export default paystackapi;
+export default jest.fn(() => PaystackProviderServiceMock);
