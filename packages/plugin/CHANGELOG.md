@@ -1,5 +1,13 @@
 # medusa-payment-paystack
 
+## 1.1.1
+
+### Patch Changes
+
+- e8cf256: Removes outdated Paystack API wrapper package we were using prior fixing deprecated dependency warnings.
+
+  Also changes how we generate references. Transactions are initialized with Paystack and the returned reference used instead of an arbitrary cuid.
+
 ## 1.1.0
 
 ### Minor Changes
