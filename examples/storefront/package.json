@@ -1,0 +1,63 @@
+{
+  "name": "medusa-next",
+  "version": "1.0.3",
+  "private": true,
+  "author": "Kasper Fabricius Kristensen <kasper@medusajs.com> (https://www.medusajs.com)",
+  "description": "Next.js starter to be used with Medusa server",
+  "keywords": [
+    "medusa-storefront"
+  ],
+  "scripts": {
+    "dev": "next dev -p 8000",
+    "build": "next build",
+    "start": "next start -p 8000",
+    "lint": "next lint",
+    "cypress": "cypress open",
+    "analyze": "ANALYZE=true next build"
+  },
+  "resolutions": {
+    "webpack": "^5",
+    "@types/react": "17.0.40"
+  },
+  "dependencies": {
+    "@headlessui/react": "^1.7.14",
+    "@hookform/error-message": "^2.0.0",
+    "@medusajs/medusa-js": "^6.0.0",
+    "@meilisearch/instant-meilisearch": "^0.7.1",
+    "@paypal/paypal-js": "^5.0.6",
+    "@paypal/react-paypal-js": "^7.8.1",
+    "@stripe/react-stripe-js": "^1.7.2",
+    "@stripe/stripe-js": "^1.29.0",
+    "@tanstack/react-query": "^4.22.4",
+    "clsx": "^1.1.1",
+    "lodash": "^4.17.21",
+    "medusa-react": "^9.0.0",
+    "next": "^13.4.5",
+    "react": "^18.2.0",
+    "react-country-flag": "^3.0.2",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.30.0",
+    "react-instantsearch-hooks-web": "^6.29.0",
+    "react-intersection-observer": "^9.3.4",
+    "react-paystack": "^4.0.3",
+    "sharp": "^0.30.7"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.5",
+    "@medusajs/client-types": "^0.2.2",
+    "@medusajs/medusa": "^1.13.0",
+    "@types/lodash": "^4.14.195",
+    "@types/node": "^16.18.39",
+    "@types/react": "17.0.40",
+    "@types/react-instantsearch-dom": "^6.12.3",
+    "autoprefixer": "^10.4.2",
+    "babel-loader": "^8.2.3",
+    "cypress": "^9.5.2",
+    "eslint": "^8.2.0",
+    "eslint-config-next": "^13.4.5",
+    "postcss": "^8.4.8",
+    "prettier": "^3.0.1",
+    "tailwindcss": "^3.0.23",
+    "typescript": "^5.1.6"
+  }
+}
