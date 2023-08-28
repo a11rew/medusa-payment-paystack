@@ -80,7 +80,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
 
     const { data, status, message } =
       await this.paystack.transaction.initialize({
-        amount: amount * 100, // Paystack expects amount in lowest denomination - https://paystack.com/docs/payments/accept-payments/#initialize-transaction-1
+        amount: amount, // Paystack expects amount in lowest denomination - https://paystack.com/docs/payments/accept-payments/#initialize-transaction-1
         email,
         currency: validatedCurrencyCode,
       });
