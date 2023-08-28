@@ -23,6 +23,11 @@ export interface PaystackPaymentProcessorConfig {
    */
   secret_key: string;
 
+  /**
+   * Debug mode
+   * If true, logs helpful debug information to the console
+   * Logs are prefixed with "PS_P_Debug"
+   */
   debug?: boolean;
 }
 
