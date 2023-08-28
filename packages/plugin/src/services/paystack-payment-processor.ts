@@ -22,6 +22,8 @@ export interface PaystackPaymentProcessorConfig {
    * https://dashboard.paystack.com/#/settings/developers
    */
   secret_key: string;
+
+  debug?: boolean;
 }
 
 class PaystackPaymentProcessor extends AbstractPaymentProcessor {
@@ -29,6 +31,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
 
   protected readonly configuration: PaystackPaymentProcessorConfig;
   protected readonly paystack: Paystack;
+  protected readonly debug: boolean;
 
   constructor(
     container: MedusaContainer,
@@ -45,6 +48,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
 
     this.configuration = options;
     this.paystack = new Paystack(this.configuration.secret_key);
+    this.debug = Boolean(options.debug);
   }
 
   get paymentIntentOptions() {
@@ -63,6 +67,13 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
         };
       })
   > {
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: InitiatePayment",
+        JSON.stringify(context, null, 2),
+      );
+    }
+
     const { amount, email, currency_code } = context;
 
     const validatedCurrencyCode = validateCurrencyCode(currency_code);
@@ -97,6 +108,13 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   ): Promise<
     PaymentProcessorSessionResponse["session_data"] | PaymentProcessorError
   > {
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: UpdatePaymentData",
+        JSON.stringify({ _, data }, null, 2),
+      );
+    }
+
     if (data.amount) {
       throw new MedusaError(
         MedusaErrorTypes.INVALID_DATA,
@@ -122,6 +140,13 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
         };
       })
   > {
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: UpdatePayment",
+        JSON.stringify(context, null, 2),
+      );
+    }
+
     // Re-initialize the payment
     return this.initiatePayment(context);
   }
@@ -139,12 +164,29 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
         data: Record<string, unknown>;
       }
   > {
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: AuthorizePayment",
+        JSON.stringify(paymentSessionData, null, 2),
+      );
+    }
+
     try {
       const { paystackTxRef } = paymentSessionData;
 
       const { status, data } = await this.paystack.transaction.verify({
         reference: paystackTxRef,
       });
+
+      if (this.debug) {
+        console.info(
+          "PS_P_Debug: AuthorizePayment: Verification",
+          JSON.stringify({ status, data }, null, 2),
+        );
+      }
+
+      // TODO: Verify currency
+      // TODO: Verify amount
 
       if (status === false) {
         // Invalid key error
@@ -198,6 +240,13 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   async retrievePayment(
     paymentSessionData: Record<string, unknown> & { paystackTxId: string },
   ): Promise<Record<string, unknown> | PaymentProcessorError> {
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: RetrievePayment",
+        JSON.stringify(paymentSessionData, null, 2),
+      );
+    }
+
     try {
       const { paystackTxId } = paymentSessionData;
 
@@ -227,6 +276,13 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
     paymentSessionData: Record<string, string>,
     refundAmount: number,
   ): Promise<Record<string, unknown> | PaymentProcessorError> {
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: RefundPayment",
+        JSON.stringify({ paymentSessionData, refundAmount }, null, 2),
+      );
+    }
+
     try {
       const { paystackTxId } = paymentSessionData;
 
@@ -256,6 +312,13 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   async getPaymentStatus(
     paymentSessionData: Record<string, unknown> & { paystackTxId?: string },
   ): Promise<PaymentSessionStatus> {
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: GetPaymentStatus",
+        JSON.stringify(paymentSessionData, null, 2),
+      );
+    }
+
     const { paystackTxId } = paymentSessionData;
 
     if (!paystackTxId) {
