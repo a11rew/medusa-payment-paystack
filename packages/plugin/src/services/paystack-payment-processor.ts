@@ -7,6 +7,7 @@ import {
   PaymentProcessorSessionResponse,
   PaymentSessionStatus,
   MedusaContainer,
+  CartService,
 } from "@medusajs/medusa";
 import { MedusaError, MedusaErrorTypes } from "@medusajs/utils";
 import { validateCurrencyCode } from "../utils/currencyCode";
@@ -34,6 +35,7 @@ export interface PaystackPaymentProcessorConfig {
 class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   static identifier = "paystack";
 
+  protected readonly cartService: CartService;
   protected readonly configuration: PaystackPaymentProcessorConfig;
   protected readonly paystack: Paystack;
   protected readonly debug: boolean;
@@ -54,6 +56,16 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
     this.configuration = options;
     this.paystack = new Paystack(this.configuration.secret_key);
     this.debug = Boolean(options.debug);
+
+    // @ts-expect-error - Container is just an object - https://docs.medusajs.com/development/fundamentals/dependency-injection#in-classes
+    this.cartService = container.cartService;
+
+    if (this.cartService.retrieveWithTotals === undefined) {
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        "Your Medusa installation contains an outdated cartService implementation. Update your Medusa installation.",
+      );
+    }
   }
 
   get paymentIntentOptions() {
@@ -69,6 +81,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
         session_data: {
           paystackTxRef: string;
           paystackTxAuthData: PaystackTransactionAuthorisation;
+          cartId: string;
         };
       })
   > {
@@ -100,6 +113,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
       session_data: {
         paystackTxRef: data.reference,
         paystackTxAuthData: data,
+        cartId: context.resource_id,
       },
     };
   }
@@ -161,7 +175,10 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
    * We validate the payment and return a status
    */
   async authorizePayment(
-    paymentSessionData: Record<string, unknown> & { paystackTxRef: string },
+    paymentSessionData: Record<string, unknown> & {
+      paystackTxRef: string;
+      cartId: string;
+    },
   ): Promise<
     | PaymentProcessorError
     | {
@@ -177,23 +194,26 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
     }
 
     try {
-      const { paystackTxRef } = paymentSessionData;
+      const { paystackTxRef, cartId } = paymentSessionData;
 
       const { status, data } = await this.paystack.transaction.verify({
         reference: paystackTxRef,
       });
 
+      const cart = await this.cartService.retrieveWithTotals(cartId);
+
       if (this.debug) {
         console.info(
           "PS_P_Debug: AuthorizePayment: Verification",
-          JSON.stringify({ status, data }, null, 2),
+          JSON.stringify({ status, cart, data }, null, 2),
         );
       }
 
-      // TODO: Verify currency
-      // TODO: Verify amount
+      const amountValid = Math.round(cart.total) === Math.round(data.amount);
+      const currencyValid =
+        cart.region.currency_code === data.currency.toLowerCase();
 
-      if (status === false) {
+      if (status === false || !amountValid || !currencyValid) {
         // Invalid key error
         return {
           status: PaymentSessionStatus.ERROR,
