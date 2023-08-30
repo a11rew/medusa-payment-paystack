@@ -30,6 +30,9 @@ jobs:
 
       - name: Build
         run: pnpm run build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_PAYSTACK_PUBLICK_KEY: ci
 
       - name: Lint
         run: pnpm run lint
