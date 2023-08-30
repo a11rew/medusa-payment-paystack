@@ -1,5 +1,13 @@
 # medusa-payment-paystack
 
+## 1.1.2
+
+### Patch Changes
+
+- 731da1d: Re-adds amount and currency checks
+
+  Adds new debug mode for testing
+
 ## 1.1.1
 
 ### Patch Changes
