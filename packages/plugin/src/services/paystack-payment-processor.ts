@@ -209,11 +209,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
         );
       }
 
-      const amountValid = Math.round(cart.total) === Math.round(data.amount);
-      const currencyValid =
-        cart.region.currency_code === data.currency.toLowerCase();
-
-      if (status === false || !amountValid || !currencyValid) {
+      if (status === false) {
         // Invalid key error
         return {
           status: PaymentSessionStatus.ERROR,
@@ -226,15 +222,44 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
       }
 
       switch (data.status) {
-        case "success":
-          // Successful transaction
+        case "success": {
+          const amountValid =
+            Math.round(cart.total) === Math.round(data.amount);
+          const currencyValid =
+            cart.region.currency_code === data.currency.toLowerCase();
+
+          if (amountValid && currencyValid) {
+            // Successful transaction
+            return {
+              status: PaymentSessionStatus.AUTHORIZED,
+              data: {
+                paystackTxId: data.id,
+                paystackTxData: data,
+              },
+            };
+          }
+
+          // Invalid amount or currency
+          // We refund the transaction
+          await this.refundPayment(
+            {
+              ...paymentSessionData,
+              paystackTxData: data,
+              paystackTxId: data.id,
+            },
+            data.amount,
+          );
+
+          // And return the failed status
           return {
-            status: PaymentSessionStatus.AUTHORIZED,
+            status: PaymentSessionStatus.ERROR,
             data: {
+              ...paymentSessionData,
               paystackTxId: data.id,
               paystackTxData: data,
             },
           };
+        }
 
         case "failed":
           // Failed transaction
@@ -298,7 +323,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
    * Refunds payment for Paystack transaction
    */
   async refundPayment(
-    paymentSessionData: Record<string, string>,
+    paymentSessionData: Record<string, unknown> & { paystackTxId: number },
     refundAmount: number,
   ): Promise<Record<string, unknown> | PaymentProcessorError> {
     if (this.debug) {
