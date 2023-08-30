@@ -143,7 +143,7 @@ export default class Paystack {
       transaction,
       amount,
     }: {
-      transaction: string;
+      transaction: number;
       amount: number;
     }) =>
       this.requestPaystackAPI<
