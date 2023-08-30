@@ -91,6 +91,8 @@ export default class Paystack {
           id: number;
           status: string;
           reference: string;
+          amount: number;
+          currency: string;
         }>
       >({
         path: "/transaction/verify/" + reference,
@@ -141,7 +143,7 @@ export default class Paystack {
       transaction,
       amount,
     }: {
-      transaction: string;
+      transaction: number;
       amount: number;
     }) =>
       this.requestPaystackAPI<

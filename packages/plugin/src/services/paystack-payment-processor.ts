@@ -7,6 +7,7 @@ import {
   PaymentProcessorSessionResponse,
   PaymentSessionStatus,
   MedusaContainer,
+  CartService,
 } from "@medusajs/medusa";
 import { MedusaError, MedusaErrorTypes } from "@medusajs/utils";
 import { validateCurrencyCode } from "../utils/currencyCode";
@@ -22,13 +23,22 @@ export interface PaystackPaymentProcessorConfig {
    * https://dashboard.paystack.com/#/settings/developers
    */
   secret_key: string;
+
+  /**
+   * Debug mode
+   * If true, logs helpful debug information to the console
+   * Logs are prefixed with "PS_P_Debug"
+   */
+  debug?: boolean;
 }
 
 class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   static identifier = "paystack";
 
+  protected readonly cartService: CartService;
   protected readonly configuration: PaystackPaymentProcessorConfig;
   protected readonly paystack: Paystack;
+  protected readonly debug: boolean;
 
   constructor(
     container: MedusaContainer,
@@ -45,6 +55,17 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
 
     this.configuration = options;
     this.paystack = new Paystack(this.configuration.secret_key);
+    this.debug = Boolean(options.debug);
+
+    // @ts-expect-error - Container is just an object - https://docs.medusajs.com/development/fundamentals/dependency-injection#in-classes
+    this.cartService = container.cartService;
+
+    if (this.cartService.retrieveWithTotals === undefined) {
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        "Your Medusa installation contains an outdated cartService implementation. Update your Medusa installation.",
+      );
+    }
   }
 
   get paymentIntentOptions() {
@@ -60,16 +81,24 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
         session_data: {
           paystackTxRef: string;
           paystackTxAuthData: PaystackTransactionAuthorisation;
+          cartId: string;
         };
       })
   > {
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: InitiatePayment",
+        JSON.stringify(context, null, 2),
+      );
+    }
+
     const { amount, email, currency_code } = context;
 
     const validatedCurrencyCode = validateCurrencyCode(currency_code);
 
     const { data, status, message } =
       await this.paystack.transaction.initialize({
-        amount: amount * 100, // Paystack expects amount in lowest denomination - https://paystack.com/docs/payments/accept-payments/#initialize-transaction-1
+        amount: amount, // Paystack expects amount in lowest denomination - https://paystack.com/docs/payments/accept-payments/#initialize-transaction-1
         email,
         currency: validatedCurrencyCode,
       });
@@ -84,6 +113,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
       session_data: {
         paystackTxRef: data.reference,
         paystackTxAuthData: data,
+        cartId: context.resource_id,
       },
     };
   }
@@ -97,6 +127,13 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   ): Promise<
     PaymentProcessorSessionResponse["session_data"] | PaymentProcessorError
   > {
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: UpdatePaymentData",
+        JSON.stringify({ _, data }, null, 2),
+      );
+    }
+
     if (data.amount) {
       throw new MedusaError(
         MedusaErrorTypes.INVALID_DATA,
@@ -122,6 +159,13 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
         };
       })
   > {
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: UpdatePayment",
+        JSON.stringify(context, null, 2),
+      );
+    }
+
     // Re-initialize the payment
     return this.initiatePayment(context);
   }
@@ -131,7 +175,10 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
    * We validate the payment and return a status
    */
   async authorizePayment(
-    paymentSessionData: Record<string, unknown> & { paystackTxRef: string },
+    paymentSessionData: Record<string, unknown> & {
+      paystackTxRef: string;
+      cartId: string;
+    },
   ): Promise<
     | PaymentProcessorError
     | {
@@ -139,12 +186,28 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
         data: Record<string, unknown>;
       }
   > {
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: AuthorizePayment",
+        JSON.stringify(paymentSessionData, null, 2),
+      );
+    }
+
     try {
-      const { paystackTxRef } = paymentSessionData;
+      const { paystackTxRef, cartId } = paymentSessionData;
 
       const { status, data } = await this.paystack.transaction.verify({
         reference: paystackTxRef,
       });
+
+      const cart = await this.cartService.retrieveWithTotals(cartId);
+
+      if (this.debug) {
+        console.info(
+          "PS_P_Debug: AuthorizePayment: Verification",
+          JSON.stringify({ status, cart, data }, null, 2),
+        );
+      }
 
       if (status === false) {
         // Invalid key error
@@ -159,15 +222,44 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
       }
 
       switch (data.status) {
-        case "success":
-          // Successful transaction
+        case "success": {
+          const amountValid =
+            Math.round(cart.total) === Math.round(data.amount);
+          const currencyValid =
+            cart.region.currency_code === data.currency.toLowerCase();
+
+          if (amountValid && currencyValid) {
+            // Successful transaction
+            return {
+              status: PaymentSessionStatus.AUTHORIZED,
+              data: {
+                paystackTxId: data.id,
+                paystackTxData: data,
+              },
+            };
+          }
+
+          // Invalid amount or currency
+          // We refund the transaction
+          await this.refundPayment(
+            {
+              ...paymentSessionData,
+              paystackTxData: data,
+              paystackTxId: data.id,
+            },
+            data.amount,
+          );
+
+          // And return the failed status
           return {
-            status: PaymentSessionStatus.AUTHORIZED,
+            status: PaymentSessionStatus.ERROR,
             data: {
+              ...paymentSessionData,
               paystackTxId: data.id,
               paystackTxData: data,
             },
           };
+        }
 
         case "failed":
           // Failed transaction
@@ -198,6 +290,13 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   async retrievePayment(
     paymentSessionData: Record<string, unknown> & { paystackTxId: string },
   ): Promise<Record<string, unknown> | PaymentProcessorError> {
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: RetrievePayment",
+        JSON.stringify(paymentSessionData, null, 2),
+      );
+    }
+
     try {
       const { paystackTxId } = paymentSessionData;
 
@@ -224,9 +323,16 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
    * Refunds payment for Paystack transaction
    */
   async refundPayment(
-    paymentSessionData: Record<string, string>,
+    paymentSessionData: Record<string, unknown> & { paystackTxId: number },
     refundAmount: number,
   ): Promise<Record<string, unknown> | PaymentProcessorError> {
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: RefundPayment",
+        JSON.stringify({ paymentSessionData, refundAmount }, null, 2),
+      );
+    }
+
     try {
       const { paystackTxId } = paymentSessionData;
 
@@ -256,6 +362,13 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   async getPaymentStatus(
     paymentSessionData: Record<string, unknown> & { paystackTxId?: string },
   ): Promise<PaymentSessionStatus> {
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: GetPaymentStatus",
+        JSON.stringify(paymentSessionData, null, 2),
+      );
+    }
+
     const { paystackTxId } = paymentSessionData;
 
     if (!paystackTxId) {

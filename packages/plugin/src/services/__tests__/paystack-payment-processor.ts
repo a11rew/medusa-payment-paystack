@@ -1,9 +1,11 @@
-import PaystackPaymentProcessor from "../paystack-payment-processor";
 import {
   PaymentProcessorContext,
   PaymentProcessorError,
   PaymentSessionStatus,
 } from "@medusajs/medusa";
+
+import PaystackPaymentProcessor from "../paystack-payment-processor";
+import { CartServiceMock } from "../../__mocks__/cart";
 
 interface ProviderServiceMockOptions {
   secretKey?: string | undefined;
@@ -16,8 +18,10 @@ function createPaystackProviderService(
   },
 ) {
   return new PaystackPaymentProcessor(
-    // @ts-expect-error - We don't need to mock all the methods
-    {},
+    {
+      // @ts-expect-error - We don't need to mock all the methods
+      cartService: CartServiceMock,
+    },
     {
       secret_key: secretKey,
     },
@@ -102,6 +106,7 @@ describe("Authorize Payment", () => {
     const payment = checkForPaymentProcessorError(
       await service.authorizePayment({
         paystackTxRef: "123-failed",
+        cartId: "cart-123",
       }),
     );
     expect(payment.status).toEqual(PaymentSessionStatus.ERROR);
@@ -113,6 +118,7 @@ describe("Authorize Payment", () => {
     const payment = checkForPaymentProcessorError(
       await service.authorizePayment({
         paystackTxRef: "123-passed",
+        cartId: "cart-123",
       }),
     );
 
@@ -124,6 +130,7 @@ describe("Authorize Payment", () => {
     const payment = checkForPaymentProcessorError(
       await service.authorizePayment({
         paystackTxRef: "123-false",
+        cartId: "cart-123",
       }),
     );
 
@@ -136,10 +143,23 @@ describe("Authorize Payment", () => {
     const payment = checkForPaymentProcessorError(
       await service.authorizePayment({
         paystackTxRef: "123-pending",
+        cartId: "cart-123",
       }),
     );
 
     expect(payment.status).toEqual(PaymentSessionStatus.PENDING);
+  });
+
+  it("errors out if the returned amount differs", async () => {
+    const service = createPaystackProviderService();
+    const payment = checkForPaymentProcessorError(
+      await service.authorizePayment({
+        paystackTxRef: "123-passed",
+        cartId: "cart-1000",
+      }),
+    );
+
+    expect(payment.status).toEqual(PaymentSessionStatus.ERROR);
   });
 });
 
@@ -231,13 +251,13 @@ describe("refundPayment", () => {
     const service = createPaystackProviderService();
     const payment = await service.refundPayment(
       {
-        paystackTxId: "paystackTx",
+        paystackTxId: 1244,
       },
       4000,
     );
 
     expect(payment).toMatchObject({
-      paystackTxId: "paystackTx",
+      paystackTxId: 1244,
     });
   });
 });
