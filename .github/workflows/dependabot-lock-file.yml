@@ -18,7 +18,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-      - run: pnpm i --lockfile-only
+      - run: pnpm i
+      - run: pnpm manypkg fix
       - run: |
           git config --global user.name github-actions[bot]
           git config --global user.email github-actions[bot]@users.noreply.github.com
