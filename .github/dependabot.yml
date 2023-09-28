@@ -7,5 +7,6 @@ version: 2
 updates:
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/packages/plugin" # Location of package manifests
+    versioning-strategy: increase
     schedule:
       interval: "weekly"
