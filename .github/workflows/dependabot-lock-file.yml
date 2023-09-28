@@ -18,7 +18,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm i --lockfile-only # Update out of sync lockfile
+      - run: pnpm i # Install to make manypkg available, catch any other dep errors
       - run: pnpm manypkg fix
       - run: |
           git config --global user.name github-actions[bot]
