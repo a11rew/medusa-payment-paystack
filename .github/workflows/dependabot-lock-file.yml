@@ -1,0 +1,29 @@
+# Dependabot is configured to only run on /packages/plugin
+# Since the lockfile is at the root of the repo, we need to
+# manually update it when Dependabot runs on a PR
+name: Dependabot Lockfile Update
+on: pull_request_target
+permissions: read-all
+jobs:
+  update-lockfile:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ^8.8.0
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - run: pnpm i --lockfile-only # Update out of sync lockfile
+      - run: pnpm i # Install to make manypkg available, catch any other dep errors
+      - run: pnpm manypkg fix
+      - run: |
+          git config --global user.name github-actions[bot]
+          git config --global user.email github-actions[bot]@users.noreply.github.com
+          git add pnpm-lock.yaml
+          git commit -m "Update pnpm-lock.yaml"
+          git push
