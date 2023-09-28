@@ -10,7 +10,7 @@
     "test": "turbo test",
     "test:watch": "turbo test",
     "release": "pnpm run build --filter='./packages/*' && pnpm changeset publish",
-    "postinstall": "manypkg check"
+    "check-deps": "manypkg check"
   },
   "dependencies": {
     "@changesets/cli": "^2.26.2",
