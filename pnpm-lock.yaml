@@ -28,7 +28,7 @@ importers:
         version: 2.0.0(react-dom@18.2.0)(react-hook-form@7.30.0)(react@18.2.0)
       '@medusajs/medusa-js':
         specifier: ^6.0.0
-        version: 6.0.0(@medusajs/medusa@1.13.0)
+        version: 6.0.0(@medusajs/medusa@1.16.1)
       '@meilisearch/instant-meilisearch':
         specifier: ^0.7.1
         version: 0.7.1
@@ -55,7 +55,7 @@ importers:
         version: 4.17.21
       medusa-react:
         specifier: ^9.0.0
-        version: 9.0.0(@medusajs/medusa@1.13.0)(@tanstack/react-query@4.22.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 9.0.0(@medusajs/medusa@1.16.1)(@tanstack/react-query@4.22.4)(react-dom@18.2.0)(react@18.2.0)
       next:
         specifier: ^13.4.5
         version: 13.4.5(@babel/core@7.19.3)(react-dom@18.2.0)(react@18.2.0)
@@ -91,8 +91,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       '@medusajs/medusa':
-        specifier: ^1.13.0
-        version: 1.13.0(@babel/core@7.19.3)(@types/ioredis-mock@8.2.2)(medusa-interfaces@1.3.7)(typeorm@0.3.17)
+        specifier: ^1.16.1
+        version: 1.16.1(@babel/core@7.19.3)(@types/ioredis-mock@8.2.2)(medusa-interfaces@1.3.7)(typeorm@0.3.17)
       '@types/lodash':
         specifier: ^4.14.195
         version: 4.14.195
@@ -124,8 +124,8 @@ importers:
         specifier: ^8.4.8
         version: 8.4.8
       prettier:
-        specifier: ^3.0.1
-        version: 3.0.1
+        specifier: ^3.0.3
+        version: 3.0.3
       tailwindcss:
         specifier: ^3.0.23
         version: 3.0.23(autoprefixer@10.4.2)(postcss@8.4.8)
@@ -1298,42 +1298,6 @@ packages:
     resolution: {integrity: sha512-fgQ0+SIoxq3PbOG5U6liNLi1kvgT1TeCDbVQ7QXDhm3auaZ7Fc56VOjafvuIvBPELRazJhqTAEhyYYgo1AbJ9A==}
     dev: true
 
-  /@medusajs/medusa-cli@1.3.17:
-    resolution: {integrity: sha512-CSmfKeDXcyPACpdK2uFxSV6L642NDiUxFlcDMVTyeQ/dsUQv3B+gM2YmH3DLUYqn0Eb1YJxxGbmQHpLZnCiqaw==}
-    hasBin: true
-    dependencies:
-      '@medusajs/utils': 1.9.4
-      axios: 0.21.4
-      chalk: 4.1.2
-      configstore: 5.0.1
-      core-js: 3.25.5
-      dotenv: 8.6.0
-      execa: 5.1.1
-      fs-exists-cached: 1.0.0
-      fs-extra: 10.1.0
-      hosted-git-info: 4.1.0
-      inquirer: 8.2.6
-      is-valid-path: 0.1.1
-      meant: 1.0.3
-      medusa-core-utils: 1.2.0
-      medusa-telemetry: 0.0.16
-      open: 8.4.2
-      ora: 5.4.1
-      pg: 8.11.2
-      pg-god: 1.0.12
-      prompts: 2.4.2
-      regenerator-runtime: 0.13.11
-      resolve-cwd: 3.0.0
-      semver: 7.5.4
-      stack-trace: 0.0.10
-      ulid: 2.3.0
-      winston: 3.10.0
-      yargs: 15.4.1
-    transitivePeerDependencies:
-      - debug
-      - pg-native
-      - supports-color
-
   /@medusajs/medusa-cli@1.3.21:
     resolution: {integrity: sha512-j898S/3ipWFG3HIBZtyUc/KfqnO2JV5h4Mj30M/P+7vXxvLlpavKiU6qdBRxLZBQHHZ2mGuyHRoq3RatHrrw/Q==}
     hasBin: true
@@ -1384,15 +1348,14 @@ packages:
       - sqlite3
       - supports-color
       - tedious
-    dev: true
 
-  /@medusajs/medusa-js@6.0.0(@medusajs/medusa@1.13.0):
+  /@medusajs/medusa-js@6.0.0(@medusajs/medusa@1.16.1):
     resolution: {integrity: sha512-R/gxsSXgrxZds4rCnn2VVTROO5U/xTFCMOOx/ZgCeMnVZFZRBoSxJyYdsCYmqkNzDoAysUR+jBcRKZIkp89FYQ==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
       '@medusajs/medusa': 1.12.0
     dependencies:
-      '@medusajs/medusa': 1.13.0(@babel/core@7.19.3)(@types/ioredis-mock@8.2.2)(medusa-interfaces@1.3.7)(typeorm@0.3.17)
+      '@medusajs/medusa': 1.16.1(@babel/core@7.19.3)(@types/ioredis-mock@8.2.2)(medusa-interfaces@1.3.7)(typeorm@0.3.17)
       axios: 0.24.0
       qs: 6.11.2
       retry-axios: 2.6.0(axios@0.24.0)
@@ -1400,70 +1363,6 @@ packages:
     transitivePeerDependencies:
       - debug
     dev: false
-
-  /@medusajs/medusa@1.13.0(@babel/core@7.19.3)(@types/ioredis-mock@8.2.2)(medusa-interfaces@1.3.7)(typeorm@0.3.17):
-    resolution: {integrity: sha512-IXd/dJbI6roUXUpb96uy96pSJKbsFLvvIun7ZeaafLUF5VY1ntvtp+E5TYiQyJ1S8k5t1JeCDsnyRl07VIiNpA==}
-    hasBin: true
-    peerDependencies:
-      medusa-interfaces: ^1.3.7
-      typeorm: ^0.3.16
-    dependencies:
-      '@medusajs/medusa-cli': 1.3.17
-      '@medusajs/modules-sdk': 1.9.0
-      '@medusajs/orchestration': 0.1.0
-      '@medusajs/utils': 1.9.4
-      awilix: 8.0.1
-      body-parser: 1.20.2
-      boxen: 5.1.2
-      bullmq: 3.15.8
-      chokidar: 3.5.3
-      class-transformer: 0.5.1
-      class-validator: 0.14.0
-      compression: 1.7.4
-      connect-redis: 5.2.0
-      cookie-parser: 1.4.6
-      core-js: 3.25.5
-      cors: 2.8.5
-      cross-spawn: 7.0.3
-      dotenv: 16.3.1
-      express: 4.18.2
-      express-session: 1.17.3
-      fs-exists-cached: 1.0.0
-      glob: 7.2.3
-      ioredis: 5.3.2
-      ioredis-mock: 8.4.0(@types/ioredis-mock@8.2.2)(ioredis@5.3.2)
-      iso8601-duration: 1.3.0
-      jsonwebtoken: 9.0.1
-      lodash: 4.17.21
-      medusa-core-utils: 1.2.0
-      medusa-interfaces: 1.3.7
-      medusa-telemetry: 0.0.16
-      medusa-test-utils: 1.1.41(@babel/core@7.19.3)
-      morgan: 1.10.0
-      multer: 1.4.5-lts.1
-      node-schedule: 2.1.1
-      papaparse: 5.3.2
-      passport: 0.6.0
-      passport-http-bearer: 1.0.1
-      passport-jwt: 4.0.1
-      passport-local: 1.0.0
-      qs: 6.11.2
-      randomatic: 3.1.1
-      redis: 3.1.2
-      reflect-metadata: 0.1.13
-      regenerator-runtime: 0.13.11
-      request-ip: 2.2.0
-      scrypt-kdf: 2.0.1
-      typeorm: 0.3.17(ioredis@5.3.2)(pg@8.11.2)
-      ulid: 2.3.0
-      uuid: 9.0.0
-      winston: 3.10.0
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@types/ioredis-mock'
-      - debug
-      - pg-native
-      - supports-color
 
   /@medusajs/medusa@1.16.1(@babel/core@7.19.3)(@types/ioredis-mock@8.2.2)(medusa-interfaces@1.3.7)(typeorm@0.3.17):
     resolution: {integrity: sha512-ayzBgNGqpP1yB2c/v7hjoeDlEcmNhj5qCLJ79xPZN0GXiWWns9s7tqADO+1n0Dgag1osyvYYeml1TkpmLwGLZA==}
@@ -1544,7 +1443,6 @@ packages:
       - sqlite3
       - supports-color
       - tedious
-    dev: true
 
   /@medusajs/modules-sdk@1.11.2:
     resolution: {integrity: sha512-f8DD0s+sZQarDc2ougEtDOZg2diAzH4CW3sPyhoqnOnyKYQf+ZPfKOOBeHPuGQnIQJ0YC0NtXsjZm403jPn9AQ==}
@@ -1573,22 +1471,6 @@ packages:
       - sqlite3
       - supports-color
       - tedious
-    dev: true
-
-  /@medusajs/modules-sdk@1.9.0:
-    resolution: {integrity: sha512-tYYrIxDB54YfWIX9IeEekYEe/tXRQ2OqMla5zyRHIv3RezmF0KUAlPqNuqIUnQfvuV0MFiYbniC1GfLfyliWuw==}
-    dependencies:
-      '@medusajs/orchestration': 0.1.0
-      '@medusajs/types': 1.10.0
-      '@medusajs/utils': 1.9.4
-      awilix: 8.0.1
-      resolve-cwd: 3.0.0
-
-  /@medusajs/orchestration@0.1.0:
-    resolution: {integrity: sha512-KvgH6Pq7BVHw23y47ot7UhD+OLU42NSX49cuSjyle5WgP72vrPdhQnw3fnq1LCJBEtHYPofPkh5jR85oU+z7Xw==}
-    dependencies:
-      '@medusajs/utils': 1.9.4
-      graphql: 16.7.1
 
   /@medusajs/orchestration@0.4.0(pg@8.11.2):
     resolution: {integrity: sha512-wOV8uppaQIXFlqasZaTQNoDEcw1u/av3ZF907i4zYdx7u8ksxAZiPuUXoTwrW9hCsyfadY8Ur9+07j1tgcR7Cw==}
@@ -1615,14 +1497,9 @@ packages:
       - sqlite3
       - supports-color
       - tedious
-    dev: true
-
-  /@medusajs/types@1.10.0:
-    resolution: {integrity: sha512-hadkFQ8AdZgHPnV47qyQiJhxzJbCEZEUweWup4krK/e9k8nqpbzfjuuFRM5jOxWvuKfZ/B9nxdQtz4piiomq8A==}
 
   /@medusajs/types@1.11.1:
     resolution: {integrity: sha512-aSkbd/ZEY3ZV1sgn9YMd0ORrgefLu3qP7RO4StQfDUoeK1heWyHGWmxp2lG3hSkatgxpET7elDOvABGObcUDQQ==}
-    dev: true
 
   /@medusajs/utils@1.10.1(pg@8.11.2):
     resolution: {integrity: sha512-EMxJ3QsY7y0hDs2fNgvsE6iUnu/hgZHFNY637+fUkKZ/b1o+V5egAB3KJO2gqxZneM5dddwyhc+XRbT8Os1CTQ==}
@@ -1652,7 +1529,6 @@ packages:
       - sqlite3
       - supports-color
       - tedious
-    dev: true
 
   /@medusajs/utils@1.9.4:
     resolution: {integrity: sha512-gppSs5L7Q43X0OkETR/ioiOdtCvBSUZ8v+j53PzBzWHw38eTkVaSKm22HitWC2/zKt8BA/JGC5xlmXvmKPsLIw==}
@@ -1660,6 +1536,7 @@ packages:
       awilix: 8.0.1
       glob: 7.2.3
       ulid: 2.3.0
+    dev: false
 
   /@medusajs/workflows@0.2.2(pg@8.11.2):
     resolution: {integrity: sha512-N+wg+la27jte7krvOYFazuN5P4hd2YlthXNqoE57QiZgB5r7RH0LfXkNd/nf8awa+VS0jnhJpInHIFdWTfw2JQ==}
@@ -1687,7 +1564,6 @@ packages:
       - sqlite3
       - supports-color
       - tedious
-    dev: true
 
   /@meilisearch/instant-meilisearch@0.7.1:
     resolution: {integrity: sha512-bUGiGO/da915Y9Dmu2n5fTMFvSlJHC6ABOcL7056OiBSCU1Bx1EvVEkzYmTxac3lqIoIpxZU5t0WXiPeikrg4g==}
@@ -1742,7 +1618,6 @@ packages:
       globby: 11.1.0
       mikro-orm: 5.7.14
       reflect-metadata: 0.1.13
-    dev: true
 
   /@mikro-orm/knex@5.7.14(@mikro-orm/core@5.7.12)(@mikro-orm/migrations@5.7.12)(pg@8.11.0):
     resolution: {integrity: sha512-dLw80JiOfQ6YBtKXI3j0C31lYfbWlytZUpXFM4tEKlMbAMmSbPqDgZpiF3luxBKTg3JpsnGSK0urBOxL1c/m+g==}
@@ -1785,7 +1660,6 @@ packages:
       - pg-native
       - supports-color
       - tedious
-    dev: true
 
   /@mikro-orm/knex@5.7.14(@mikro-orm/core@5.7.12)(@mikro-orm/migrations@5.7.12)(pg@8.11.2):
     resolution: {integrity: sha512-dLw80JiOfQ6YBtKXI3j0C31lYfbWlytZUpXFM4tEKlMbAMmSbPqDgZpiF3luxBKTg3JpsnGSK0urBOxL1c/m+g==}
@@ -1828,7 +1702,6 @@ packages:
       - pg-native
       - supports-color
       - tedious
-    dev: true
 
   /@mikro-orm/migrations@5.7.12(@mikro-orm/core@5.7.12)(pg@8.11.2):
     resolution: {integrity: sha512-hUKUMKw01KpCKEoLMSbqLpztymE8Gk95+/nO7ThO5PTkNzH5eqLt00Zy9KlFgDEi85mOkyGnKbthzZMHPSLxSg==}
@@ -1852,7 +1725,6 @@ packages:
       - sqlite3
       - supports-color
       - tedious
-    dev: true
 
   /@mikro-orm/postgresql@5.7.12(@mikro-orm/core@5.7.12)(@mikro-orm/migrations@5.7.12):
     resolution: {integrity: sha512-JF89Yf3D/nyA45TzXxclajaDrHXFB/ad3edkF0BA5+sFKsj6it18P/wq0HEk/rhqsHLTlxcmyG0/F+AO3HOPow==}
@@ -1883,7 +1755,6 @@ packages:
       - sqlite3
       - supports-color
       - tedious
-    dev: true
 
   /@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.2:
     resolution: {integrity: sha512-9bfjwDxIDWmmOKusUcqdS4Rw+SETlp9Dy39Xui9BEGEk19dDwH0jhipwFzEff/pFg95NKymc6TOTbRKcWeRqyQ==}
@@ -2220,7 +2091,6 @@ packages:
       argparse: 1.0.10
       colors: 1.2.5
       string-argv: 0.3.2
-    dev: true
 
   /@sinclair/typebox@0.27.8:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
@@ -2300,7 +2170,6 @@ packages:
 
   /@types/argparse@1.0.38:
     resolution: {integrity: sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA==}
-    dev: true
 
   /@types/babel__core@7.1.19:
     resolution: {integrity: sha512-WEOTgRsbYkvA/KCsDwVEGkd7WAr1e3g31VHQ8zy5gul/V1qKullU/BU5I68X5v7V3GnB9eotmom4v5a5gjxorw==}
@@ -2798,7 +2667,6 @@ packages:
     engines: {node: '>=0.4.0'}
     dependencies:
       acorn: 8.10.0
-    dev: true
 
   /acorn-node@1.8.2:
     resolution: {integrity: sha512-8mt+fslDufLYntIoPAaIMUe/lrbrehIiwmR3t2k9LljIzoigEPF27eLk2hy8zSGzmR/ogr7zbRKINMo1u0yh5A==}
@@ -2816,7 +2684,6 @@ packages:
   /acorn-walk@8.2.0:
     resolution: {integrity: sha512-k+iyHEuPgSw6SbuDpGQM+06HQUa04DZ3o+F6CSzXMvvI5KMvnaEqXe+YVe555R9nn6GPt404fos4wcgpw12SDA==}
     engines: {node: '>=0.4.0'}
-    dev: true
 
   /acorn@7.4.1:
     resolution: {integrity: sha512-nQyp0o1/mNdbTO1PO6kHkwSrmgZ0MT/jCCpNiwbUjGoRN4dlBhqJtoQuCnEOKzgTVwg0ZWiCoQy6SxMebQVh8A==}
@@ -2828,7 +2695,6 @@ packages:
     resolution: {integrity: sha512-F0SAmZ8iUtS//m8DmCTA0jlh6TDKkHQyK6xc6V4KDTyZKA9dnvX9/3sRTVQrWm79glUAZbnmmNcdYwUIHWVybw==}
     engines: {node: '>=0.4.0'}
     hasBin: true
-    dev: true
 
   /aggregate-error@3.1.0:
     resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
@@ -3790,7 +3656,6 @@ packages:
 
   /colorette@2.0.19:
     resolution: {integrity: sha512-3tlv/dIP7FWvj3BsbHrGLJ6l/oKh1O3TcgBqMn+yyCagOxc23fyzDS6HypQbgxWbkpDnf52p1LuR4eWDQ/K9WQ==}
-    dev: true
 
   /colorette@2.0.20:
     resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}
@@ -3799,7 +3664,6 @@ packages:
   /colors@1.2.5:
     resolution: {integrity: sha512-erNRLao/Y3Fv54qUa0LBB+//Uf3YwMUmdJinN20yMXm9zdKKqH9wt7R9IIVZ+K7ShzfpLV/Zg8+VyrBJYB4lpg==}
     engines: {node: '>=0.1.90'}
-    dev: true
 
   /colorspace@1.1.4:
     resolution: {integrity: sha512-BgvKJiuVu1igBUF2kEjRCZXol6wiiGbY5ipL/oVPwm0BL9sIpMIzM8IK7vwuxIIzOXMV3Ey5w+vxhm0rR/TN8w==}
@@ -3817,7 +3681,6 @@ packages:
   /commander@10.0.1:
     resolution: {integrity: sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug==}
     engines: {node: '>=14'}
-    dev: true
 
   /commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
@@ -3831,7 +3694,6 @@ packages:
   /commander@9.5.0:
     resolution: {integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==}
     engines: {node: ^12.20.0 || >=14}
-    dev: true
 
   /common-tags@1.8.2:
     resolution: {integrity: sha512-gk/Z852D2Wtb//0I+kRFNKKE9dIIVirjoqPoA1wJU+XePVXZfGeBpk45+A1rKO4Q43prqWBNY/MiIeRLbPWUaA==}
@@ -4324,20 +4186,14 @@ packages:
   /dotenv@16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
     engines: {node: '>=12'}
-    dev: true
 
   /dotenv@16.1.4:
     resolution: {integrity: sha512-m55RtE8AsPeJBpOIFKihEmqUcoVncQIwo7x9U8ZwLEZw9ZpXboz2c+rvog+jUaJvVrZ5kBOeYQBX5+8Aa/OZQw==}
     engines: {node: '>=12'}
-    dev: true
 
   /dotenv@16.3.1:
     resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
     engines: {node: '>=12'}
-
-  /dotenv@8.6.0:
-    resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
-    engines: {node: '>=10'}
 
   /duplexer3@0.1.5:
     resolution: {integrity: sha512-1A8za6ws41LQgv9HrE/66jyC5yuSjQ3L/KOpFtoBilsAK2iA2wuS5rTt1OCzIvtS2V7nVmedsUU+DGRcjBmOYA==}
@@ -4368,7 +4224,6 @@ packages:
   /emittery@0.12.1:
     resolution: {integrity: sha512-pYyW59MIZo0HxPFf+Vb3+gacUu0gxVS3TZwB2ClwkEZywgF9f9OJDoVmNLojTn0vKX3tO9LC+pdQEcLP4Oz/bQ==}
     engines: {node: '>=12'}
-    dev: true
 
   /emittery@0.13.1:
     resolution: {integrity: sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==}
@@ -4863,7 +4718,6 @@ packages:
   /esm@3.2.25:
     resolution: {integrity: sha512-U1suiZ2oDVWv4zPO56S0NcR5QriEahGtdN2OR6FiOG4WJvcjBVFB0qI4+eKoWFH483PKGuLuu6V8Z4T5g63UVA==}
     engines: {node: '>=6'}
-    dev: true
 
   /espree@9.4.0:
     resolution: {integrity: sha512-DQmnRpLj7f6TgN/NYb0MTzJXL+vJF9h3pHy4JhCIs3zwcgez8xmGg3sXHcEO97BrmO2OSvCwMdfdlyl+E9KjOw==}
@@ -5286,7 +5140,6 @@ packages:
       graceful-fs: 4.2.10
       jsonfile: 6.1.0
       universalify: 2.0.0
-    dev: true
 
   /fs-extra@7.0.1:
     resolution: {integrity: sha512-YJDaCJZEnBmcbw13fvdAM9AwNOJwOzrE4pqMqBq5nFiEqXUqHwlK4B+3pUw6JNvfSPtX05xFHtYy/1ni01eGCw==}
@@ -5320,7 +5173,6 @@ packages:
     dependencies:
       minimatch: 3.1.2
       rimraf: 2.7.1
-    dev: true
 
   /fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
@@ -5378,7 +5230,6 @@ packages:
   /get-package-type@0.1.0:
     resolution: {integrity: sha512-pjzuKtY64GYfWizNAJ0fr9VqttZkNiK2iS430LtIHzjBEr6bX8Am2zm4sW4Ro5wjWW5cAlRL1qAMTcXbjNAO2Q==}
     engines: {node: '>=8.0.0'}
-    dev: true
 
   /get-stream@4.1.0:
     resolution: {integrity: sha512-GMat4EJ5161kIy2HevLlr4luNjBgvmj413KaQA7jt4V8B4RDsfpHk7WQ9GVqfYyyx8OS/L66Kox+rJRNklLK7w==}
@@ -5412,7 +5263,6 @@ packages:
 
   /getopts@2.3.0:
     resolution: {integrity: sha512-5eDf9fuSXwxBL6q5HX+dhDj+dslFGWzU5thZ9kNKUkcPtaPdatmUFKwHFrLb/uf/WpA4BHET+AX3Scl56cAjpA==}
-    dev: true
 
   /getos@3.2.1:
     resolution: {integrity: sha512-U56CfOK17OKgTVqozZjUKNdkfEv6jk5WISBJ8SHoagjE6L69zOwl3Z+O8myjY9MEW3i2HPWQBt/LTbCgcC973Q==}
@@ -5799,7 +5649,6 @@ packages:
   /interpret@2.2.0:
     resolution: {integrity: sha512-Ju0Bz/cEia55xDwUWEa8+olFpCiQoypjnQySseKtmjNrnps3P+xfpUmGr90T7yjlVJmOtybRvPXhKMbHr+fWnw==}
     engines: {node: '>= 0.10'}
-    dev: true
 
   /ioredis-mock@8.4.0(@types/ioredis-mock@8.2.2)(ioredis@5.3.2):
     resolution: {integrity: sha512-ZB+Wj9kzYbYcPrU2Xr61Fo+Fcc8Y1/sAnc/8sCKhyi69C4lQf7cdTEqiqRwneICX2OwgGtpCw8Udr7GEyZixOQ==}
@@ -6092,9 +5941,6 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       is-docker: 2.2.1
-
-  /is_js@0.9.0:
-    resolution: {integrity: sha512-8Y5EHSH+TonfUHX2g3pMJljdbGavg55q4jmHzghJCdqYDbdNROC8uw/YFQwIRCRqRJT1EY3pJefz+kglw+o7sg==}
 
   /isarray@1.0.0:
     resolution: {integrity: sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==}
@@ -6780,7 +6626,6 @@ packages:
       tildify: 2.0.0
     transitivePeerDependencies:
       - supports-color
-    dev: true
 
   /knex@2.5.1(pg@8.11.0):
     resolution: {integrity: sha512-z78DgGKUr4SE/6cm7ku+jHvFT0X97aERh/f0MUKAKgFnwCYBEW4TFBqtHWFYiJFid7fMrtpZ/gxJthvz5mEByA==}
@@ -6827,7 +6672,6 @@ packages:
       tildify: 2.0.0
     transitivePeerDependencies:
       - supports-color
-    dev: true
 
   /knex@2.5.1(pg@8.11.2):
     resolution: {integrity: sha512-z78DgGKUr4SE/6cm7ku+jHvFT0X97aERh/f0MUKAKgFnwCYBEW4TFBqtHWFYiJFid7fMrtpZ/gxJthvz5mEByA==}
@@ -6874,7 +6718,6 @@ packages:
       tildify: 2.0.0
     transitivePeerDependencies:
       - supports-color
-    dev: true
 
   /kuler@2.0.0:
     resolution: {integrity: sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==}
@@ -7115,7 +6958,7 @@ packages:
   /medusa-interfaces@1.3.7:
     resolution: {integrity: sha512-vU1PjepGeglUmEqoBY72gx5Pfj5Uv3VCO3oqYpj6hSz55jhy4xnUNhf4Ttw1mhqGmwtyi9UkHx+aTuCcYx24Ww==}
 
-  /medusa-react@9.0.0(@medusajs/medusa@1.13.0)(@tanstack/react-query@4.22.4)(react-dom@18.2.0)(react@18.2.0):
+  /medusa-react@9.0.0(@medusajs/medusa@1.16.1)(@tanstack/react-query@4.22.4)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-S3Ag8IolBT4/FDN2NPObPCo4n1GupAjL/EmTVq+ayv6eU+QqAahMblhFHY+X2UDFQVhr4EOny42nAtY1I84Now==}
     engines: {node: '>=10'}
     peerDependencies:
@@ -7124,30 +6967,14 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@medusajs/medusa': 1.13.0(@babel/core@7.19.3)(@types/ioredis-mock@8.2.2)(medusa-interfaces@1.3.7)(typeorm@0.3.17)
-      '@medusajs/medusa-js': 6.0.0(@medusajs/medusa@1.13.0)
+      '@medusajs/medusa': 1.16.1(@babel/core@7.19.3)(@types/ioredis-mock@8.2.2)(medusa-interfaces@1.3.7)(typeorm@0.3.17)
+      '@medusajs/medusa-js': 6.0.0(@medusajs/medusa@1.16.1)
       '@tanstack/react-query': 4.22.4(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     transitivePeerDependencies:
       - debug
     dev: false
-
-  /medusa-telemetry@0.0.16:
-    resolution: {integrity: sha512-i9FVCfILzVQXXYuPCNf4h9BwTqi1uVyL08zzKLTCq/ttodyMb77TmnvolrE5XuvLsRbw3iqQ3aGq+sn0aURaVQ==}
-    requiresBuild: true
-    dependencies:
-      axios: 0.21.4
-      axios-retry: 3.6.0
-      boxen: 5.1.2
-      ci-info: 3.8.0
-      configstore: 5.0.1
-      global: 4.4.0
-      is-docker: 2.2.1
-      remove-trailing-slash: 0.1.1
-      uuid: 8.3.2
-    transitivePeerDependencies:
-      - debug
 
   /medusa-telemetry@0.0.17:
     resolution: {integrity: sha512-Wwtm7QE1AKME0/uiEPen7lfzE9wnaO7J9Or8ObT8eTUipOqIbYRLEY7SSdGjMRg4NdyrzOJMIIjbcPz+vvsRVw==}
@@ -7165,7 +6992,6 @@ packages:
       uuid: 8.3.2
     transitivePeerDependencies:
       - debug
-    dev: true
 
   /medusa-test-utils@1.1.41(@babel/core@7.19.3):
     resolution: {integrity: sha512-UZNmkkrWfLXjYwUJUwIKxUvkGC5j22IFB5mv1daHDw//C0ehCrFFi2q0bTqkds9vH1VSTUf31Kz0MUiMdXZs/g==}
@@ -7226,7 +7052,6 @@ packages:
   /mikro-orm@5.7.14:
     resolution: {integrity: sha512-izfG8Cz5aYGYhxaNNv1Ozc1LAC/ifIsniwDrTWbxHVJkMlWLKAM8FzJhoZpXZzBissZqeRN9tPdzvBCxwV4G0w==}
     engines: {node: '>= 14.0.0'}
-    dev: true
 
   /mime-db@1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
@@ -7911,11 +7736,9 @@ packages:
 
   /pg-connection-string@2.5.0:
     resolution: {integrity: sha512-r5o/V/ORTA6TmUnyWZR9nCj1klXCO2CEKNRlVuJptZe85QuhFayC7WeMic7ndayT5IRIR0S0xFxFi2ousartlQ==}
-    dev: true
 
   /pg-connection-string@2.6.1:
     resolution: {integrity: sha512-w6ZzNu6oMmIzEAYVw+RLK0+nqHPt8K3ZnknKi+g48Ak2pr3dtljJW3o+D/n2zzCG07Zoe9VOX3aiKpj+BN0pjg==}
-    dev: true
 
   /pg-connection-string@2.6.2:
     resolution: {integrity: sha512-ch6OwaeaPYcova4kKZ15sbJ2hKb/VP48ZD2gE7i1J+L4MspCtBMAx8nMgz7bksc7IojCIIWuEhHibSMFH8m8oA==}
@@ -7945,7 +7768,6 @@ packages:
       pg: '>=8.0'
     dependencies:
       pg: 8.11.0
-    dev: true
 
   /pg-pool@3.6.1(pg@8.11.2):
     resolution: {integrity: sha512-jizsIzhkIitxCGfPRzJn1ZdcosIt3pz9Sh3V01fm1vZnbnCMgmGl5wvGGdNN2EL9Rmb0EcFoCkixH4Pu+sP9Og==}
@@ -7985,7 +7807,6 @@ packages:
       pgpass: 1.0.5
     optionalDependencies:
       pg-cloudflare: 1.1.1
-    dev: true
 
   /pg@8.11.2:
     resolution: {integrity: sha512-l4rmVeV8qTIrrPrIR3kZQqBgSN93331s9i6wiUiLOSk0Q7PmUxZD/m1rQI622l3NfqBby9Ar5PABfS/SulfieQ==}
@@ -8042,7 +7863,6 @@ packages:
   /pony-cause@2.1.10:
     resolution: {integrity: sha512-3IKLNXclQgkU++2fSi93sQ6BznFuxSLB11HdvZQ6JW/spahf/P1pAHBQEahr20rs0htZW0UDkM1HmA+nZkXKsw==}
     engines: {node: '>=12.0.0'}
-    dev: true
 
   /postcss-js@4.0.1(postcss@8.4.8):
     resolution: {integrity: sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==}
@@ -8177,12 +7997,6 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: false
-
-  /prettier@3.0.1:
-    resolution: {integrity: sha512-fcOWSnnpCrovBsmFZIGIy9UqK2FaI7Hqax+DIO0A9UxeVoY4iweyaFjS5TavZN97Hfehph0nhsZnjlVKzEQSrQ==}
-    engines: {node: '>=14'}
-    hasBin: true
-    dev: true
 
   /prettier@3.0.3:
     resolution: {integrity: sha512-L/4pUDMxcNa8R/EthV08Zt42WBO4h1rarVtK0K+QJG0X187OLo7l699jWw0GKuwzkPQ//jMFA/8Xm6Fh3J/DAg==}
@@ -8506,7 +8320,6 @@ packages:
     engines: {node: '>= 10.13.0'}
     dependencies:
       resolve: 1.22.1
-    dev: true
 
   /redent@3.0.0:
     resolution: {integrity: sha512-6tDA8g98We0zd0GvVeMT9arEOnTw9qM03L9cJXaCjrip1OO764RDBLBfrB4cwzNGDj5OA5ioymC9GkizgWJDUg==}
@@ -8603,14 +8416,8 @@ packages:
   /remove-trailing-slash@0.1.1:
     resolution: {integrity: sha512-o4S4Qh6L2jpnCy83ysZDau+VORNvnFw07CKSAymkd6ICNVEPisMyzlc00KlvvicsxKck94SEwhDnMNdICzO+tA==}
 
-  /request-ip@2.2.0:
-    resolution: {integrity: sha512-Hn4zUAr+XHbUs2RrfHur62t7+UhvtevqK32ordFewguEfNHUkhSdYgbG7PDGmXZEzqEXll9bei0+VMe6gkmuUQ==}
-    dependencies:
-      is_js: 0.9.0
-
   /request-ip@3.3.0:
     resolution: {integrity: sha512-cA6Xh6e0fDBBBwH77SLJaJPBmD3nWVAcF9/XAcsrIHdjhFzFiB5aNQFytdjCGPezU3ROwrR11IddKAM08vohxA==}
-    dev: true
 
   /request-progress@3.0.0:
     resolution: {integrity: sha512-MnWzEHHaxHO2iWiQuHrUPBi/1WeBf5PkxQqNyNvLl9VAYSdXkP8tQ3pBSeCPD+yw0v0Aq1zosWLz0BdeXpWwZg==}
@@ -8705,7 +8512,6 @@ packages:
     hasBin: true
     dependencies:
       glob: 7.2.3
-    dev: true
 
   /rimraf@3.0.2:
     resolution: {integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==}
@@ -9050,7 +8856,6 @@ packages:
   /sqlstring@2.3.3:
     resolution: {integrity: sha512-qC9iz2FlN7DQl3+wjwn3802RTyjCx7sDvfQEXchwa6CWOx07/WVfh91gBmQ9fahw8snwGEWU3xGzOt4tFyHLxg==}
     engines: {node: '>= 0.6'}
-    dev: true
 
   /sshpk@1.17.0:
     resolution: {integrity: sha512-/9HIEs1ZXGhSPE8X6Ccm7Nam1z8KcoCqPdI7ecm1N33EzAetWahvQWVqLZtaZQ+IDKX4IyA2o0gBzqIMkAagHQ==}
@@ -9098,7 +8903,6 @@ packages:
   /string-argv@0.3.2:
     resolution: {integrity: sha512-aqD2Q0144Z+/RqG52NeHEkZauTAUWJO8c6yTftGJKO3Tja5tUgIfmIl6kExvhtxSDP7fXB6DvzkfMpCd/F3G+Q==}
     engines: {node: '>=0.6.19'}
-    dev: true
 
   /string-length@4.0.2:
     resolution: {integrity: sha512-+l6rNN5fYHNhZZy41RXsYptCjA2Igmq4EG7kZAYFQI1E1VTXarr6ZPXBg6eq7Y6eK4FEhY6AJlyuFIb/v/S0VQ==}
@@ -9339,7 +9143,6 @@ packages:
   /tarn@3.0.2:
     resolution: {integrity: sha512-51LAVKUSZSVfI05vjPESNc5vwqqZpbXCsU+/+wxlOrUjk2SnFTt97v9ZgQrD4YmxYW1Px6w2KjaDitCfkvgxMQ==}
     engines: {node: '>=8.0.0'}
-    dev: true
 
   /term-size@2.2.1:
     resolution: {integrity: sha512-wK0Ri4fOGjv/XPy8SBHZChl8CM7uMc5VML7SqiQ0zG7+J5Vr+RMQDoHa2CNT6KHUnTGIXH34UDMkPzAUyapBZg==}
@@ -9418,7 +9221,6 @@ packages:
   /tildify@2.0.0:
     resolution: {integrity: sha512-Cc+OraorugtXNfs50hU9KS369rFXCfgGLpfCfvlc+Ud5u6VWmUQsOAa9HbTvheQdYnrdJqqv1e5oIqXppMYnSw==}
     engines: {node: '>=8'}
-    dev: true
 
   /tmp@0.0.33:
     resolution: {integrity: sha512-jRCJlojKnZ3addtTOjdIqoRuPEKBvNXcGYqzO6zWZX8KfKEpnGY5jfggJQ3EjKuu8D4bJRr0y+cYJFmYbImXGw==}
@@ -9663,7 +9465,6 @@ packages:
   /type-fest@2.19.0:
     resolution: {integrity: sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==}
     engines: {node: '>=12.20'}
-    dev: true
 
   /type-is@1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
@@ -9822,7 +9623,6 @@ packages:
       glob: 8.1.0
       pony-cause: 2.1.10
       type-fest: 2.19.0
-    dev: true
 
   /unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
