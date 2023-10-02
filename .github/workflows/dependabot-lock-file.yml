@@ -27,3 +27,5 @@ jobs:
           git add pnpm-lock.yaml
           git commit -m "Update pnpm-lock.yaml"
           git push
+          git commit -m "Trigger checks" --allow-empty
+          git push
