@@ -1,5 +1,12 @@
 # medusa-payment-paystack
 
+## 1.1.3
+
+### Patch Changes
+
+- 47af03f: Upgrade dependencies
+  Include README in published package
+
 ## 1.1.2
 
 ### Patch Changes
