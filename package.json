@@ -9,7 +9,7 @@
     "lint": "turbo lint",
     "test": "turbo test",
     "test:watch": "turbo test",
-    "release": "pnpm run build --filter='./packages/*' && pnpm changeset publish",
+    "release": "cp README.md packages/plugin && pnpm run build --filter='./packages/*' && pnpm changeset publish",
     "check-deps": "manypkg check"
   },
   "dependencies": {
