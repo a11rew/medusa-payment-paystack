@@ -136,8 +136,8 @@ importers:
   packages/plugin:
     dependencies:
       '@medusajs/utils':
-        specifier: ^1.9.4
-        version: 1.9.4
+        specifier: ^1.10.3
+        version: 1.10.3(pg@8.11.0)
     devDependencies:
       '@medusajs/medusa':
         specifier: ^1.16.1
@@ -1323,7 +1323,7 @@ packages:
     resolution: {integrity: sha512-j898S/3ipWFG3HIBZtyUc/KfqnO2JV5h4Mj30M/P+7vXxvLlpavKiU6qdBRxLZBQHHZ2mGuyHRoq3RatHrrw/Q==}
     hasBin: true
     dependencies:
-      '@medusajs/utils': 1.10.1(pg@8.11.2)
+      '@medusajs/utils': 1.10.3(pg@8.11.2)
       axios: 0.21.4
       chalk: 4.1.2
       configstore: 5.0.1
@@ -1470,7 +1470,7 @@ packages:
     dependencies:
       '@medusajs/orchestration': 0.4.0(pg@8.11.2)
       '@medusajs/types': 1.11.1
-      '@medusajs/utils': 1.10.1(pg@8.11.2)
+      '@medusajs/utils': 1.10.3(pg@8.11.2)
       awilix: 8.0.1
       knex: 2.4.2(pg@8.11.2)
       pg: 8.11.2
@@ -1497,7 +1497,7 @@ packages:
     resolution: {integrity: sha512-wOV8uppaQIXFlqasZaTQNoDEcw1u/av3ZF907i4zYdx7u8ksxAZiPuUXoTwrW9hCsyfadY8Ur9+07j1tgcR7Cw==}
     dependencies:
       '@medusajs/types': 1.11.1
-      '@medusajs/utils': 1.10.1(pg@8.11.2)
+      '@medusajs/utils': 1.10.3(pg@8.11.2)
       awilix: 8.0.1
       graphql: 16.7.1
     transitivePeerDependencies:
@@ -1521,6 +1521,9 @@ packages:
 
   /@medusajs/types@1.11.1:
     resolution: {integrity: sha512-aSkbd/ZEY3ZV1sgn9YMd0ORrgefLu3qP7RO4StQfDUoeK1heWyHGWmxp2lG3hSkatgxpET7elDOvABGObcUDQQ==}
+
+  /@medusajs/types@1.11.3:
+    resolution: {integrity: sha512-kMk5TfJyIdQjR4I8qXYdn5fJlnRNaU5e4F5LZ0XptVT0Kh7S4iKrxJ6iLHKzw5nnUSuQ+na6VPKTSVG+Pt0Q7A==}
 
   /@medusajs/utils@1.10.1(pg@8.11.2):
     resolution: {integrity: sha512-EMxJ3QsY7y0hDs2fNgvsE6iUnu/hgZHFNY637+fUkKZ/b1o+V5egAB3KJO2gqxZneM5dddwyhc+XRbT8Os1CTQ==}
@@ -1551,20 +1554,71 @@ packages:
       - supports-color
       - tedious
 
-  /@medusajs/utils@1.9.4:
-    resolution: {integrity: sha512-gppSs5L7Q43X0OkETR/ioiOdtCvBSUZ8v+j53PzBzWHw38eTkVaSKm22HitWC2/zKt8BA/JGC5xlmXvmKPsLIw==}
+  /@medusajs/utils@1.10.3(pg@8.11.0):
+    resolution: {integrity: sha512-x8AJ8wp1osnixsTBwI2ydogKa1pXzjuYnpYwRa2shQ4gWSNzA6jQGHnVZA0IFDhSBjcI/ewsfZXQkkLm1AiGbg==}
     dependencies:
+      '@medusajs/types': 1.11.3
+      '@mikro-orm/core': 5.7.12(@mikro-orm/migrations@5.7.12)(@mikro-orm/postgresql@5.7.12)
+      '@mikro-orm/migrations': 5.7.12(@mikro-orm/core@5.7.12)(pg@8.11.0)
+      '@mikro-orm/postgresql': 5.7.12(@mikro-orm/core@5.7.12)(@mikro-orm/migrations@5.7.12)
       awilix: 8.0.1
-      glob: 7.2.3
+      knex: 2.4.2(pg@8.11.0)
       ulid: 2.3.0
+    transitivePeerDependencies:
+      - '@mikro-orm/better-sqlite'
+      - '@mikro-orm/entity-generator'
+      - '@mikro-orm/mariadb'
+      - '@mikro-orm/migrations-mongodb'
+      - '@mikro-orm/mongodb'
+      - '@mikro-orm/mysql'
+      - '@mikro-orm/seeder'
+      - '@mikro-orm/sqlite'
+      - better-sqlite3
+      - mssql
+      - mysql
+      - mysql2
+      - pg
+      - pg-native
+      - sqlite3
+      - supports-color
+      - tedious
     dev: false
+
+  /@medusajs/utils@1.10.3(pg@8.11.2):
+    resolution: {integrity: sha512-x8AJ8wp1osnixsTBwI2ydogKa1pXzjuYnpYwRa2shQ4gWSNzA6jQGHnVZA0IFDhSBjcI/ewsfZXQkkLm1AiGbg==}
+    dependencies:
+      '@medusajs/types': 1.11.3
+      '@mikro-orm/core': 5.7.12(@mikro-orm/migrations@5.7.12)(@mikro-orm/postgresql@5.7.12)
+      '@mikro-orm/migrations': 5.7.12(@mikro-orm/core@5.7.12)(pg@8.11.2)
+      '@mikro-orm/postgresql': 5.7.12(@mikro-orm/core@5.7.12)(@mikro-orm/migrations@5.7.12)
+      awilix: 8.0.1
+      knex: 2.4.2(pg@8.11.2)
+      ulid: 2.3.0
+    transitivePeerDependencies:
+      - '@mikro-orm/better-sqlite'
+      - '@mikro-orm/entity-generator'
+      - '@mikro-orm/mariadb'
+      - '@mikro-orm/migrations-mongodb'
+      - '@mikro-orm/mongodb'
+      - '@mikro-orm/mysql'
+      - '@mikro-orm/seeder'
+      - '@mikro-orm/sqlite'
+      - better-sqlite3
+      - mssql
+      - mysql
+      - mysql2
+      - pg
+      - pg-native
+      - sqlite3
+      - supports-color
+      - tedious
 
   /@medusajs/workflows@0.2.2(pg@8.11.2):
     resolution: {integrity: sha512-N+wg+la27jte7krvOYFazuN5P4hd2YlthXNqoE57QiZgB5r7RH0LfXkNd/nf8awa+VS0jnhJpInHIFdWTfw2JQ==}
     dependencies:
       '@medusajs/modules-sdk': 1.11.2
       '@medusajs/orchestration': 0.4.0(pg@8.11.2)
-      '@medusajs/utils': 1.10.1(pg@8.11.2)
+      '@medusajs/utils': 1.10.3(pg@8.11.2)
       awilix: 8.0.1
       ulid: 2.3.0
     transitivePeerDependencies:
@@ -1630,7 +1684,7 @@ packages:
       '@mikro-orm/sqlite':
         optional: true
     dependencies:
-      '@mikro-orm/migrations': 5.7.12(@mikro-orm/core@5.7.12)(pg@8.11.2)
+      '@mikro-orm/migrations': 5.7.12(@mikro-orm/core@5.7.12)(pg@8.11.0)
       '@mikro-orm/postgresql': 5.7.12(@mikro-orm/core@5.7.12)(@mikro-orm/migrations@5.7.12)
       acorn-loose: 8.3.0
       acorn-walk: 8.2.0
@@ -1672,7 +1726,7 @@ packages:
         optional: true
     dependencies:
       '@mikro-orm/core': 5.7.12(@mikro-orm/migrations@5.7.12)(@mikro-orm/postgresql@5.7.12)
-      '@mikro-orm/migrations': 5.7.12(@mikro-orm/core@5.7.12)(pg@8.11.2)
+      '@mikro-orm/migrations': 5.7.12(@mikro-orm/core@5.7.12)(pg@8.11.0)
       fs-extra: 11.1.1
       knex: 2.5.1(pg@8.11.0)
       pg: 8.11.0
@@ -1724,6 +1778,29 @@ packages:
       - supports-color
       - tedious
 
+  /@mikro-orm/migrations@5.7.12(@mikro-orm/core@5.7.12)(pg@8.11.0):
+    resolution: {integrity: sha512-hUKUMKw01KpCKEoLMSbqLpztymE8Gk95+/nO7ThO5PTkNzH5eqLt00Zy9KlFgDEi85mOkyGnKbthzZMHPSLxSg==}
+    engines: {node: '>= 14.0.0'}
+    peerDependencies:
+      '@mikro-orm/core': ^5.0.0
+    dependencies:
+      '@mikro-orm/core': 5.7.12(@mikro-orm/migrations@5.7.12)(@mikro-orm/postgresql@5.7.12)
+      '@mikro-orm/knex': 5.7.14(@mikro-orm/core@5.7.12)(@mikro-orm/migrations@5.7.12)(pg@8.11.0)
+      fs-extra: 11.1.1
+      knex: 2.4.2(pg@8.11.0)
+      umzug: 3.2.1
+    transitivePeerDependencies:
+      - '@mikro-orm/entity-generator'
+      - better-sqlite3
+      - mssql
+      - mysql
+      - mysql2
+      - pg
+      - pg-native
+      - sqlite3
+      - supports-color
+      - tedious
+
   /@mikro-orm/migrations@5.7.12(@mikro-orm/core@5.7.12)(pg@8.11.2):
     resolution: {integrity: sha512-hUKUMKw01KpCKEoLMSbqLpztymE8Gk95+/nO7ThO5PTkNzH5eqLt00Zy9KlFgDEi85mOkyGnKbthzZMHPSLxSg==}
     engines: {node: '>= 14.0.0'}
@@ -1765,7 +1842,7 @@ packages:
     dependencies:
       '@mikro-orm/core': 5.7.12(@mikro-orm/migrations@5.7.12)(@mikro-orm/postgresql@5.7.12)
       '@mikro-orm/knex': 5.7.14(@mikro-orm/core@5.7.12)(@mikro-orm/migrations@5.7.12)(pg@8.11.0)
-      '@mikro-orm/migrations': 5.7.12(@mikro-orm/core@5.7.12)(pg@8.11.2)
+      '@mikro-orm/migrations': 5.7.12(@mikro-orm/core@5.7.12)(pg@8.11.0)
       pg: 8.11.0
     transitivePeerDependencies:
       - better-sqlite3
@@ -6701,6 +6778,52 @@ packages:
     resolution: {integrity: sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==}
     engines: {node: '>=6'}
     dev: false
+
+  /knex@2.4.2(pg@8.11.0):
+    resolution: {integrity: sha512-tMI1M7a+xwHhPxjbl/H9K1kHX+VncEYcvCx5K00M16bWvpYPKAZd6QrCu68PtHAdIZNQPWZn0GVhqVBEthGWCg==}
+    engines: {node: '>=12'}
+    hasBin: true
+    peerDependencies:
+      better-sqlite3: '*'
+      mysql: '*'
+      mysql2: '*'
+      pg: '*'
+      pg-native: '*'
+      sqlite3: '*'
+      tedious: '*'
+    peerDependenciesMeta:
+      better-sqlite3:
+        optional: true
+      mysql:
+        optional: true
+      mysql2:
+        optional: true
+      pg:
+        optional: true
+      pg-native:
+        optional: true
+      sqlite3:
+        optional: true
+      tedious:
+        optional: true
+    dependencies:
+      colorette: 2.0.19
+      commander: 9.5.0
+      debug: 4.3.4(supports-color@8.1.1)
+      escalade: 3.1.1
+      esm: 3.2.25
+      get-package-type: 0.1.0
+      getopts: 2.3.0
+      interpret: 2.2.0
+      lodash: 4.17.21
+      pg: 8.11.0
+      pg-connection-string: 2.5.0
+      rechoir: 0.8.0
+      resolve-from: 5.0.0
+      tarn: 3.0.2
+      tildify: 2.0.0
+    transitivePeerDependencies:
+      - supports-color
 
   /knex@2.4.2(pg@8.11.2):
     resolution: {integrity: sha512-tMI1M7a+xwHhPxjbl/H9K1kHX+VncEYcvCx5K00M16bWvpYPKAZd6QrCu68PtHAdIZNQPWZn0GVhqVBEthGWCg==}
