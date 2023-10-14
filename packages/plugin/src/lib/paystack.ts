@@ -108,7 +108,7 @@ export default class Paystack {
       data = res.data;
       return res.data;
     } catch (error) {
-      console.log(error);
+      throw new Error("something went wrong");
     }
     return data;
   }
