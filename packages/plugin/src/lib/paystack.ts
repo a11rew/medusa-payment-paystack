@@ -1,4 +1,5 @@
-import https from "https";
+// import https from "https";
+import axios from "axios";
 
 import { SupportedCurrency } from "../utils/currencyCode";
 
@@ -40,48 +41,76 @@ export default class Paystack {
     this.apiKey = apiKey;
   }
 
+  // protected async requestPaystackAPI<T>(request: Request): Promise<T> {
+  //   const path =
+  //     request.path.replace(/\/$/, "") +
+  //     "/?" +
+  //     new URLSearchParams(request.query).toString();
+
+  //   const options = {
+  //     method: request.method,
+  //     path,
+  //     headers: {
+  //       Authorization: `Bearer ${this.apiKey}`,
+  //       "Content-Type": "application/json",
+  //     },
+  //   };
+
+  //   return new Promise((resolve, reject) => {
+  //     const req = https.request(PAYSTACK_API_PATH, options, res => {
+  //       let data: Uint8Array[] = [];
+
+  //       res.on("data", chunk => {
+  //         data.push(chunk);
+  //       });
+
+  //       res.on("end", () => {
+  //         try {
+  //           resolve(JSON.parse(Buffer.concat(data).toString()) as T);
+  //         } catch (e) {
+  //           reject(e);
+  //         }
+  //       });
+  //     });
+
+  //     req.on("error", e => {
+  //       reject(e);
+  //     });
+
+  //     if (request.body && Object.values(request.body).length > 0) {
+  //       req.write(JSON.stringify(request.body));
+  //     }
+
+  //     req.end();
+  //   });
+  // }
+
   protected async requestPaystackAPI<T>(request: Request): Promise<T> {
     const path =
       request.path.replace(/\/$/, "") +
       "/?" +
       new URLSearchParams(request.query).toString();
+    let data;
 
     const options = {
       method: request.method,
-      path,
+      url: PAYSTACK_API_PATH + path,
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
         "Content-Type": "application/json",
       },
     };
 
-    return new Promise((resolve, reject) => {
-      const req = https.request(PAYSTACK_API_PATH, options, res => {
-        let data: Uint8Array[] = [];
-
-        res.on("data", chunk => {
-          data.push(chunk);
-        });
-
-        res.on("end", () => {
-          try {
-            resolve(JSON.parse(Buffer.concat(data).toString()) as T);
-          } catch (e) {
-            reject(e);
-          }
-        });
-      });
-
-      req.on("error", e => {
-        reject(e);
-      });
-
-      if (request.body && Object.values(request.body).length > 0) {
-        req.write(JSON.stringify(request.body));
-      }
-
-      req.end();
-    });
+    try {
+      const res = await axios(
+        request.body ? { ...options, data: request.body } : { ...options }
+      );
+      data = res.data;
+      return res.data;
+    } catch (error) {
+      console.log(error);
+    }
+    return data;
   }
 
   transaction = {
