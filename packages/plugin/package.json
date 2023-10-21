@@ -19,6 +19,7 @@
     "@medusajs/medusa": "^1.16.1",
     "@types/jest": "^29.5.5",
     "@types/node": "^16.18.39",
+    "axios": "^1.5.1",
     "cross-env": "^5.2.1",
     "eslint": "^8.2.0",
     "eslint-config-airbnb-base": "15.0.0",
