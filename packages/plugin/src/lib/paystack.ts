@@ -55,7 +55,7 @@ export default class Paystack {
       url: request.path,
       params: request.query,
       data: request.body,
-    } satisfies AxiosRequestConfig
+    } satisfies AxiosRequestConfig;
 
     try {
       const res = await this.axiosInstance(options);
