@@ -1,5 +1,13 @@
 # medusa-payment-paystack
 
+## 1.1.4
+
+### Patch Changes
+
+- a27dbfe: Use Axios for Paystack API requests to resolve header issues on some platforms.
+
+  Credits: [JaeKralj](https://github.com/JaeKralj)
+
 ## 1.1.3
 
 ### Patch Changes
