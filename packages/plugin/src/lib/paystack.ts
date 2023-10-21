@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 import { SupportedCurrency } from "../utils/currencyCode";
 
@@ -36,32 +36,32 @@ export interface PaystackTransactionAuthorisation {
 export default class Paystack {
   apiKey: string;
 
+  protected readonly axiosInstance: AxiosInstance;
+
   constructor(apiKey: string) {
     this.apiKey = apiKey;
-  }
-
-  
-  protected async requestPaystackAPI<T>(request: Request): Promise<T> {
-   
-    const options = {
-      method: request.method,
-      baseUrl: PAYSTACK_API_PATH,
-      url: request.path,
-      params: request.query,
-      data: request?.body,
+    this.axiosInstance = axios.create({
+      baseURL: PAYSTACK_API_PATH,
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
         "Content-Type": "application/json",
       },
-    };
+    });
+  }
+
+  protected async requestPaystackAPI<T>(request: Request): Promise<T> {
+    const options = {
+      method: request.method,
+      url: request.path,
+      params: request.query,
+      data: request.body,
+    } satisfies AxiosRequestConfig
 
     try {
-      const res = await axios(
-        request.body ? { ...options, data: request.body } : { ...options }
-      );
+      const res = await this.axiosInstance(options);
       return res.data;
     } catch (error) {
-      throw new Error("something went wrong");
+      throw "Error from Paystack API: " + error.message;
     }
   }
 
