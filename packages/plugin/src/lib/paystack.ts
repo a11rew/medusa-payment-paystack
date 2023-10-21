@@ -1,4 +1,4 @@
-import https from "https";
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 import { SupportedCurrency } from "../utils/currencyCode";
 
@@ -36,52 +36,33 @@ export interface PaystackTransactionAuthorisation {
 export default class Paystack {
   apiKey: string;
 
+  protected readonly axiosInstance: AxiosInstance;
+
   constructor(apiKey: string) {
     this.apiKey = apiKey;
-  }
-
-  protected async requestPaystackAPI<T>(request: Request): Promise<T> {
-    const path =
-      request.path.replace(/\/$/, "") +
-      "/?" +
-      new URLSearchParams(request.query).toString();
-
-    const options = {
-      method: request.method,
-      path,
+    this.axiosInstance = axios.create({
+      baseURL: PAYSTACK_API_PATH,
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
         "Content-Type": "application/json",
       },
-    };
-
-    return new Promise((resolve, reject) => {
-      const req = https.request(PAYSTACK_API_PATH, options, res => {
-        let data: Uint8Array[] = [];
-
-        res.on("data", chunk => {
-          data.push(chunk);
-        });
-
-        res.on("end", () => {
-          try {
-            resolve(JSON.parse(Buffer.concat(data).toString()) as T);
-          } catch (e) {
-            reject(e);
-          }
-        });
-      });
-
-      req.on("error", e => {
-        reject(e);
-      });
-
-      if (request.body && Object.values(request.body).length > 0) {
-        req.write(JSON.stringify(request.body));
-      }
-
-      req.end();
     });
+  }
+
+  protected async requestPaystackAPI<T>(request: Request): Promise<T> {
+    const options = {
+      method: request.method,
+      url: request.path,
+      params: request.query,
+      data: request.body,
+    } satisfies AxiosRequestConfig;
+
+    try {
+      const res = await this.axiosInstance(options);
+      return res.data;
+    } catch (error) {
+      throw "Error from Paystack API: " + error.message;
+    }
   }
 
   transaction = {

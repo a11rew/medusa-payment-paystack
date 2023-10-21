@@ -13,7 +13,8 @@
     "@medusajs/medusa": "^1.16.1"
   },
   "dependencies": {
-    "@medusajs/utils": "^1.9.4"
+    "@medusajs/utils": "^1.9.4",
+    "axios": "^1.5.1"
   },
   "devDependencies": {
     "@medusajs/medusa": "^1.16.1",
