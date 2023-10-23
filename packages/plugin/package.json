@@ -10,14 +10,14 @@
     "dist"
   ],
   "peerDependencies": {
-    "@medusajs/medusa": "^1.16.1"
+    "@medusajs/medusa": "^1.17.2"
   },
   "dependencies": {
     "@medusajs/utils": "^1.9.4",
     "axios": "^1.5.1"
   },
   "devDependencies": {
-    "@medusajs/medusa": "^1.16.1",
+    "@medusajs/medusa": "^1.17.2",
     "@types/jest": "^29.5.5",
     "@types/node": "^16.18.39",
     "cross-env": "^5.2.1",
