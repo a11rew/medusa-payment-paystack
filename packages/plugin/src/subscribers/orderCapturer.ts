@@ -1,4 +1,5 @@
 import { EventBusService, OrderService, CartService } from "@medusajs/medusa";
+import { PaystackPaymentProcessorConfig } from "../services/paystack-payment-processor";
 
 type InjectedDependencies = {
   eventBusService: EventBusService;
@@ -18,9 +19,15 @@ class PaystackOrderCapturer {
   eventBusService: EventBusService;
   orderService: OrderService;
 
-  constructor(container: InjectedDependencies) {
+  protected readonly debug: boolean;
+
+  constructor(
+    container: InjectedDependencies,
+    options: PaystackPaymentProcessorConfig,
+  ) {
     this.eventBusService = container.eventBusService;
     this.orderService = container.orderService;
+    this.debug = options.debug || false;
 
     this.eventBusService.subscribe("order.placed", this.handleOrder);
   }
@@ -41,6 +48,13 @@ class PaystackOrderCapturer {
         p => p.provider_id === "paystack",
       );
       if (!isPaidForWithPaystack) return;
+
+      if (this.debug) {
+        console.info(
+          "PS_P_Debug: Capturing Paystack order with data:",
+          JSON.stringify(data, null, 2),
+        );
+      }
 
       // Capture the payment
       await this.orderService.capturePayment(order.id);
