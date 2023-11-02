@@ -1,5 +1,11 @@
 # medusa-payment-paystack
 
+## 1.2.0
+
+### Minor Changes
+
+- 1524578: Payments are now automatically marked as captured. You do not have to go into the admin dashboard after every order to mark the payment as captured.
+
 ## 1.1.4
 
 ### Patch Changes
