@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@medusajs/utils": "^1.9.4",
-    "axios": "^1.5.1"
+    "axios": "^1.6.3"
   },
   "devDependencies": {
     "@medusajs/medusa": "^1.16.1",
