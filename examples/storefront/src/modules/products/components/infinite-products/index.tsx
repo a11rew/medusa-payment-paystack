@@ -1,4 +1,4 @@
-import { fetchProductsList } from "@lib/data"
+import { getProductsList } from "@lib/data"
 import usePreviews from "@lib/hooks/use-previews"
 import getNumberOfSkeletons from "@lib/util/get-number-of-skeletons"
 import repeat from "@lib/util/repeat"
@@ -9,12 +9,14 @@ import { useCart } from "medusa-react"
 import { useEffect, useMemo } from "react"
 import { useInView } from "react-intersection-observer"
 import { useInfiniteQuery } from "@tanstack/react-query"
+import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 
-type InfiniteProductsType = {
+export type InfiniteProductsType = {
   params: StoreGetProductsParams
+  sortBy?: SortOptions
 }
 
-const InfiniteProducts = ({ params }: InfiniteProductsType) => {
+const InfiniteProducts = ({ params, sortBy }: InfiniteProductsType) => {
   const { cart } = useCart()
 
   const { ref, inView } = useInView()
@@ -26,24 +28,32 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
       p.cart_id = cart.id
     }
 
+    if (cart?.region?.currency_code) {
+      p.currency_code = cart.region.currency_code
+    }
+
     p.is_giftcard = false
 
     return {
       ...p,
       ...params,
     }
-  }, [cart?.id, params])
+  }, [cart?.id, cart?.region, params])
 
   const { data, hasNextPage, fetchNextPage, isLoading, isFetchingNextPage } =
     useInfiniteQuery(
       [`infinite-products-store`, queryParams, cart],
-      ({ pageParam }) => fetchProductsList({ pageParam, queryParams }),
+      ({ pageParam }) => getProductsList({ pageParam, queryParams }),
       {
         getNextPageParam: (lastPage) => lastPage.nextPage,
       }
     )
 
-  const previews = usePreviews({ pages: data?.pages, region: cart?.region })
+  const previews = usePreviews({
+    pages: data?.pages,
+    region: cart?.region,
+    sortBy,
+  })
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -54,7 +64,7 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
 
   return (
     <div className="flex-1 content-container">
-      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-x-4 gap-y-8 flex-1">
+      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-3 gap-x-6 gap-y-8 flex-1">
         {previews.map((p) => (
           <li key={p.id}>
             <ProductPreview {...p} />

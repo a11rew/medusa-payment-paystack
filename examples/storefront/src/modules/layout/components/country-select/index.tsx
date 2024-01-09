@@ -2,7 +2,8 @@
 
 import { Listbox, Transition } from "@headlessui/react"
 import { useStore } from "@lib/context/store-context"
-import useToggleState from "@lib/hooks/use-toggle-state"
+import useToggleState, { StateType } from "@lib/hooks/use-toggle-state"
+import { revalidateTags } from "app/actions"
 import { useRegions } from "medusa-react"
 import { Fragment, useEffect, useMemo, useState } from "react"
 import ReactCountryFlag from "react-country-flag"
@@ -13,11 +14,16 @@ type CountryOption = {
   label: string
 }
 
-const CountrySelect = () => {
+type CountrySelectProps = {
+  toggleState: StateType
+}
+
+const CountrySelect = ({ toggleState }: CountrySelectProps) => {
   const { countryCode, setRegion } = useStore()
   const { regions } = useRegions()
   const [current, setCurrent] = useState<CountryOption | undefined>(undefined)
-  const { state, open, close } = useToggleState()
+
+  const { state, open, close } = toggleState
 
   const options: CountryOption[] | undefined = useMemo(() => {
     return regions
@@ -39,12 +45,13 @@ const CountrySelect = () => {
   }, [countryCode, options])
 
   const handleChange = (option: CountryOption) => {
+    revalidateTags(["medusa_request", "products", "collections"])
     setRegion(option.region, option.country)
     close()
   }
 
   return (
-    <div onMouseEnter={open} onMouseLeave={close}>
+    <div>
       <Listbox
         onChange={handleChange}
         defaultValue={
@@ -54,10 +61,10 @@ const CountrySelect = () => {
         }
       >
         <Listbox.Button className="py-1 w-full">
-          <div className="text-small-regular flex items-center gap-x-2 xsmall:justify-end">
+          <div className="txt-compact-small flex items-start gap-x-2">
             <span>Shipping to:</span>
             {current && (
-              <span className="text-small-semi flex items-center gap-x-2">
+              <span className="txt-compact-small flex items-center gap-x-2">
                 <ReactCountryFlag
                   svg
                   style={{
@@ -71,7 +78,7 @@ const CountrySelect = () => {
             )}
           </div>
         </Listbox.Button>
-        <div className="relative w-full min-w-[316px]">
+        <div className="flex relative w-full min-w-[320px]">
           <Transition
             show={state}
             as={Fragment}
@@ -80,7 +87,7 @@ const CountrySelect = () => {
             leaveTo="opacity-0"
           >
             <Listbox.Options
-              className="absolute -bottom-[calc(100%-36px)] left-0 xsmall:left-auto xsmall:right-0 max-h-[442px] overflow-y-scroll z-[900] bg-white drop-shadow-md text-small-regular uppercase text-black no-scrollbar"
+              className="absolute -bottom-[calc(100%-36px)] left-0 xsmall:left-auto xsmall:right-0 max-h-[442px] overflow-y-scroll z-[900] bg-white drop-shadow-md text-small-regular uppercase text-black no-scrollbar rounded-rounded w-full"
               static
             >
               {options?.map((o, index) => {

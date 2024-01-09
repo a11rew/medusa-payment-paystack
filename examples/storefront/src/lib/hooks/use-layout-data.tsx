@@ -1,6 +1,6 @@
-import { medusaClient } from "@lib/config"
+import { getProductsList, getCollectionsList } from "@lib/data"
 import { getPercentageDiff } from "@lib/util/get-precentage-diff"
-import { Product, ProductCollection, Region } from "@medusajs/medusa"
+import { ProductCollection, Region } from "@medusajs/medusa"
 import { PricedProduct } from "@medusajs/medusa/dist/types/pricing"
 import { useQuery } from "@tanstack/react-query"
 import { formatAmount, useCart } from "medusa-react"
@@ -18,8 +18,8 @@ const fetchCollectionData = async (): Promise<LayoutCollection[]> => {
   let count = 1
 
   do {
-    await medusaClient.collections
-      .list({ offset })
+    await getCollectionsList(offset)
+      .then((res) => res)
       .then(({ collections: newCollections, count: newCount }) => {
         collections = [...collections, ...newCollections]
         count = newCount
@@ -49,14 +49,20 @@ export const useNavigationCollections = () => {
 
 const fetchFeaturedProducts = async (
   cartId: string,
-  region: Region
+  region: Region,
+  collectionId?: string
 ): Promise<ProductPreviewType[]> => {
-  const products = await medusaClient.products
-    .list({
-      is_giftcard: false,
-      limit: 4,
+  const products: PricedProduct[] = await getProductsList({
+    pageParam: 0,
+    queryParams: {
+      limit: 3,
       cart_id: cartId,
-    })
+      region_id: region.id,
+      currency_code: region.currency_code,
+      collection_id: collectionId ? [collectionId] : [],
+    },
+  })
+    .then((res) => res.response)
     .then(({ products }) => products)
     .catch((_) => [] as PricedProduct[])
 
@@ -105,12 +111,17 @@ const fetchFeaturedProducts = async (
     })
 }
 
-export const useFeaturedProductsQuery = () => {
+export const useFeaturedProductsQuery = (collectionId?: string) => {
   const { cart } = useCart()
 
   const queryResults = useQuery(
-    ["layout_featured_products", cart?.id, cart?.region],
-    () => fetchFeaturedProducts(cart?.id!, cart?.region!),
+    ["layout_featured_products", cart?.id, cart?.region, collectionId],
+    () =>
+      fetchFeaturedProducts(
+        cart?.id!,
+        cart?.region!,
+        collectionId && collectionId
+      ),
     {
       enabled: !!cart?.id && !!cart?.region,
       staleTime: Infinity,

@@ -1,47 +1,28 @@
 import { useCheckout } from "@lib/context/checkout-context"
 import { PaymentSession } from "@medusajs/medusa"
-import Button from "@modules/common/components/button"
-import Spinner from "@modules/common/icons/spinner"
+import { Button } from "@medusajs/ui"
 import { OnApproveActions, OnApproveData } from "@paypal/paypal-js"
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js"
+import { PaystackButton } from "react-paystack"
 import { useElements, useStripe } from "@stripe/react-stripe-js"
 import { useCart } from "medusa-react"
 import React, { useEffect, useState } from "react"
-import { PaystackButton } from "react-paystack"
 
 type PaymentButtonProps = {
   paymentSession?: PaymentSession | null
 }
 
 const PaymentButton: React.FC<PaymentButtonProps> = ({ paymentSession }) => {
-  const [notReady, setNotReady] = useState(true)
   const { cart } = useCart()
 
-  useEffect(() => {
-    setNotReady(true)
-
-    if (!cart) {
-      return
-    }
-
-    if (!cart.shipping_address) {
-      return
-    }
-
-    if (!cart.billing_address) {
-      return
-    }
-
-    if (!cart.email) {
-      return
-    }
-
-    if (cart.shipping_methods.length < 1) {
-      return
-    }
-
-    setNotReady(false)
-  }, [cart])
+  const notReady =
+    !cart ||
+    !cart.shipping_address ||
+    !cart.billing_address ||
+    !cart.email ||
+    cart.shipping_methods.length < 1
+      ? true
+      : false
 
   switch (paymentSession?.provider_id) {
     case "stripe":
@@ -70,7 +51,6 @@ const StripePaymentButton = ({
   session: PaymentSession
   notReady: boolean
 }) => {
-  const [disabled, setDisabled] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined
@@ -83,13 +63,7 @@ const StripePaymentButton = ({
   const elements = useElements()
   const card = elements?.getElement("cardNumber")
 
-  useEffect(() => {
-    if (!stripe || !elements) {
-      setDisabled(true)
-    } else {
-      setDisabled(false)
-    }
-  }, [stripe, elements])
+  const disabled = !stripe || !elements ? true : false
 
   const handlePayment = async () => {
     setSubmitting(true)
@@ -153,10 +127,12 @@ const StripePaymentButton = ({
   return (
     <>
       <Button
-        disabled={submitting || disabled || notReady}
+        disabled={disabled || notReady}
         onClick={handlePayment}
+        size="large"
+        isLoading={submitting}
       >
-        {submitting ? <Spinner /> : "Checkout"}
+        Place order
       </Button>
       {errorMessage && (
         <div className="mt-2 text-red-500 text-small-regular">
@@ -239,20 +215,23 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
   }
 
   return (
-    <Button disabled={submitting || notReady} onClick={handlePayment}>
-      {submitting ? <Spinner /> : "Checkout"}
+    <Button
+      disabled={notReady}
+      isLoading={submitting}
+      onClick={handlePayment}
+      size="large"
+    >
+      Place order
     </Button>
   )
 }
-
-export default PaymentButton
 
 // Public key obtained from the Paystack dashboard
 const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLICK_KEY
 if (!publicKey) throw new Error("Paystack Public Key is not defined.")
 
-// The only currency we've enabled on the Medusa Admin dashboard
-type EnabledCurrencies = "GHS"
+// The currencies we've enabled on the Medusa Admin dashboard
+type EnabledCurrencies = "GHS" | "NGN"
 
 const PaystackPaymentButton = ({
   session,
@@ -281,3 +260,5 @@ const PaystackPaymentButton = ({
     </PaystackButton>
   )
 }
+
+export default PaymentButton
