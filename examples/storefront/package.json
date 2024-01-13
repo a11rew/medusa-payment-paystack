@@ -45,7 +45,7 @@
     "react-hook-form": "^7.30.0",
     "react-instantsearch-hooks-web": "^6.29.0",
     "react-intersection-observer": "^9.3.4",
-    "react-paystack": "^4.0.3",
+    "react-paystack": "^5.0.0",
     "sharp": "^0.30.7",
     "tailwindcss-radix": "^2.8.0",
     "webpack": "^5"

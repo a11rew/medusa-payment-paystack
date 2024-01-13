@@ -6,7 +6,7 @@ import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js"
 import { PaystackButton } from "react-paystack"
 import { useElements, useStripe } from "@stripe/react-stripe-js"
 import { useCart } from "medusa-react"
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 
 type PaymentButtonProps = {
   paymentSession?: PaymentSession | null
@@ -230,9 +230,6 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
 const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY
 if (!publicKey) throw new Error("Paystack Public Key is not defined.")
 
-// The currencies we've enabled on the Medusa Admin dashboard
-type EnabledCurrencies = "GHS" | "NGN"
-
 const PaystackPaymentButton = ({
   session,
   notReady,
@@ -246,12 +243,18 @@ const PaystackPaymentButton = ({
   // If the cart is not ready, we don't want to render the button
   if (notReady || !cart?.total) return null
 
+  const txRef = session.data.paystackTxRef as string | undefined
+
+  if (!txRef) {
+    throw new Error("Paystack transaction not initialized")
+  }
+
   return (
     <PaystackButton
       amount={cart.total} // in the smallest currency sub-unit.
       email={cart.email} // customer email
-      reference={String(session.data.paystackTxRef)} // unique transaction reference
-      currency={cart.region.currency_code.toUpperCase() as EnabledCurrencies}
+      reference={txRef} // unique transaction reference
+      currency={cart.region.currency_code.toUpperCase()}
       publicKey={publicKey}
       onSuccess={onPaymentCompleted} // called after successful payment
       className="w-full uppercase flex items-center justify-center min-h-[50px] px-5 py-[10px] text-small-regular border transition-colors duration-200 disabled:opacity-50 text-white bg-[#3bb75e] border-[#3bb75e] hover:bg-white hover:text-[#3bb75e] disabled:hover:bg-gray-900 disabled:hover:text-white"
