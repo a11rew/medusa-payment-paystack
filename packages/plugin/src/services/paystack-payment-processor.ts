@@ -10,7 +10,7 @@ import {
   CartService,
 } from "@medusajs/medusa";
 import { MedusaError, MedusaErrorTypes } from "@medusajs/utils";
-import { validateCurrencyCode } from "../utils/currencyCode";
+import { formatCurrencyCode } from "../utils/currencyCode";
 
 export interface PaystackPaymentProcessorConfig {
   /**
@@ -94,7 +94,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
 
     const { amount, email, currency_code } = context;
 
-    const validatedCurrencyCode = validateCurrencyCode(currency_code);
+    const validatedCurrencyCode = formatCurrencyCode(currency_code);
 
     const { data, status, message } =
       await this.paystack.transaction.initialize({

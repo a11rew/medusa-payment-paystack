@@ -1,7 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
-import { SupportedCurrency } from "../utils/currencyCode";
-
 const PAYSTACK_API_PATH = "https://api.paystack.co";
 
 type HTTPMethod =
@@ -61,7 +59,11 @@ export default class Paystack {
       const res = await this.axiosInstance(options);
       return res.data;
     } catch (error) {
-      throw "Error from Paystack API: " + error.message;
+      if (axios.isAxiosError(error)) {
+        throw `Error from Paystack API with status code ${error.response?.status}: ${error.response?.data?.message}`;
+      }
+
+      throw error;
     }
   }
 
@@ -98,7 +100,7 @@ export default class Paystack {
     }: {
       amount: number;
       email?: string;
-      currency?: SupportedCurrency;
+      currency?: string;
       reference?: string;
     }) =>
       this.requestPaystackAPI<
