@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  lint:
+  packages:
     name: Build & Lint
     runs-on: ubuntu-latest
     steps:
@@ -32,7 +32,38 @@ jobs:
         run: pnpm run build
         env:
           NODE_ENV: production
-          NEXT_PUBLIC_PAYSTACK_PUBLICK_KEY: ci
+          NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY: ci
 
       - name: Lint
         run: pnpm run lint
+
+  examples:
+    name: Build & Lint Examples
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: [examples/storefront]
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "yarn"
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY: ci
+
+      - name: Lint
+        run: yarn lint

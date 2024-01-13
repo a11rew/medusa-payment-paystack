@@ -227,7 +227,7 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
 }
 
 // Public key obtained from the Paystack dashboard
-const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLICK_KEY
+const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY
 if (!publicKey) throw new Error("Paystack Public Key is not defined.")
 
 // The currencies we've enabled on the Medusa Admin dashboard
