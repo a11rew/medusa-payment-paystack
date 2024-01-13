@@ -61,7 +61,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Build
-        run: yarn build
+        run: yarn next experimental-compile # Skip static page generation
         env:
           NODE_ENV: production
           NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY: ci
