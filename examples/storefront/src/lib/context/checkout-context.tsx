@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation"
 import React, { createContext, useContext, useEffect, useMemo } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import { useStore } from "./store-context"
+import Spinner from "@modules/common/icons/spinner"
 
 type AddressValues = {
   first_name: string
@@ -47,9 +48,15 @@ interface CheckoutContext {
   cart?: Omit<Cart, "refundable_amount" | "refunded_total">
   shippingMethods: { label?: string; value?: string; price: string }[]
   isLoading: boolean
+  addressReady: boolean
+  shippingReady: boolean
+  paymentReady: boolean
   readyToComplete: boolean
   sameAsBilling: StateType
   editAddresses: StateType
+  editShipping: StateType
+  editPayment: StateType
+  isCompleting: StateType
   initPayment: () => Promise<void>
   setAddresses: (addresses: CheckoutFormValues) => void
   setSavedAddress: (address: Address) => void
@@ -74,7 +81,7 @@ export const CheckoutProvider = ({ children }: CheckoutProviderProps) => {
       mutate: setShippingMethod,
       isLoading: addingShippingMethod,
     },
-    completeCheckout: { mutate: complete, isLoading: completingCheckout },
+    completeCheckout: { mutate: complete },
   } = useCart()
 
   const { customer } = useMeCustomer()
@@ -110,37 +117,50 @@ export const CheckoutProvider = ({ children }: CheckoutProviderProps) => {
       : true
   )
 
+  const editShipping = useToggleState()
+  const editPayment = useToggleState()
+
   /**
    * Boolean that indicates if a part of the checkout is loading.
    */
   const isLoading = useMemo(() => {
-    return (
-      addingShippingMethod ||
-      settingPaymentSession ||
-      updatingCart ||
-      completingCheckout
-    )
-  }, [
-    addingShippingMethod,
-    completingCheckout,
-    settingPaymentSession,
-    updatingCart,
-  ])
+    return addingShippingMethod || settingPaymentSession || updatingCart
+  }, [addingShippingMethod, settingPaymentSession, updatingCart])
 
   /**
    * Boolean that indicates if the checkout is ready to be completed. A checkout is ready to be completed if
    * the user has supplied a email, shipping address, billing address, shipping method, and a method of payment.
    */
-  const readyToComplete = useMemo(() => {
-    return (
-      !!cart &&
-      !!cart.email &&
-      !!cart.shipping_address &&
-      !!cart.billing_address &&
-      !!cart.payment_session &&
-      cart.shipping_methods?.length > 0
-    )
-  }, [cart])
+  const { addressReady, shippingReady, paymentReady, readyToComplete } =
+    useMemo(() => {
+      const addressReady =
+        !!cart?.shipping_address && !!cart?.billing_address && !!cart?.email
+
+      const shippingReady =
+        addressReady &&
+        !!(
+          cart?.shipping_methods &&
+          cart.shipping_methods.length > 0 &&
+          cart.shipping_methods[0].shipping_option
+        )
+
+      const paymentReady = shippingReady && !!cart?.payment_session
+
+      const readyToComplete = addressReady && shippingReady && paymentReady
+
+      return {
+        addressReady,
+        shippingReady,
+        paymentReady,
+        readyToComplete,
+      }
+    }, [cart])
+
+  useEffect(() => {
+    if (addressReady && !shippingReady) {
+      editShipping.open()
+    }
+  }, [addressReady, shippingReady, editShipping])
 
   const shippingMethods = useMemo(() => {
     if (shipping_options && cart?.region) {
@@ -184,7 +204,7 @@ export const CheckoutProvider = ({ children }: CheckoutProviderProps) => {
   /**
    * Method to set the selected shipping method for the cart. This is called when the user selects a shipping method, such as UPS, FedEx, etc.
    */
-  const setShippingOption = (soId: string) => {
+  const setShippingOption = async (soId: string) => {
     if (cart) {
       setShippingMethod(
         { option_id: soId },
@@ -198,30 +218,24 @@ export const CheckoutProvider = ({ children }: CheckoutProviderProps) => {
   /**
    * Method to create the payment sessions available for the cart. Uses a idempotency key to prevent duplicate requests.
    */
-  const createPaymentSession = async (cartId: string) => {
-    return medusaClient.carts
-      .createPaymentSessions(cartId, {
-        "Idempotency-Key": IDEMPOTENCY_KEY,
-      })
-      .then(({ cart }) => cart)
-      .catch(() => null)
-  }
-
-  /**
-   * Method that calls the createPaymentSession method and updates the cart with the payment session.
-   */
   const initPayment = async () => {
     if (cart?.id && !cart.payment_sessions?.length && cart?.items?.length) {
-      const paymentSession = await createPaymentSession(cart.id)
-
-      if (!paymentSession) {
-        setTimeout(initPayment, 500)
-      } else {
-        setCart(paymentSession)
-        return
-      }
+      return medusaClient.carts
+        .createPaymentSessions(cart.id, {
+          "Idempotency-Key": IDEMPOTENCY_KEY,
+        })
+        .then(({ cart }) => cart && setCart(cart))
+        .catch((err) => err)
     }
   }
+
+  useEffect(() => {
+    // initialize payment session
+    const start = async () => {
+      await initPayment()
+    }
+    start()
+  }, [cart?.region, cart?.id, cart?.items])
 
   /**
    * Method to set the selected payment session for the cart. This is called when the user selects a payment provider, such as Stripe, PayPal, etc.
@@ -238,14 +252,6 @@ export const CheckoutProvider = ({ children }: CheckoutProviderProps) => {
           },
         }
       )
-    }
-  }
-
-  const prepareFinalSteps = () => {
-    initPayment()
-
-    if (shippingMethods?.length && shippingMethods?.[0]?.value) {
-      setShippingOption(shippingMethods[0].value)
     }
   }
 
@@ -287,6 +293,8 @@ export const CheckoutProvider = ({ children }: CheckoutProviderProps) => {
   const setAddresses = (data: CheckoutFormValues) => {
     const { shipping_address, billing_address, email } = data
 
+    validateRegion(shipping_address.country_code)
+
     const payload: StorePostCartsCartReq = {
       shipping_address,
       email,
@@ -303,23 +311,24 @@ export const CheckoutProvider = ({ children }: CheckoutProviderProps) => {
     }
 
     updateCart(payload, {
-      onSuccess: ({ cart }) => {
-        setCart(cart)
-        prepareFinalSteps()
-      },
+      onSuccess: ({ cart }) => setCart(cart),
     })
   }
+
+  const isCompleting = useToggleState()
 
   /**
    * Method to complete the checkout process. This is called when the user clicks the "Complete Checkout" button.
    */
   const onPaymentCompleted = () => {
+    isCompleting.open()
     complete(undefined, {
       onSuccess: ({ data }) => {
-        resetCart()
         push(`/order/confirmed/${data.id}`)
+        resetCart()
       },
     })
+    isCompleting.close()
   }
 
   return (
@@ -329,9 +338,15 @@ export const CheckoutProvider = ({ children }: CheckoutProviderProps) => {
           cart,
           shippingMethods,
           isLoading,
+          addressReady,
+          shippingReady,
+          paymentReady,
           readyToComplete,
           sameAsBilling,
           editAddresses,
+          editShipping,
+          editPayment,
+          isCompleting,
           initPayment,
           setAddresses,
           setSavedAddress,
@@ -340,7 +355,15 @@ export const CheckoutProvider = ({ children }: CheckoutProviderProps) => {
           onPaymentCompleted,
         }}
       >
-        <Wrapper paymentSession={cart?.payment_session}>{children}</Wrapper>
+        {isLoading && cart?.id === "" ? (
+          <div className="flex justify-center items-center h-screen">
+            <div className="w-auto">
+              <Spinner size={40} />
+            </div>
+          </div>
+        ) : (
+          <Wrapper paymentSession={cart?.payment_session}>{children}</Wrapper>
+        )}
       </CheckoutContext.Provider>
     </FormProvider>
   )

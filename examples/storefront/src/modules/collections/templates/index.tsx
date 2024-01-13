@@ -1,6 +1,7 @@
 "use client"
 
 import usePreviews from "@lib/hooks/use-previews"
+import { getProductsByCollectionHandle } from "@lib/data"
 import getNumberOfSkeletons from "@lib/util/get-number-of-skeletons"
 import repeat from "@lib/util/repeat"
 import ProductPreview from "@modules/products/components/product-preview"
@@ -9,35 +10,9 @@ import { useInfiniteQuery } from "@tanstack/react-query"
 import { useCart } from "medusa-react"
 import React, { useEffect } from "react"
 import { useInView } from "react-intersection-observer"
+import { ProductCollection } from "@medusajs/medusa"
 
-type CollectionTemplateProps = {
-  collection: {
-    handle: string
-    title: string
-  }
-}
-
-const BASEURL = process.env.NEXT_PUBLIC_BASE_URL
-
-const fetchCollectionProducts = async ({
-  pageParam = 0,
-  handle,
-  cartId,
-}: {
-  pageParam?: number
-  handle: string
-  cartId?: string
-}) => {
-  const { response, nextPage } = await fetch(
-    `${BASEURL}/collections?handle=${handle}&cart_id=${cartId}&page=${pageParam.toString()}`
-  ).then((res) => res.json())
-  return {
-    response,
-    nextPage,
-  }
-}
-
-const CollectionTemplate: React.FC<CollectionTemplateProps> = ({
+const CollectionTemplate: React.FC<{ collection: ProductCollection }> = ({
   collection,
 }) => {
   const { cart } = useCart()
@@ -52,10 +27,11 @@ const CollectionTemplate: React.FC<CollectionTemplateProps> = ({
   } = useInfiniteQuery(
     [`get_collection_products`, collection.handle, cart?.id],
     ({ pageParam }) =>
-      fetchCollectionProducts({
+      getProductsByCollectionHandle({
         pageParam,
-        handle: collection.handle,
+        handle: collection.handle!,
         cartId: cart?.id,
+        currencyCode: cart?.region.currency_code,
       }),
     {
       getNextPageParam: (lastPage) => lastPage.nextPage,
@@ -85,7 +61,7 @@ const CollectionTemplate: React.FC<CollectionTemplateProps> = ({
       <div className="mb-8 text-2xl-semi">
         <h1>{collection.title}</h1>
       </div>
-      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-x-4 gap-y-8">
+      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8">
         {previews.map((p) => (
           <li key={p.id}>
             <ProductPreview {...p} />
