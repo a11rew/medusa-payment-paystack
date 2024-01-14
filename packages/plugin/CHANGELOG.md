@@ -1,5 +1,12 @@
 # medusa-payment-paystack
 
+## 1.2.1
+
+### Patch Changes
+
+- cc7407a: Removes hardcoded currency restrictions
+  Improves logging of Paystack API errors
+
 ## 1.2.0
 
 ### Minor Changes
