@@ -435,10 +435,14 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
         }
       | Error,
   ): PaymentProcessorError {
+    const errorMessage = "Paystack Payment error: " + message;
+    const code = e instanceof Error ? e.message : e.code;
+    const detail = e instanceof Error ? e.stack : e.detail;
+
     return {
-      error: "Paystack Payment error: " + message,
-      code: "code" in e ? e.code : "PAYSTACK_PAYMENT_ERROR",
-      detail: "detail" in e ? e.detail : e.message ?? "",
+      error: errorMessage,
+      code: code ?? "",
+      detail: detail ?? "",
     };
   }
 }

@@ -60,7 +60,9 @@ export default class Paystack {
       return res.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        throw `Error from Paystack API with status code ${error.response?.status}: ${error.response?.data?.message}`;
+        throw new Error(
+          `Error from Paystack API with status code ${error.response?.status}: ${error.response?.data?.message}`,
+        );
       }
 
       throw error;
