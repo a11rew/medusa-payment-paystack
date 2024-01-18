@@ -85,17 +85,17 @@ function payWithPaystack(e) {
   const paystack = new PaystackPop();
 
   paystack.newTransaction({
-	key: 'pk_test_xxxxxxxxxx', // Your Paystack public key
-	email: document.getElementById("email-address").value,
-	amount: document.getElementById("amount").value * 100,
-  ref: paystackTxRef, // Reference gotten from plugin
-  onSuccess(){
-    // Call Medusa checkout complete here
-  }
-  onCancel(){
-    alert("Window closed.")
-  }
-});
+    key: 'pk_test_xxxxxxxxxx', // Your Paystack public key
+    email: document.getElementById("email-address").value, // Customer email
+    amount: document.getElementById("amount").value, // Amount in currency's lowest denomination
+    ref: paystackTxRef, // Reference gotten from plugin
+    onSuccess(){
+      // Call Medusa checkout complete here
+    }
+    onCancel(){
+      // Handle cancelled payment here
+    }
+  });
 }
 ```
 
