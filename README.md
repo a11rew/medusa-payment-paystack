@@ -69,11 +69,11 @@ Using this returned reference as the Paystack transaction's reference allows the
 
 `medusa-payment-paystack` inserts a reference named `paystackTxRef` into the [`PaymentSession`](https://docs.medusajs.com/advanced/backend/payment/overview/#payment-session)'s data.
 
-```
-const { paystackTxRef } = paymentSession.data
+```js
+const { paystackTxRef } = paymentSession.data;
 ```
 
-Provide this reference when initiating the Paystack [Popup](https://paystack.com/docs/payments/accept-payments/#popup) payment flow.
+Provide this reference when initiating the Paystack [Popup](https://paystack.com/docs/guides/migrating-from-inlinejs-v1-to-v2/) payment flow.
 
 ```js
 const paymentForm = document.getElementById('paymentForm');
@@ -82,20 +82,20 @@ paymentForm.addEventListener("submit", payWithPaystack, false);
 function payWithPaystack(e) {
   e.preventDefault();
 
-  let handler = PaystackPop.setup({
-    key: 'pk_test_xxxxxxxxxx',
-    email: document.getElementById("email-address").value,
-    amount: document.getElementById("amount").value * 100,
-    ref: paystackTxRef // Reference returned from plugin
-    onClose: function(){
-      alert('Window closed.');
-    },
-    callback: function(response){
+  const paystack = new PaystackPop();
+
+  paystack.newTransaction({
+	  key: 'pk_test_xxxxxxxxxx', // Your Paystack public key
+	  email: document.getElementById("email-address").value,
+	  amount: document.getElementById("amount").value, // Value in lowest denomination of currency to be paid
+    ref: paystackTxRef, // Reference gotten from plugin
+    onSuccess(){
       // Call Medusa checkout complete here
     }
+    onCancel(){
+      alert("Window closed.")
+    }
   });
-
-  handler.openIframe();
 }
 ```
 
