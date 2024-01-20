@@ -76,7 +76,7 @@ const { paystackTxRef } = paymentSession.data;
 Provide this reference when initiating the Paystack [Popup](https://paystack.com/docs/guides/migrating-from-inlinejs-v1-to-v2/) payment flow.
 
 ```js
-const paymentForm = document.getElementById('paymentForm');
+const paymentForm = document.getElementById("paymentForm");
 paymentForm.addEventListener("submit", payWithPaystack, false);
 
 function payWithPaystack(e) {
@@ -85,16 +85,16 @@ function payWithPaystack(e) {
   const paystack = new PaystackPop();
 
   paystack.newTransaction({
-	  key: 'pk_test_xxxxxxxxxx', // Your Paystack public key
-	  email: document.getElementById("email-address").value,
-	  amount: document.getElementById("amount").value, // Value in lowest denomination of currency to be paid
+    key: "pk_test_xxxxxxxxxx", // Your Paystack public key
+    email: document.getElementById("email-address").value,
+    amount: document.getElementById("amount").value, // Value in lowest denomination of currency to be paid
     ref: paystackTxRef, // Reference gotten from plugin
-    onSuccess(){
+    onSuccess() {
       // Call Medusa checkout complete here
-    }
-    onCancel(){
-      alert("Window closed.")
-    }
+    },
+    onCancel() {
+      alert("Window closed.");
+    },
   });
 }
 ```
