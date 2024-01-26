@@ -33,6 +33,12 @@ const DATABASE_URL =
 
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
+
+if (!PAYSTACK_SECRET_KEY) {
+  throw new Error("Please provide a PAYSTACK_SECRET_KEY environment variable");
+}
+
 const plugins = [
   `medusa-fulfillment-manual`,
   `medusa-payment-manual`,
@@ -50,6 +56,13 @@ const plugins = [
       develop: {
         open: process.env.OPEN_BROWSER !== "false",
       },
+    },
+  },
+  {
+    resolve: "medusa-payment-paystack",
+    options: {
+      secret_key: PAYSTACK_SECRET_KEY,
+      debug: true, // Shows helpful debugging information
     },
   },
 ];
