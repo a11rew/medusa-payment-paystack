@@ -1,0 +1,186 @@
+{
+  "store": {
+    "currencies": ["ghs"],
+    "default_currency_code": "ghs"
+  },
+  "users": [
+    {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  ],
+  "regions": [
+    {
+      "id": "test-region-gh",
+      "name": "Ghana",
+      "currency_code": "ghs",
+      "tax_rate": 0.125,
+      "payment_providers": ["paystack", "manual"],
+      "fulfillment_providers": ["manual"],
+      "countries": ["gh"]
+    }
+  ],
+  "shipping_options": [
+    {
+      "name": "GhanaPost Standard",
+      "region_id": "test-region-gh",
+      "provider_id": "manual",
+      "data": {
+        "id": "manual-fulfillment"
+      },
+      "price_type": "flat_rate",
+      "amount": 4500
+    },
+    {
+      "name": "GhanaPost Return",
+      "region_id": "test-region-gh",
+      "provider_id": "manual",
+      "data": {
+        "id": "manual-fulfillment"
+      },
+      "price_type": "flat_rate",
+      "is_return": true,
+      "amount": 4500
+    }
+  ],
+  "products": [
+    {
+      "title": "Medusa Hoodie",
+      "categories": [
+        {
+          "id": "pcat_merch"
+        }
+      ],
+      "subtitle": null,
+      "description": "Reimagine the feeling of a classic hoodie. With our cotton hoodie, everyday essentials no longer have to be ordinary.",
+      "handle": "hoodie",
+      "is_giftcard": false,
+      "weight": 400,
+      "images": [
+        "https://medusa-public-images.s3.eu-west-1.amazonaws.com/black_hoodie_front.png",
+        "https://medusa-public-images.s3.eu-west-1.amazonaws.com/black_hoodie_back.png"
+      ],
+      "options": [
+        {
+          "title": "Size",
+          "values": ["S", "M", "L", "XL"]
+        }
+      ],
+      "variants": [
+        {
+          "title": "S",
+          "prices": [
+            {
+              "currency_code": "ghs",
+              "amount": 12000
+            }
+          ],
+          "options": [
+            {
+              "value": "S"
+            }
+          ],
+          "inventory_quantity": 1000000,
+          "manage_inventory": true
+        },
+        {
+          "title": "M",
+          "prices": [
+            {
+              "currency_code": "ghs",
+              "amount": 12000
+            }
+          ],
+          "options": [
+            {
+              "value": "M"
+            }
+          ],
+          "inventory_quantity": 1000000,
+          "manage_inventory": true
+        },
+        {
+          "title": "L",
+          "prices": [
+            {
+              "currency_code": "ghs",
+              "amount": 12000
+            }
+          ],
+          "options": [
+            {
+              "value": "L"
+            }
+          ],
+          "inventory_quantity": 1000000,
+          "manage_inventory": true
+        },
+        {
+          "title": "XL",
+          "prices": [
+            {
+              "currency_code": "ghs",
+              "amount": 12000
+            }
+          ],
+          "options": [
+            {
+              "value": "XL"
+            }
+          ],
+          "inventory_quantity": 1000000,
+          "manage_inventory": true
+        }
+      ]
+    },
+    {
+      "title": "Medusa Coffee Mug",
+      "categories": [
+        {
+          "id": "pcat_merch"
+        }
+      ],
+      "subtitle": null,
+      "description": "Every programmer's best friend.",
+      "handle": "coffee-mug",
+      "is_giftcard": false,
+      "weight": 400,
+      "images": [
+        "https://medusa-public-images.s3.eu-west-1.amazonaws.com/coffee-mug.png"
+      ],
+      "options": [
+        {
+          "title": "Size",
+          "values": ["One Size"]
+        }
+      ],
+      "variants": [
+        {
+          "title": "One Size",
+          "prices": [
+            {
+              "currency_code": "ghs",
+              "amount": 5000
+            }
+          ],
+          "options": [
+            {
+              "value": "One Size"
+            }
+          ],
+          "inventory_quantity": 1000000,
+          "manage_inventory": true
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": "pcat_merch",
+      "name": "Merch",
+      "rank": 0,
+      "category_children": [],
+      "handle": "merch"
+    }
+  ]
+}
