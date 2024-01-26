@@ -112,6 +112,7 @@ You can refund captured payments made with Paystack from the Admin dashboard.
 `medusa-payment-paystack` handles refunding the given amount using Paystack and marks the order in Medusa as refunded.
 
 # Demo
+Try out the demo here: [Medusa store with Paystack Integration](https://storefront-production-ae6c.up.railway.app/)
 
 ![Demo video](https://user-images.githubusercontent.com/87580113/211937892-d1a34735-78a5-451d-83f8-bc23185dd8ef.png)
 
