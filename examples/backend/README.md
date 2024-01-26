@@ -8,7 +8,7 @@
   </a>
 </p>
 <h1 align="center">
-  Medusa
+  Medusa Paystack Backend Example
 </h1>
 
 <h4 align="center">
@@ -34,13 +34,25 @@
 
 ## Compatibility
 
-This starter is compatible with versions >= 1.8.0 of `@medusajs/medusa`. 
+This starter is compatible with versions >= 1.8.0 of `@medusajs/medusa`.
 
 ## Getting Started
 
-Visit the [Quickstart Guide](https://docs.medusajs.com/create-medusa-app) to set up a server.
+Visit the [Docs](https://docs.medusajs.com/development/backend/prepare-environment) to learn more about Medusa system requirements.
 
-Visit the [Docs](https://docs.medusajs.com/development/backend/prepare-environment) to learn more about our system requirements.
+Visit the [Quickstart Guide](https://docs.medusajs.com/create-medusa-app) to set up the server.
+
+Add your Paystack API keys to the `.env` file.
+
+```bash
+PAYSTACK_SECRET_KEY=your_secret_key
+```
+
+Run the seed command to seed the database with sample data (optional)
+
+```bash
+yarn seed
+```
 
 ## What is Medusa
 

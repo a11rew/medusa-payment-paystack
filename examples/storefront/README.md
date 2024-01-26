@@ -9,7 +9,7 @@
 </p>
 
 <h1 align="center">
-  Medusa Paystack Payment Next.js Starter Template
+  Medusa Paystack Storefront Example
 </h1>
 
 <p align="center">
