@@ -19,7 +19,7 @@
   "devDependencies": {
     "@medusajs/medusa": "^1.16.1",
     "@types/jest": "^29.5.10",
-    "@types/node": "^16.18.39",
+    "@types/node": "^20.11.14",
     "cross-env": "^5.2.1",
     "eslint": "^8.2.0",
     "eslint-config-airbnb-base": "15.0.0",
