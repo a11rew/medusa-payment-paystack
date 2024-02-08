@@ -22,6 +22,10 @@ module.exports = withStoreConfig({
       },
       {
         protocol: "https",
+        hostname: "i.imgur.com",
+      },
+      {
+        protocol: "https",
         hostname: "medusa-server-testing.s3.amazonaws.com",
       },
       {
