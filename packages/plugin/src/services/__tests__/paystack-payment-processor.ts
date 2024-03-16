@@ -6,6 +6,7 @@ import {
 
 import PaystackPaymentProcessor from "../paystack-payment-processor";
 import { CartServiceMock } from "../../__mocks__/cart";
+import { paystackMockServer } from "../../lib/__mocks__/paystack-msw";
 
 interface ProviderServiceMockOptions {
   secretKey?: string | undefined;
@@ -47,7 +48,15 @@ const demoSessionContext = {
   paymentSessionData: {},
 } satisfies PaymentProcessorContext;
 
-jest.mock("../../lib/paystack");
+paystackMockServer.listen();
+
+afterEach(() => {
+  paystackMockServer.resetHandlers();
+});
+
+afterAll(() => {
+  paystackMockServer.close();
+});
 
 describe("Provider Service Initialization", () => {
   it("initializes the provider service", () => {
@@ -302,4 +311,10 @@ describe("deletePayment", () => {
       paystackTxId: "123-delete",
     });
   });
+});
+
+describe("Paystack 5xx handling", () => {
+  it("retries on 5xx errors from Paystack", () => {});
+
+  it("exits with an error state on 3 failed retries", () => {});
 });
