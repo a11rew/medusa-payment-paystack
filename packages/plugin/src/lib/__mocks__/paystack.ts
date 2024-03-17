@@ -1,4 +1,4 @@
-import { http, HttpResponse } from "msw";
+import { http, HttpResponse, HttpResponseInit } from "msw";
 import { setupServer } from "msw/node";
 import { PAYSTACK_API_PATH } from "../paystack";
 
@@ -6,6 +6,9 @@ const handlers = [
   // Transaction verification
   http.get(`${PAYSTACK_API_PATH}/transaction/verify/:reference`, req => {
     const { reference } = req.params;
+    const { testRetryCount } = req.cookies;
+
+    const retryCount = testRetryCount ? parseInt(testRetryCount) : 0;
 
     switch (reference) {
       case "123-failed":
@@ -41,15 +44,41 @@ const handlers = [
         });
 
       case "123-throw": {
+        // Respond with an error for the first 3 requests
+        if (retryCount <= 2) {
+          return HttpResponse.json(
+            {
+              status: false,
+              message: "Paystack error",
+            },
+            {
+              status: 500,
+              headers: {
+                // Set a test only cookie to track the number of retries
+                "Set-Cookie": `testRetryCount=${retryCount + 1}`,
+              },
+            } as HttpResponseInit,
+          );
+        }
+
+        // Respond with success on the 4th attempt
         return HttpResponse.json(
           {
-            status: false,
-            message: "Paystack error",
+            status: true,
+            message: "Verification successful",
+            data: {
+              status: "success",
+              id: "123",
+              amount: 2000,
+              currency: "GHS",
+            },
           },
           {
-            // @ts-expect-error
-            status: 400,
-          },
+            headers: {
+              // Reset the test only cookie
+              "Set-Cookie": "testRetryCount=0",
+            },
+          } as HttpResponseInit,
         );
       }
 

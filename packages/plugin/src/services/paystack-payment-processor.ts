@@ -25,6 +25,15 @@ export interface PaystackPaymentProcessorConfig {
   secret_key: string;
 
   /**
+   * Disable retries for 5xx and failed idempotent requests to Paystack
+   *
+   * Generally, you should not disable retries, these errors are usually temporary
+   * but it can be useful for debugging
+   * @default false
+   */
+  disableRetries?: boolean;
+
+  /**
    * Debug mode
    * If true, logs helpful debug information to the console
    * Logs are prefixed with "PS_P_Debug"
@@ -54,7 +63,9 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
     }
 
     this.configuration = options;
-    this.paystack = new Paystack(this.configuration.secret_key);
+    this.paystack = new Paystack(this.configuration.secret_key, {
+      disableRetries: options.disableRetries,
+    });
     this.debug = Boolean(options.debug);
 
     // @ts-expect-error - Container is just an object - https://docs.medusajs.com/development/fundamentals/dependency-injection#in-classes
