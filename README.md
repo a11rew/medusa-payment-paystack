@@ -28,9 +28,9 @@ yarn add medusa-payment-paystack
 
 ### Configure the Paystack Plugin
 
-Next, you need to add configurations for your paystack plugin.
+Next, you need to enable the plugin in your Medusa server.
 
-In `medusa-config.js` add the following at the end of the `plugins` array:
+In `medusa-config.js` add the following to the `plugins` array:
 
 ```js
 const plugins = [
@@ -44,6 +44,8 @@ const plugins = [
   },
 ];
 ```
+
+The full list of configuration options you can pass to the plugin can be found in [Config](#configuration)
 
 ## Admin Setup
 
@@ -111,7 +113,16 @@ You can refund captured payments made with Paystack from the Admin dashboard.
 
 `medusa-payment-paystack` handles refunding the given amount using Paystack and marks the order in Medusa as refunded.
 
+# Configuration
+
+| Name            | Type      | Default     | Description                                                                                   |
+| --------------- | --------- | ----------- | --------------------------------------------------------------------------------------------- |
+| secret_key      | `string`  | `undefined` | Your Paystack secret key                                                                      |
+| disable_retries | `boolean` | `false`     | Disable retries for 5xx and failed idempotent requests to Paystack                            |
+| debug           | `boolean` | `false`     | Enable debug mode for the plugin. If true, helpful debug information is logged to the console |
+
 # Demo
+
 Try out the demo here: [Medusa store with Paystack Integration](https://storefront-production-ae6c.up.railway.app/)
 
 ![Demo video](https://user-images.githubusercontent.com/87580113/211937892-d1a34735-78a5-451d-83f8-bc23185dd8ef.png)
