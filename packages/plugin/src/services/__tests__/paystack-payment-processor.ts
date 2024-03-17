@@ -327,10 +327,10 @@ describe("Retriable error handling", () => {
     expect(payment.status).toEqual(PaymentSessionStatus.AUTHORIZED);
   });
 
-  it("does not retry if disableRetries is true", async () => {
+  it("does not retry if disable_retries is true", async () => {
     const service = createPaystackProviderService({
       secret_key: "sk_test_123",
-      disableRetries: true,
+      disable_retries: true,
     });
 
     // We receive a PaymentProcessorError

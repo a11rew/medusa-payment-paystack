@@ -33,7 +33,7 @@ export interface PaystackTransactionAuthorisation {
 }
 
 export interface PaystackWrapperOptions {
-  disableRetries?: boolean;
+  disable_retries?: boolean;
 }
 
 export default class Paystack {
@@ -51,7 +51,7 @@ export default class Paystack {
       },
     });
 
-    if (options?.disableRetries !== true) {
+    if (options?.disable_retries !== true) {
       axiosRetry(this.axiosInstance, {
         retries: 3,
         // Enables retries on network errors, idempotent http methods, and 5xx errors

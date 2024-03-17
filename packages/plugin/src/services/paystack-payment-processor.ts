@@ -31,7 +31,7 @@ export interface PaystackPaymentProcessorConfig {
    * but it can be useful for debugging
    * @default false
    */
-  disableRetries?: boolean;
+  disable_retries?: boolean;
 
   /**
    * Debug mode
@@ -64,7 +64,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
 
     this.configuration = options;
     this.paystack = new Paystack(this.configuration.secret_key, {
-      disableRetries: options.disableRetries,
+      disable_retries: options.disable_retries,
     });
     this.debug = Boolean(options.debug);
 
