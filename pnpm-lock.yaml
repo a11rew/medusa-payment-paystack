@@ -61,8 +61,8 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@16.18.39)
       msw:
-        specifier: ^2.2.4
-        version: 2.2.4(typescript@5.3.3)
+        specifier: ^2.2.7
+        version: 2.2.7(typescript@5.3.3)
       prettier:
         specifier: ^3.1.0
         version: 3.2.1
@@ -6427,8 +6427,8 @@ packages:
       msgpackr-extract: 3.0.2
     dev: true
 
-  /msw@2.2.4(typescript@5.3.3):
-    resolution: {integrity: sha512-jFRVA8megbf134fZsddsEuZZCe0O0NIaW3NssSya4ZJ7jODRUodKMFjVjphA+ckS9pPhIrE/ehTrgccShAKU2A==}
+  /msw@2.2.7(typescript@5.3.3):
+    resolution: {integrity: sha512-ZxJpzw2Y8QvgPsYY4D4giBOkQNrTauqr3zh2aGguW4alnf9JHryJNCui/pGlsWfhwbpz2KkndmGkl9dVFHzHZA==}
     engines: {node: '>=18'}
     hasBin: true
     requiresBuild: true
