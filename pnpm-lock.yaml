@@ -49,8 +49,8 @@ importers:
         specifier: 15.0.0
         version: 15.0.0(eslint-plugin-import@2.29.1)(eslint@8.10.0)
       eslint-config-prettier:
-        specifier: ^8.5.0
-        version: 8.5.0(eslint@8.10.0)
+        specifier: ^9.1.0
+        version: 9.1.0(eslint@8.10.0)
       eslint-plugin-import:
         specifier: ^2.29.1
         version: 2.29.1(eslint@8.10.0)
@@ -3850,8 +3850,8 @@ packages:
       semver: 6.3.1
     dev: true
 
-  /eslint-config-prettier@8.5.0(eslint@8.10.0):
-    resolution: {integrity: sha512-obmWKLUNCnhtQRKc+tmnYuQl0pFU1ibYJQ5BGhTVB08bHe9wC8qUeG7c08dj9XX+AuPj1YSGSQIHl1pnDHZR0Q==}
+  /eslint-config-prettier@9.1.0(eslint@8.10.0):
+    resolution: {integrity: sha512-NSWl5BFQWEPi1j4TjVNItzYV7dZXZ+wP6I6ZhrBGpChQhZRUaElihE9uRRkcbRnNb76UMKDF3r+WTmNcGPKsqw==}
     hasBin: true
     peerDependencies:
       eslint: '>=7.0.0'
