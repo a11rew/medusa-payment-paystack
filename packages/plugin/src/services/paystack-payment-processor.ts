@@ -25,7 +25,7 @@ export interface PaystackPaymentProcessorConfig {
   secret_key: string;
 
   /**
-   * Disable retries for 5xx and failed idempotent requests to Paystack
+   * Disable retries on network errors and 5xx errors on idempotent requests to Paystack
    *
    * Generally, you should not disable retries, these errors are usually temporary
    * but it can be useful for debugging
@@ -54,6 +54,48 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
     options: PaystackPaymentProcessorConfig,
   ) {
     super(container);
+
+    const { setupServer } = require("msw/node");
+    const { http, HttpResponse } = require("msw");
+
+    let retryCount = 0;
+
+    const mswServer = setupServer(
+      http.post("https://api.paystack.co/refund", () => {
+        // Respond with an error for the first 3 requests
+        if (retryCount <= 2) {
+          retryCount++;
+          console.log("Retrying", retryCount);
+          return HttpResponse.json(
+            {
+              status: false,
+              message: "Paystack error",
+            },
+            {
+              status: 504,
+            },
+          );
+        }
+
+        // Respond with success on the 4th attempt
+        return HttpResponse.json({
+          status: true,
+          message: "Verification successful",
+          data: {
+            status: "success",
+            id: "123",
+            amount: 2000,
+            currency: "GHS",
+          },
+        });
+      }),
+    );
+
+    mswServer.listen();
+
+    mswServer.events.on("request:start", ({ request }: { request: any }) => {
+      console.log("MSW intercepted:", request.method, request.url);
+    });
 
     if (!options.secret_key) {
       throw new MedusaError(
