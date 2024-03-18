@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import axiosRetry from "axios-retry";
 
-const PAYSTACK_API_PATH = "https://api.paystack.co";
+export const PAYSTACK_API_PATH = "https://api.paystack.co";
 
 type HTTPMethod =
   | "GET"
@@ -31,12 +32,16 @@ export interface PaystackTransactionAuthorisation {
   access_code: string;
 }
 
+export interface PaystackWrapperOptions {
+  disable_retries?: boolean;
+}
+
 export default class Paystack {
   apiKey: string;
 
   protected readonly axiosInstance: AxiosInstance;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, options?: PaystackWrapperOptions) {
     this.apiKey = apiKey;
     this.axiosInstance = axios.create({
       baseURL: PAYSTACK_API_PATH,
@@ -45,6 +50,16 @@ export default class Paystack {
         "Content-Type": "application/json",
       },
     });
+
+    if (options?.disable_retries !== true) {
+      axiosRetry(this.axiosInstance, {
+        retries: 3,
+        // Enables retries on network errors, idempotent http methods, and 5xx errors
+        retryCondition: axiosRetry.isNetworkOrIdempotentRequestError,
+        // Exponential backoff with jitter
+        retryDelay: axiosRetry.exponentialDelay,
+      });
+    }
   }
 
   protected async requestPaystackAPI<T>(request: Request): Promise<T> {

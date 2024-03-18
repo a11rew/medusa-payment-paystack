@@ -5,8 +5,16 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/packages/plugin" # Location of package manifests
+  - package-ecosystem: "npm"
+    directory: "/packages/plugin"
     versioning-strategy: increase
     schedule:
-      interval: "monthly"
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/examples/backend"
+    versioning-strategy: increase
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-name: "medusa-payment-paystack" # Keep plugin dep up to date

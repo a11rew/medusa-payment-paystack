@@ -2,19 +2,19 @@ import {
   PaymentProcessorContext,
   PaymentProcessorError,
   PaymentSessionStatus,
+  isPaymentProcessorError,
 } from "@medusajs/medusa";
 
-import PaystackPaymentProcessor from "../paystack-payment-processor";
+import PaystackPaymentProcessor, {
+  PaystackPaymentProcessorConfig,
+} from "../paystack-payment-processor";
 import { CartServiceMock } from "../../__mocks__/cart";
-
-interface ProviderServiceMockOptions {
-  secretKey?: string | undefined;
-}
+import { paystackMockServer } from "../../lib/__mocks__/paystack";
 
 // Helpers
 function createPaystackProviderService(
-  { secretKey }: ProviderServiceMockOptions = {
-    secretKey: "sk_test_123",
+  options: PaystackPaymentProcessorConfig = {
+    secret_key: "sk_test_123",
   },
 ) {
   return new PaystackPaymentProcessor(
@@ -22,16 +22,14 @@ function createPaystackProviderService(
       // @ts-expect-error - We don't need to mock all the methods
       cartService: CartServiceMock,
     },
-    {
-      secret_key: secretKey,
-    },
+    options,
   );
 }
 
 function checkForPaymentProcessorError<T>(response: T | PaymentProcessorError) {
   // Check for error
-  if (response?.hasOwnProperty("error")) {
-    throw new Error(String(response));
+  if (isPaymentProcessorError(response)) {
+    throw new Error(response.detail);
   }
 
   // Narrow type
@@ -47,7 +45,17 @@ const demoSessionContext = {
   paymentSessionData: {},
 } satisfies PaymentProcessorContext;
 
-jest.mock("../../lib/paystack");
+beforeAll(() => {
+  paystackMockServer.listen();
+});
+
+afterEach(() => {
+  paystackMockServer.resetHandlers();
+});
+
+afterAll(() => {
+  paystackMockServer.close();
+});
 
 describe("Provider Service Initialization", () => {
   it("initializes the provider service", () => {
@@ -58,6 +66,7 @@ describe("Provider Service Initialization", () => {
   it("fails initialization if api_key is not provided", () => {
     expect(() => {
       void createPaystackProviderService({
+        // @ts-expect-error - We are testing for missing secretKey, helper has default value
         secretKey: undefined,
       });
     }).toThrow();
@@ -301,5 +310,37 @@ describe("deletePayment", () => {
     expect(payment).toMatchObject({
       paystackTxId: "123-delete",
     });
+  });
+});
+
+describe("Retriable error handling", () => {
+  it("retries on 5xx errors from Paystack", async () => {
+    const service = createPaystackProviderService();
+    const payment = checkForPaymentProcessorError(
+      await service.authorizePayment({
+        paystackTxRef: "123-throw",
+        cartId: "cart-123",
+      }),
+    );
+
+    // It should return success after retrying
+    expect(payment.status).toEqual(PaymentSessionStatus.AUTHORIZED);
+  });
+
+  it("does not retry if disable_retries is true", async () => {
+    const service = createPaystackProviderService({
+      secret_key: "sk_test_123",
+      disable_retries: true,
+    });
+
+    // We receive a PaymentProcessorError
+    expect(async () => {
+      checkForPaymentProcessorError(
+        await service.authorizePayment({
+          paystackTxRef: "123-throw",
+          cartId: "cart-123",
+        }),
+      );
+    }).rejects.toThrow();
   });
 });
