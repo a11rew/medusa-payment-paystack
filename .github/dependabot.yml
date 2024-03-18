@@ -17,4 +17,4 @@ updates:
     schedule:
       interval: "daily"
     allow:
-      - dependency-name: "medusa-payment-paystack" # Keep plugin up to date
+      - dependency-name: "medusa-payment-paystack" # Keep plugin dep up to date
