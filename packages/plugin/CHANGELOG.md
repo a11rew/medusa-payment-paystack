@@ -1,5 +1,11 @@
 # medusa-payment-paystack
 
+## 1.2.3
+
+### Patch Changes
+
+- ac65bde: Fixes initialization errors related to "msw/node" requires
+
 ## 1.2.2
 
 ### Patch Changes
