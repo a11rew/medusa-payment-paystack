@@ -1,5 +1,11 @@
 # medusa-payment-paystack
 
+## 1.2.2
+
+### Patch Changes
+
+- c77bb51: Adds support for automatically retrying network and 5xx errors in requests sent to Paystack.
+
 ## 1.2.1
 
 ### Patch Changes
