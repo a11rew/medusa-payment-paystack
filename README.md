@@ -47,6 +47,14 @@ const plugins = [
 
 The full list of configuration options you can pass to the plugin can be found in [Config](#configuration)
 
+### Setup Webhooks
+
+To ensure that Medusa is notified of successful payments, you need to set up webhooks in your Paystack dashboard. If you're installing this plugin for production use, this is a required step.
+
+Go to your [Paystack dashboard](https://dashboard.paystack.com/#/settings/developer) and navigate to the "API Keys & Webhooks" section.
+
+Set the Webhook URL to `<your-medusa-backend-url>/paystack/hooks`. Eg. `https://your-medusa-backend.com/paystack/hooks`.
+
 ## Admin Setup
 
 This step is required for you to be able to use Paystack as a payment provider in your storefront.

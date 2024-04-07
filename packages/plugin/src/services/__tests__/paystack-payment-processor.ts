@@ -18,8 +18,8 @@ function createPaystackProviderService(
   },
 ) {
   return new PaystackPaymentProcessor(
+    // @ts-expect-error - We don't need to mock all the methods
     {
-      // @ts-expect-error - We don't need to mock all the methods
       cartService: CartServiceMock,
     },
     options,
@@ -67,7 +67,7 @@ describe("Provider Service Initialization", () => {
     expect(() => {
       void createPaystackProviderService({
         // @ts-expect-error - We are testing for missing secretKey, helper has default value
-        secretKey: undefined,
+        secret_key: undefined,
       });
     }).toThrow();
   });

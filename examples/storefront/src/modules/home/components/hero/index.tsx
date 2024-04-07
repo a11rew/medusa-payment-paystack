@@ -1,6 +1,8 @@
 import { Button, Heading } from "@medusajs/ui"
 import InteractiveLink from "@modules/common/components/interactive-link"
 import { Github } from "@medusajs/icons"
+import Link from "next/link"
+import ArrowRight from "@modules/common/icons/arrow-right"
 
 const Hero = () => {
   return (
@@ -20,15 +22,23 @@ const Hero = () => {
             Powered by Medusa and Next.js
           </Heading>
         </span>
-        <a
-          href="https://github.com/a11rew/medusa-payment-paystack"
-          target="_blank"
-        >
-          <Button variant="secondary">
-            View on GitHub
-            <Github />
-          </Button>
-        </a>
+        <div className="flex gap-4">
+          <a
+            href="https://github.com/a11rew/medusa-payment-paystack"
+            target="_blank"
+          >
+            <Button variant="secondary">
+              View on GitHub
+              <Github />
+            </Button>
+          </a>
+          <Link href="/store">
+            <Button variant="secondary">
+              Go to Store
+              <ArrowRight />
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   )
