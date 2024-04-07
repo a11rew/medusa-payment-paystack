@@ -12,7 +12,8 @@ import {
 import { MedusaError, MedusaErrorTypes } from "@medusajs/utils";
 import { formatCurrencyCode } from "../utils/currencyCode";
 
-export interface PaystackPaymentProcessorConfig {
+export interface PaystackPaymentProcessorConfig
+  extends Record<string, unknown> {
   /**
    * Paystack Secret Key
    *
@@ -50,10 +51,10 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   protected readonly debug: boolean;
 
   constructor(
-    container: MedusaContainer,
+    container: Record<string, any> & MedusaContainer,
     options: PaystackPaymentProcessorConfig,
   ) {
-    super(container);
+    super(container, options);
 
     if (!options.secret_key) {
       throw new MedusaError(
@@ -68,7 +69,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
     });
     this.debug = Boolean(options.debug);
 
-    // @ts-expect-error - Container is just an object - https://docs.medusajs.com/development/fundamentals/dependency-injection#in-classes
+    // Container is just an object - https://docs.medusajs.com/development/fundamentals/dependency-injection#in-classes
     this.cartService = container.cartService;
 
     if (this.cartService.retrieveWithTotals === undefined) {
@@ -112,6 +113,9 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
         amount: amount, // Paystack expects amount in lowest denomination - https://paystack.com/docs/payments/accept-payments/#initialize-transaction-1
         email,
         currency: validatedCurrencyCode,
+        metadata: {
+          cart_id: context.resource_id,
+        },
       });
 
     if (status === false) {
