@@ -1,5 +1,15 @@
 # medusa-payment-paystack
 
+## 1.3.0
+
+### Minor Changes
+
+- 235282e: Adds support for Paystack webhooks
+
+### Patch Changes
+
+- ee5a111: Updates orderCapturer subscriber implementation to remove deprecation warning
+
 ## 1.2.3
 
 ### Patch Changes
