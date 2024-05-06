@@ -10,7 +10,7 @@
     "dist"
   ],
   "peerDependencies": {
-    "@medusajs/medusa": "^1.20.4"
+    "@medusajs/medusa": "^1.20.6"
   },
   "dependencies": {
     "@medusajs/utils": "^1.11.8",
@@ -18,7 +18,7 @@
     "axios-retry": "^4.1.0"
   },
   "devDependencies": {
-    "@medusajs/medusa": "^1.20.4",
+    "@medusajs/medusa": "^1.20.6",
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
     "@types/node": "^16.18.39",
