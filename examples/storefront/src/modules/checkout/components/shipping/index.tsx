@@ -9,6 +9,7 @@ import Radio from "@modules/common/components/radio"
 import { ErrorMessage } from "@hookform/error-message"
 import { formatAmount, useCart, useCartShippingOptions } from "medusa-react"
 import { useEffect, useMemo, useState } from "react"
+import { flushSync } from "react-dom"
 import { Cart } from "@medusajs/medusa"
 
 type ShippingOption = {
@@ -67,9 +68,15 @@ const Shipping: React.FC<ShippingProps> = ({ cart }) => {
       { option_id: soId },
       {
         onSuccess: ({ cart }) => {
-          setCart(cart)
-          close()
-          openPayment()
+          // React 18 bug with state update batching inside event handlers (submitShippingOption is called from a click event)
+          // will cause these state updates to not be applied
+          // flushSync forces a sync update
+          // https://github.com/facebook/react/issues/26227
+          flushSync(() => {
+            setCart(cart)
+            close()
+            openPayment()
+          })
         },
         onError: () =>
           setError(
