@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@medusajs/utils": "^1.11.8",
-    "axios": "^1.7.4",
+    "axios": "^1.7.7",
     "axios-retry": "^4.1.0"
   },
   "devDependencies": {
