@@ -5,9 +5,10 @@ import type {
   MedusaContainer,
   SubscriberArgs,
   SubscriberConfig,
-} from "@medusajs/medusa";
+} from "@medusajs/framework/dist/types";
+
 import type { EntityManager } from "typeorm";
-import { MedusaError } from "@medusajs/utils";
+import { MedusaError } from "@medusajs/framework/dist/utils";
 import PaystackPaymentProcessor, {
   PaystackPaymentProcessorConfig,
 } from "../services/paystack-payment-processor";

@@ -1,8 +1,6 @@
-import {
-  type MedusaRequest,
-  MedusaResponse,
-  EventBusService,
-} from "@medusajs/medusa";
+import type { IEventBusService } from "@medusajs/types";
+import type { MedusaRequest, MedusaResponse } from "@medusajs/framework";
+
 import crypto from "crypto";
 
 import PaystackPaymentProcessor, {
@@ -63,11 +61,15 @@ export const POST = async (
       data: req.body.data,
     } satisfies WebhookEventData;
 
-    const eventBus = req.scope.resolve<EventBusService>("eventBusService");
+    const eventBus = req.scope.resolve<IEventBusService>("eventBusService");
 
-    await eventBus.emit("paystack.webhook_event", eventData, {
-      // Delayed to prevent race conditions with manual order confirmation
-      delay: 5000,
+    await eventBus.emit({
+      name: "paystack.webhook_event",
+      data: eventData,
+      options: {
+        // Delayed to prevent race conditions with manual order confirmation
+        delay: 5000,
+      },
     });
 
     return res.sendStatus(200);

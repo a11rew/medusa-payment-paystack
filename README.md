@@ -30,19 +30,31 @@ yarn add medusa-payment-paystack
 
 Next, you need to enable the plugin in your Medusa server.
 
-In `medusa-config.js` add the following to the `plugins` array:
+In `medusa-config.ts` add the following to the `plugins` array:
 
 ```js
-const plugins = [
-  // other plugins
-  {
-    resolve: `medusa-payment-paystack`,
-    /** @type {import("medusa-payment-paystack").PluginOptions} */
-    options: {
-      secret_key: "<PAYSTACK_SECRET_KEY>",
+module.exports = defineConfig({
+  projectConfig: {
+    databaseUrl: process.env.DATABASE_URL,
+    http: {
+      storeCors: process.env.STORE_CORS!,
+      adminCors: process.env.ADMIN_CORS!,
+      authCors: process.env.AUTH_CORS!,
+      jwtSecret: process.env.JWT_SECRET || "supersecret",
+      cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
   },
-];
+  plugins: [
+    // other plugins
+    {
+      resolve: `medusa-payment-paystack`,
+      /** @type {import("medusa-payment-paystack").PluginOptions} */
+      options: {
+        secret_key: "<PAYSTACK_SECRET_KEY>",
+      },
+    },
+  ]
+});
 ```
 
 The full list of configuration options you can pass to the plugin can be found in [Config](#configuration)
