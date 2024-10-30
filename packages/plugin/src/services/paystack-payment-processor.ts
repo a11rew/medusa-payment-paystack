@@ -1,15 +1,22 @@
+import crypto from "crypto";
+
 import Paystack, { PaystackTransactionAuthorisation } from "../lib/paystack";
 
 import {
-  AbstractPaymentProcessor,
   PaymentProcessorContext,
   PaymentProcessorError,
   PaymentProcessorSessionResponse,
-  PaymentSessionStatus,
   MedusaContainer,
-  CartService,
-} from "@medusajs/medusa";
-import { MedusaError, MedusaErrorTypes } from "@medusajs/utils";
+  ICartModuleService,
+  WebhookActionResult,
+} from "@medusajs/types";
+import {
+  MedusaError,
+  MedusaErrorTypes,
+  PaymentSessionStatus,
+  AbstractPaymentProvider,
+  PaymentActions,
+} from "@medusajs/framework/dist/utils";
 import { formatCurrencyCode } from "../utils/currencyCode";
 
 export interface PaystackPaymentProcessorConfig
@@ -42,10 +49,10 @@ export interface PaystackPaymentProcessorConfig
   debug?: boolean;
 }
 
-class PaystackPaymentProcessor extends AbstractPaymentProcessor {
+class PaystackPaymentProcessor extends AbstractPaymentProvider {
   static identifier = "paystack";
 
-  protected readonly cartService: CartService;
+  protected readonly cartService: ICartModuleService;
   protected readonly configuration: PaystackPaymentProcessorConfig;
   protected readonly paystack: Paystack;
   protected readonly debug: boolean;
@@ -72,10 +79,10 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
     // Container is just an object - https://docs.medusajs.com/development/fundamentals/dependency-injection#in-classes
     this.cartService = container.cartService;
 
-    if (this.cartService.retrieveWithTotals === undefined) {
+    if (this.cartService.retrieveCart === undefined) {
       throw new MedusaError(
         MedusaError.Types.UNEXPECTED_STATE,
-        "Your Medusa installation contains an outdated cartService implementation. Update your Medusa installation.",
+        "Your Medusa installation contains an unsupported cartService implementation. Update your Medusa installation.",
       );
     }
   }
@@ -209,18 +216,16 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
     }
 
     try {
-      const { paystackTxRef, cartId } = paymentSessionData;
+      const { paystackTxRef } = paymentSessionData;
 
       const { status, data } = await this.paystack.transaction.verify({
         reference: paystackTxRef,
       });
 
-      const cart = await this.cartService.retrieveWithTotals(cartId);
-
       if (this.debug) {
         console.info(
           "PS_P_Debug: AuthorizePayment: Verification",
-          JSON.stringify({ status, cart, data }, null, 2),
+          JSON.stringify({ status, data }, null, 2),
         );
       }
 
@@ -238,38 +243,10 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
 
       switch (data.status) {
         case "success": {
-          const amountValid =
-            Math.round(cart.total) === Math.round(data.amount);
-          const currencyValid =
-            cart.region.currency_code === data.currency.toLowerCase();
-
-          if (amountValid && currencyValid) {
-            // Successful transaction
-            return {
-              status: PaymentSessionStatus.AUTHORIZED,
-              data: {
-                paystackTxId: data.id,
-                paystackTxData: data,
-              },
-            };
-          }
-
-          // Invalid amount or currency
-          // We refund the transaction
-          await this.refundPayment(
-            {
-              ...paymentSessionData,
-              paystackTxData: data,
-              paystackTxId: data.id,
-            },
-            data.amount,
-          );
-
-          // And return the failed status
+          // Successful transaction
           return {
-            status: PaymentSessionStatus.ERROR,
+            status: PaymentSessionStatus.AUTHORIZED,
             data: {
-              ...paymentSessionData,
               paystackTxId: data.id,
               paystackTxData: data,
             },
@@ -431,6 +408,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
   ): Promise<Record<string, unknown> | PaymentProcessorError> {
     return paymentSessionData;
   }
+
   /**
    * Delete payment for Paystack payment intent.
    * This is not supported by Paystack - transactions are stateless.
@@ -458,6 +436,75 @@ class PaystackPaymentProcessor extends AbstractPaymentProcessor {
       error: errorMessage,
       code: code ?? "",
       detail: detail ?? "",
+    };
+  }
+
+  async getWebhookActionAndData({
+    data,
+    rawData,
+    headers,
+  }: {
+    data: {
+      event: string;
+      amount: number;
+      metadata?: Record<string, any>;
+    };
+    rawData: string | Buffer;
+    headers: Record<string, unknown>;
+  }): Promise<WebhookActionResult> {
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: Handling webhook event",
+        JSON.stringify({ data, rawData, headers }, null, 2),
+      );
+    }
+
+    const webhookSecretKey = this.configuration.secret_key;
+
+    if (!webhookSecretKey) {
+      console.error("PS_P_Debug: No secret key provided for Paystack plugin");
+
+      return {
+        action: PaymentActions.NOT_SUPPORTED,
+      };
+    }
+
+    // Validate webhook event
+    const hash = crypto
+      .createHmac("sha512", webhookSecretKey)
+      .update(rawData)
+      .digest("hex");
+
+    if (hash !== headers["x-paystack-signature"]) {
+      return {
+        action: PaymentActions.NOT_SUPPORTED,
+      };
+    }
+
+    // Validate event type
+    if (data.event !== "charge.success") {
+      return {
+        action: PaymentActions.NOT_SUPPORTED,
+      };
+    }
+
+    const cartId = data.metadata?.cart_id;
+
+    if (!cartId) {
+      console.error(
+        "PS_P_Debug: No cart_id found in webhook transaction metadata",
+      );
+      return {
+        action: PaymentActions.NOT_SUPPORTED,
+      };
+    }
+
+    return {
+      action: PaymentActions.AUTHORIZED,
+      data: {
+        session_id: cartId,
+        amount: data.amount,
+      },
     };
   }
 }

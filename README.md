@@ -65,7 +65,7 @@ To ensure that Medusa is notified of successful payments, you need to set up web
 
 Go to your [Paystack dashboard](https://dashboard.paystack.com/#/settings/developer) and navigate to the "API Keys & Webhooks" section.
 
-Set the Webhook URL to `<your-medusa-backend-url>/paystack/hooks`. Eg. `https://your-medusa-backend.com/paystack/hooks`.
+Set the Webhook URL to `<your-medusa-backend-url>/hooks/payment/paystack`. Eg. `https://your-medusa-backend.com/hooks/payment/paystack`.
 
 ## Admin Setup
 
