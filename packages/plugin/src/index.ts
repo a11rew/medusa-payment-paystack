@@ -1,4 +1,4 @@
-import { ModuleProvider, Modules } from "@medusajs/framework/dist/utils";
+import { ModuleProvider, Modules } from "@medusajs/framework/utils";
 
 import PaystackPaymentProcessor from "./services/paystack-payment-processor";
 
