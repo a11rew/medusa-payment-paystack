@@ -1,22 +1,22 @@
 import crypto from "crypto";
 
-import Paystack, { PaystackTransactionAuthorisation } from "../lib/paystack";
+import Paystack from "../lib/paystack";
 
 import {
-  PaymentProcessorContext,
-  PaymentProcessorError,
-  PaymentProcessorSessionResponse,
+  PaymentProviderError,
+  PaymentProviderSessionResponse,
   MedusaContainer,
   ICartModuleService,
   WebhookActionResult,
+  CreatePaymentProviderSession,
+  UpdatePaymentProviderSession,
 } from "@medusajs/types";
 import {
   MedusaError,
-  MedusaErrorTypes,
   PaymentSessionStatus,
   AbstractPaymentProvider,
   PaymentActions,
-} from "@medusajs/framework/dist/utils";
+} from "@medusajs/framework/utils";
 import { formatCurrencyCode } from "../utils/currencyCode";
 
 export interface PaystackPaymentProcessorConfig
@@ -48,6 +48,12 @@ export interface PaystackPaymentProcessorConfig
    */
   debug?: boolean;
 }
+
+type PaystackPaymentProviderSessionResponse = PaymentProviderSessionResponse & {
+  data: {
+    paystackTxRef: string;
+  };
+};
 
 class PaystackPaymentProcessor extends AbstractPaymentProvider {
   static identifier = "paystack";
@@ -87,41 +93,31 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
     }
   }
 
-  get paymentIntentOptions() {
-    return {};
-  }
-
   /**
    * Called when a user selects Paystack as their payment method during checkout
    */
-  async initiatePayment(context: PaymentProcessorContext): Promise<
-    | PaymentProcessorError
-    | (PaymentProcessorSessionResponse & {
-        session_data: {
-          paystackTxRef: string;
-          paystackTxAuthData: PaystackTransactionAuthorisation;
-          cartId: string;
-        };
-      })
-  > {
+  async initiatePayment(
+    initiatePaymentData: CreatePaymentProviderSession,
+  ): Promise<PaystackPaymentProviderSessionResponse | PaymentProviderError> {
     if (this.debug) {
       console.info(
         "PS_P_Debug: InitiatePayment",
-        JSON.stringify(context, null, 2),
+        JSON.stringify(initiatePaymentData, null, 2),
       );
     }
 
-    const { amount, email, currency_code } = context;
+    const { context, amount, currency_code } = initiatePaymentData;
+    const { email, session_id } = context;
 
     const validatedCurrencyCode = formatCurrencyCode(currency_code);
 
     const { data, status, message } =
       await this.paystack.transaction.initialize({
-        amount: amount, // Paystack expects amount in lowest denomination - https://paystack.com/docs/payments/accept-payments/#initialize-transaction-1
+        amount: Number(amount), // Paystack expects amount in lowest denomination - https://paystack.com/docs/payments/accept-payments/#initialize-transaction-1
         email,
         currency: validatedCurrencyCode,
         metadata: {
-          cart_id: context.resource_id,
+          session_id,
         },
       });
 
@@ -132,40 +128,9 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
     }
 
     return {
-      session_data: {
+      data: {
         paystackTxRef: data.reference,
         paystackTxAuthData: data,
-        cartId: context.resource_id,
-      },
-    };
-  }
-
-  /**
-   * Called when a user updates their cart after `initiatePayment` has been called
-   */
-  async updatePaymentData(
-    _: string,
-    data: Record<string, unknown>,
-  ): Promise<
-    PaymentProcessorSessionResponse["session_data"] | PaymentProcessorError
-  > {
-    if (this.debug) {
-      console.info(
-        "PS_P_Debug: UpdatePaymentData",
-        JSON.stringify({ _, data }, null, 2),
-      );
-    }
-
-    if (data.amount) {
-      throw new MedusaError(
-        MedusaErrorTypes.INVALID_DATA,
-        "Cannot update amount from updatePaymentData",
-      );
-    }
-
-    return {
-      session_data: {
-        ...data, // We just return the data as is
       },
     };
   }
@@ -173,14 +138,9 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
   /**
    * Called when a cart item is added or shipping address is updated
    */
-  async updatePayment(context: PaymentProcessorContext): Promise<
-    | PaymentProcessorError
-    | (PaymentProcessorSessionResponse & {
-        session_data: {
-          paystackTxRef: string;
-        };
-      })
-  > {
+  async updatePayment(
+    context: UpdatePaymentProviderSession,
+  ): Promise<PaystackPaymentProviderSessionResponse | PaymentProviderError> {
     if (this.debug) {
       console.info(
         "PS_P_Debug: UpdatePayment",
@@ -188,7 +148,8 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
       );
     }
 
-    // Re-initialize the payment
+    // Paystack does not support updating transactions
+    // We create a new transaction instead
     return this.initiatePayment(context);
   }
 
@@ -197,15 +158,12 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
    * We validate the payment and return a status
    */
   async authorizePayment(
-    paymentSessionData: Record<string, unknown> & {
-      paystackTxRef: string;
-      cartId: string;
-    },
+    paymentSessionData: PaystackPaymentProviderSessionResponse["data"],
   ): Promise<
-    | PaymentProcessorError
+    | PaymentProviderError
     | {
         status: PaymentSessionStatus;
-        data: Record<string, unknown>;
+        data: PaymentProviderSessionResponse["data"];
       }
   > {
     if (this.debug) {
@@ -245,7 +203,8 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
         case "success": {
           // Successful transaction
           return {
-            status: PaymentSessionStatus.AUTHORIZED,
+            // Captured instead of authorized so they are automatically captured
+            status: PaymentSessionStatus.CAPTURED,
             data: {
               paystackTxId: data.id,
               paystackTxData: data,
@@ -281,7 +240,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
    */
   async retrievePayment(
     paymentSessionData: Record<string, unknown> & { paystackTxId: string },
-  ): Promise<Record<string, unknown> | PaymentProcessorError> {
+  ): Promise<PaymentProviderSessionResponse["data"] | PaymentProviderError> {
     if (this.debug) {
       console.info(
         "PS_P_Debug: RetrievePayment",
@@ -317,7 +276,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
   async refundPayment(
     paymentSessionData: Record<string, unknown> & { paystackTxId: number },
     refundAmount: number,
-  ): Promise<Record<string, unknown> | PaymentProcessorError> {
+  ): Promise<PaymentProviderSessionResponse["data"] | PaymentProviderError> {
     if (this.debug) {
       console.info(
         "PS_P_Debug: RefundPayment",
@@ -390,55 +349,8 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
   }
 
   /**
-   * Marks payment as captured. Transactions are 'captured' by default in Paystack.
-   * So this just returns the payment session data.
+   * Handles incoming webhook events from Paystack
    */
-  async capturePayment(
-    paymentSessionData: Record<string, unknown>,
-  ): Promise<Record<string, unknown> | PaymentProcessorError> {
-    return paymentSessionData;
-  }
-
-  /**
-   * Cancel payment for Paystack payment intent.
-   * This is not supported by Paystack - transactions are stateless.
-   */
-  async cancelPayment(
-    paymentSessionData: Record<string, unknown>,
-  ): Promise<Record<string, unknown> | PaymentProcessorError> {
-    return paymentSessionData;
-  }
-
-  /**
-   * Delete payment for Paystack payment intent.
-   * This is not supported by Paystack - transactions are stateless.
-   */
-  async deletePayment(
-    paymentSessionData: Record<string, unknown>,
-  ): Promise<Record<string, unknown> | PaymentProcessorError> {
-    return paymentSessionData;
-  }
-
-  protected buildError(
-    message: string,
-    e:
-      | {
-          code?: string;
-          detail: string;
-        }
-      | Error,
-  ): PaymentProcessorError {
-    const errorMessage = "Paystack Payment error: " + message;
-    const code = e instanceof Error ? e.message : e.code;
-    const detail = e instanceof Error ? e.stack : e.detail;
-
-    return {
-      error: errorMessage,
-      code: code ?? "",
-      detail: detail ?? "",
-    };
-  }
-
   async getWebhookActionAndData({
     data,
     rawData,
@@ -505,6 +417,56 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
         session_id: cartId,
         amount: data.amount,
       },
+    };
+  }
+
+  /**
+   * Marks payment as captured. Transactions are 'captured' by default in Paystack.
+   * So this just returns the payment session data.
+   */
+  async capturePayment(
+    paymentSessionData: Record<string, unknown>,
+  ): Promise<Record<string, unknown> | PaymentProviderError> {
+    return paymentSessionData;
+  }
+
+  /**
+   * Cancel payment for Paystack payment intent.
+   * This is not supported by Paystack - transactions are stateless.
+   */
+  async cancelPayment(
+    paymentSessionData: Record<string, unknown>,
+  ): Promise<Record<string, unknown> | PaymentProviderError> {
+    return paymentSessionData;
+  }
+
+  /**
+   * Delete payment for Paystack payment intent.
+   * This is not supported by Paystack - transactions are stateless.
+   */
+  async deletePayment(
+    paymentSessionData: Record<string, unknown>,
+  ): Promise<Record<string, unknown> | PaymentProviderError> {
+    return paymentSessionData;
+  }
+
+  protected buildError(
+    message: string,
+    e:
+      | {
+          code?: string;
+          detail: string;
+        }
+      | Error,
+  ): PaymentProviderError {
+    const errorMessage = "Paystack Payment error: " + message;
+    const code = e instanceof Error ? e.message : e.code;
+    const detail = e instanceof Error ? e.stack : e.detail;
+
+    return {
+      error: errorMessage,
+      code: code ?? "",
+      detail: detail ?? "",
     };
   }
 }
