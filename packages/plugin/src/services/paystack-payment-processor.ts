@@ -6,7 +6,6 @@ import {
   PaymentProviderError,
   PaymentProviderSessionResponse,
   MedusaContainer,
-  ICartModuleService,
   WebhookActionResult,
   CreatePaymentProviderSession,
   UpdatePaymentProviderSession,
@@ -58,7 +57,6 @@ type PaystackPaymentProviderSessionResponse = PaymentProviderSessionResponse & {
 class PaystackPaymentProcessor extends AbstractPaymentProvider {
   static identifier = "paystack";
 
-  protected readonly cartService: ICartModuleService;
   protected readonly configuration: PaystackPaymentProcessorConfig;
   protected readonly paystack: Paystack;
   protected readonly debug: boolean;
@@ -81,16 +79,6 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
       disable_retries: options.disable_retries,
     });
     this.debug = Boolean(options.debug);
-
-    // Container is just an object - https://docs.medusajs.com/development/fundamentals/dependency-injection#in-classes
-    this.cartService = container.cartService;
-
-    if (this.cartService.retrieveCart === undefined) {
-      throw new MedusaError(
-        MedusaError.Types.UNEXPECTED_STATE,
-        "Your Medusa installation contains an unsupported cartService implementation. Update your Medusa installation.",
-      );
-    }
   }
 
   /**
@@ -110,6 +98,12 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
     const { email, session_id } = context;
 
     const validatedCurrencyCode = formatCurrencyCode(currency_code);
+
+    if (!email) {
+      return this.buildError("Email is required", {
+        detail: "Email is required to initiate a Paystack payment",
+      });
+    }
 
     const { data, status, message } =
       await this.paystack.transaction.initialize({
@@ -352,14 +346,16 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
    * Handles incoming webhook events from Paystack
    */
   async getWebhookActionAndData({
-    data,
+    data: { event, data },
     rawData,
     headers,
   }: {
     data: {
       event: string;
-      amount: number;
-      metadata?: Record<string, any>;
+      data: {
+        amount: number;
+        metadata?: Record<string, any>;
+      };
     };
     rawData: string | Buffer;
     headers: Record<string, unknown>;
@@ -367,7 +363,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
     if (this.debug) {
       console.info(
         "PS_P_Debug: Handling webhook event",
-        JSON.stringify({ data, rawData, headers }, null, 2),
+        JSON.stringify({ data, headers }, null, 2),
       );
     }
 
@@ -394,17 +390,17 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
     }
 
     // Validate event type
-    if (data.event !== "charge.success") {
+    if (event !== "charge.success") {
       return {
         action: PaymentActions.NOT_SUPPORTED,
       };
     }
 
-    const cartId = data.metadata?.cart_id;
+    const sessionId = data.metadata?.session_id;
 
-    if (!cartId) {
+    if (!sessionId) {
       console.error(
-        "PS_P_Debug: No cart_id found in webhook transaction metadata",
+        "PS_P_Debug: No sessionId found in webhook transaction metadata",
       );
       return {
         action: PaymentActions.NOT_SUPPORTED,
@@ -414,7 +410,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
     return {
       action: PaymentActions.AUTHORIZED,
       data: {
-        session_id: cartId,
+        session_id: sessionId,
         amount: data.amount,
       },
     };
