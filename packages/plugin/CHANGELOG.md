@@ -1,5 +1,11 @@
 # medusa-payment-paystack
 
+## 2.0.0-next.1
+
+### Patch Changes
+
+- fix: send amounts in subunits
+
 ## 2.0.0-next.0
 
 ### Major Changes
