@@ -117,7 +117,7 @@ export default class Paystack {
       metadata,
     }: {
       amount: number;
-      email?: string;
+      email: string;
       currency?: string;
       reference?: string;
       metadata?: Record<string, unknown>;
