@@ -32,7 +32,7 @@ Next, you need to enable the plugin in your Medusa server.
 
 In `medusa-config.ts` add the following to the `plugins` array:
 
-```js
+```ts
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
@@ -44,16 +44,23 @@ module.exports = defineConfig({
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
   },
-  plugins: [
-    // other plugins
+  modules: [
+    // other modules
     {
-      resolve: `medusa-payment-paystack`,
-      /** @type {import("medusa-payment-paystack").PluginOptions} */
+      resolve: "@medusajs/medusa/payment",
       options: {
-        secret_key: "<PAYSTACK_SECRET_KEY>",
+        providers: [
+          // other payment providers like stripe, paypal etc
+          {
+            resolve: "medusa-payment-paystack",
+            options: {
+              secret_key: <PAYSTACK_SECRET_KEY>,
+            } satisfies import("medusa-payment-paystack").PluginOptions,
+          },
+        ],
       },
     },
-  ]
+  ],
 });
 ```
 
