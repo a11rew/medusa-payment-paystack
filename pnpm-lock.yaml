@@ -67,7 +67,7 @@ importers:
         specifier: ^2.2.14
         version: 2.4.3(typescript@5.5.4)
       prettier:
-        specifier: ^3.2.5
+        specifier: ^3.3.3
         version: 3.3.3
       rimraf:
         specifier: ^5.0.8
