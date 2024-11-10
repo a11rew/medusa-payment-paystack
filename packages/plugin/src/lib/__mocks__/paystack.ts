@@ -95,7 +95,21 @@ const handlers = [
   }),
 
   // Initialize transaction
-  http.post(`${PAYSTACK_API_PATH}/transaction/initialize`, () => {
+  http.post(`${PAYSTACK_API_PATH}/transaction/initialize`, async req => {
+    const { amount } = (await req.request.json()) as {
+      amount: number;
+    };
+
+    if (typeof amount !== "number") {
+      return HttpResponse.json(
+        {
+          status: false,
+          message: "Invalid amount",
+        },
+        { status: 400 },
+      );
+    }
+
     return HttpResponse.json({
       status: true,
       message: "Transaction initialized",

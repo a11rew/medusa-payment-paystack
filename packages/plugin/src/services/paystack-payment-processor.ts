@@ -101,32 +101,41 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
 
     if (!email) {
       return this.buildError("Email is required", {
-        detail: "Email is required to initiate a Paystack payment",
+        detail:
+          "Email is required to initiate a Paystack payment. Ensure you are providing the email in the context object when calling `initiatePaymentSession` in your Medusa storefront",
       });
     }
 
-    const { data, status, message } =
-      await this.paystack.transaction.initialize({
-        amount: Number(amount) * 100, // Paystack expects amount in lowest denomination - https://paystack.com/docs/api/#supported-currency
-        email,
-        currency: validatedCurrencyCode,
-        metadata: {
-          session_id,
+    try {
+      const { data, status, message } =
+        await this.paystack.transaction.initialize({
+          amount: Number(amount) * 100, // Paystack expects amount in lowest denomination - https://paystack.com/docs/api/#supported-currency
+          email,
+          currency: validatedCurrencyCode,
+          metadata: {
+            session_id,
+          },
+        });
+
+      if (status === false) {
+        return this.buildError("Failed to initiate Paystack payment", {
+          detail: message,
+        });
+      }
+
+      return {
+        data: {
+          paystackTxRef: data.reference,
+          paystackTxAuthData: data,
         },
-      });
+      };
+    } catch (error) {
+      if (this.debug) {
+        console.error("PS_P_Debug: InitiatePayment: Error", error);
+      }
 
-    if (status === false) {
-      return this.buildError("Failed to initiate Paystack payment", {
-        detail: message,
-      });
+      return this.buildError("Failed to initiate Paystack payment", error);
     }
-
-    return {
-      data: {
-        paystackTxRef: data.reference,
-        paystackTxAuthData: data,
-      },
-    };
   }
 
   /**
@@ -143,7 +152,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
     }
 
     // Paystack does not support updating transactions
-    // We create a new transaction instead
+    // We abandon the current transaction and create a new one instead
     return this.initiatePayment(context);
   }
 
@@ -225,6 +234,10 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
           };
       }
     } catch (error) {
+      if (this.debug) {
+        console.error("PS_P_Debug: AuthorizePayment: Error", error);
+      }
+
       return this.buildError("Failed to authorize payment", error);
     }
   }
@@ -260,6 +273,10 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
         paystackTxData: data,
       };
     } catch (error) {
+      if (this.debug) {
+        console.error("PS_P_Debug: RetrievePayment: Error", error);
+      }
+
       return this.buildError("Failed to retrieve payment", error);
     }
   }
@@ -297,6 +314,10 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
         paystackTxData: data,
       };
     } catch (error) {
+      if (this.debug) {
+        console.error("PS_P_Debug: RefundPayment: Error", error);
+      }
+
       return this.buildError("Failed to refund payment", error);
     }
   }
@@ -325,6 +346,13 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
         id: paystackTxId,
       });
 
+      if (this.debug) {
+        console.info(
+          "PS_P_Debug: GetPaymentStatus: Verification",
+          JSON.stringify({ status, data }, null, 2),
+        );
+      }
+
       if (status === false) {
         return PaymentSessionStatus.ERROR;
       }
@@ -338,6 +366,10 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
           return PaymentSessionStatus.PENDING;
       }
     } catch (error) {
+      if (this.debug) {
+        console.error("PS_P_Debug: GetPaymentStatus: Error", error);
+      }
+
       return PaymentSessionStatus.ERROR;
     }
   }
@@ -369,14 +401,6 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
 
     const webhookSecretKey = this.configuration.secret_key;
 
-    if (!webhookSecretKey) {
-      console.error("PS_P_Debug: No secret key provided for Paystack plugin");
-
-      return {
-        action: PaymentActions.NOT_SUPPORTED,
-      };
-    }
-
     // Validate webhook event
     const hash = crypto
       .createHmac("sha512", webhookSecretKey)
@@ -399,12 +423,21 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
     const sessionId = data.metadata?.session_id;
 
     if (!sessionId) {
-      console.error(
-        "PS_P_Debug: No sessionId found in webhook transaction metadata",
-      );
+      if (this.debug) {
+        console.error(
+          "PS_P_Debug: No sessionId found in webhook transaction metadata",
+        );
+      }
       return {
         action: PaymentActions.NOT_SUPPORTED,
       };
+    }
+
+    if (this.debug) {
+      console.info(
+        "PS_P_Debug: Webhook event is valid",
+        JSON.stringify({ sessionId, amount: data.amount }, null, 2),
+      );
     }
 
     return {
