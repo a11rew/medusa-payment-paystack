@@ -33,9 +33,9 @@
     "typescript": "^5.5.4"
   },
   "scripts": {
-    "build": "rimraf dist && tsc -p tsconfig.build.json",
+    "dev": "tsc --watch",
+    "build": "rimraf dist && tsc",
     "prepare": "pnpm run build",
-    "dev": "tsc -p tsconfig.build.json --watch",
     "test:watch": "jest --watch",
     "test": "jest --ci --coverage",
     "lint": "eslint --ignore-path .gitignore . && prettier --check .",

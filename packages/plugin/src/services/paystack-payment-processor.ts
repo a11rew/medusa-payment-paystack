@@ -479,18 +479,23 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
     return paymentSessionData;
   }
 
-  protected buildError(
-    message: string,
-    e:
-      | {
-          code?: string;
-          detail: string;
-        }
-      | Error,
-  ): PaymentProviderError {
+  protected buildError(message: string, e: unknown): PaymentProviderError {
     const errorMessage = "Paystack Payment error: " + message;
-    const code = e instanceof Error ? e.message : e.code;
-    const detail = e instanceof Error ? e.stack : e.detail;
+    let code: string | undefined;
+    let detail: string | undefined;
+
+    if (e instanceof Error) {
+      code = e.message;
+      detail = e.stack;
+    } else if (
+      typeof e === "object" &&
+      e !== null &&
+      "code" in e &&
+      "detail" in e
+    ) {
+      code = (e as { code?: string }).code;
+      detail = (e as { detail: string }).detail;
+    }
 
     return {
       error: errorMessage,
