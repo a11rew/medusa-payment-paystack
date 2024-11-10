@@ -116,6 +116,7 @@ const handlers = [
       data: {
         reference: `ref-${Math.random() * 1000}`,
         authorization_url: "https://paystack.com/123",
+        access_code: "123",
       },
     });
   }),

@@ -77,7 +77,7 @@ describe("Provider Service Initialization", () => {
 });
 
 describe("initiatePayment", () => {
-  it("returns a payment session with a transaction reference", async () => {
+  it("returns a payment session with Paystack transaction data", async () => {
     const service = createPaystackProviderService();
     const { data } = checkForPaymentProcessorError(
       await service.initiatePayment({
@@ -89,8 +89,9 @@ describe("initiatePayment", () => {
       }),
     );
 
-    expect(data.paystackTxRef).toBeTruthy();
     expect(data.paystackTxRef).toEqual(expect.any(String));
+    expect(data.paystackTxAccessCode).toEqual(expect.any(String));
+    expect(data.paystackTxAuthorizationUrl).toEqual(expect.any(String));
   });
 
   it("errors out if email is not provided", async () => {
@@ -157,7 +158,6 @@ describe("authorizePayment", () => {
     const payment = checkForPaymentProcessorError(
       await service.authorizePayment({
         paystackTxRef: "123-failed",
-        cartId: "cart-123",
       }),
     );
     expect(payment.status).toEqual(PaymentSessionStatus.ERROR);
@@ -169,7 +169,6 @@ describe("authorizePayment", () => {
     const payment = checkForPaymentProcessorError(
       await service.authorizePayment({
         paystackTxRef: "123-passed",
-        cartId: "cart-123",
       }),
     );
 
@@ -181,7 +180,6 @@ describe("authorizePayment", () => {
     const payment = checkForPaymentProcessorError(
       await service.authorizePayment({
         paystackTxRef: "123-false",
-        cartId: "cart-123",
       }),
     );
 
@@ -194,7 +192,6 @@ describe("authorizePayment", () => {
     const payment = checkForPaymentProcessorError(
       await service.authorizePayment({
         paystackTxRef: "123-pending",
-        cartId: "cart-123",
       }),
     );
 
@@ -407,7 +404,6 @@ describe("Retriable error handling", () => {
     const payment = checkForPaymentProcessorError(
       await service.authorizePayment({
         paystackTxRef: "123-throw",
-        cartId: "cart-123",
       }),
     );
 
@@ -426,7 +422,6 @@ describe("Retriable error handling", () => {
       checkForPaymentProcessorError(
         await service.authorizePayment({
           paystackTxRef: "123-throw",
-          cartId: "cart-123",
         }),
       );
     }).rejects.toThrow();

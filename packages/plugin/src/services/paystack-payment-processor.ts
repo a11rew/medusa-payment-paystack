@@ -51,6 +51,8 @@ export interface PaystackPaymentProcessorConfig
 type PaystackPaymentProviderSessionResponse = PaymentProviderSessionResponse & {
   data: {
     paystackTxRef: string;
+    paystackTxAccessCode: string;
+    paystackTxAuthorizationUrl: string;
   };
 };
 
@@ -126,7 +128,8 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
       return {
         data: {
           paystackTxRef: data.reference,
-          paystackTxAuthData: data,
+          paystackTxAccessCode: data.access_code,
+          paystackTxAuthorizationUrl: data.authorization_url,
         },
       };
     } catch (error) {
@@ -160,9 +163,9 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
    * Called when a cart is completed
    * We validate the payment and return a status
    */
-  async authorizePayment(
-    paymentSessionData: PaystackPaymentProviderSessionResponse["data"],
-  ): Promise<
+  async authorizePayment(paymentSessionData: {
+    paystackTxRef: string;
+  }): Promise<
     | PaymentProviderError
     | {
         status: PaymentSessionStatus;
