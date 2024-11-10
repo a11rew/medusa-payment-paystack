@@ -9,7 +9,7 @@ import {
   WebhookActionResult,
   CreatePaymentProviderSession,
   UpdatePaymentProviderSession,
-} from "@medusajs/types";
+} from "@medusajs/framework/types";
 import {
   MedusaError,
   PaymentSessionStatus,

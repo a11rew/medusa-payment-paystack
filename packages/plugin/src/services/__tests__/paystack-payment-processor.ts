@@ -7,7 +7,7 @@ import {
   PaymentProviderError,
   CreatePaymentProviderSession,
   UpdatePaymentProviderSession,
-} from "@medusajs/types";
+} from "@medusajs/framework/types";
 import crypto from "crypto";
 
 import PaystackPaymentProcessor, {
