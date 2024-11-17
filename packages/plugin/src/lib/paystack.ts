@@ -117,12 +117,10 @@ export default class Paystack {
       metadata,
     }: {
       amount: number;
-      email?: string;
+      email: string;
       currency?: string;
       reference?: string;
-      metadata?: {
-        cart_id: string;
-      };
+      metadata?: Record<string, unknown>;
     }) =>
       this.requestPaystackAPI<
         PaystackResponse<{

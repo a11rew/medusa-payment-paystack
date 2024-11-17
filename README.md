@@ -16,11 +16,11 @@
 
 ## Medusa Server
 
-If you don’t have a Medusa server installed yet, you must follow the [quickstart guide](https://docs.medusajs.com/quickstart/quick-start/) first.
+If you don’t have a Medusa server installed yet, you must follow the [quickstart guide](https://docs.medusajs.com/learn) first.
 
 ### Install the Paystack Plugin
 
-In the root of your Medusa server, run the following command to install the Paystack plugin:
+In the root of your Medusa server (backend), run the following command to install the Paystack plugin:
 
 ```bash
 yarn add medusa-payment-paystack
@@ -30,19 +30,32 @@ yarn add medusa-payment-paystack
 
 Next, you need to enable the plugin in your Medusa server.
 
-In `medusa-config.js` add the following to the `plugins` array:
+In `medusa-config.ts` add the following to the `plugins` array:
 
-```js
-const plugins = [
-  // other plugins
-  {
-    resolve: `medusa-payment-paystack`,
-    /** @type {import("medusa-payment-paystack").PluginOptions} */
-    options: {
-      secret_key: "<PAYSTACK_SECRET_KEY>",
-    },
+```ts
+module.exports = defineConfig({
+  projectConfig: {
+    databaseUrl: process.env.DATABASE_URL,
+    // ... other config
   },
-];
+  modules: [
+    // other modules
+    {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: [
+          // other payment providers like stripe, paypal etc
+          {
+            resolve: "medusa-payment-paystack",
+            options: {
+              secret_key: <PAYSTACK_SECRET_KEY>,
+            } satisfies import("medusa-payment-paystack").PluginOptions,
+          },
+        ],
+      },
+    },
+  ],
+});
 ```
 
 The full list of configuration options you can pass to the plugin can be found in [Config](#configuration)
@@ -53,67 +66,130 @@ To ensure that Medusa is notified of successful payments, you need to set up web
 
 Go to your [Paystack dashboard](https://dashboard.paystack.com/#/settings/developer) and navigate to the "API Keys & Webhooks" section.
 
-Set the Webhook URL to `<your-medusa-backend-url>/paystack/hooks`. Eg. `https://your-medusa-backend.com/paystack/hooks`.
+Set the Webhook URL to `<your-medusa-backend-url>/hooks/payment/paystack`. Eg. `https://your-medusa-backend.com/hooks/payment/paystack`.
 
 ## Admin Setup
 
 This step is required for you to be able to use Paystack as a payment provider in your storefront.
 
-### Admin Prerequisites
-
-If you don’t have a Medusa admin installed, make sure to follow [the guide on how to install it](https://github.com/medusajs/admin#-quickstart) before continuing with this section.
-
 ### Add Paystack to Regions
 
-You can refer to [this documentation in the user guide](https://docs.medusajs.com/user-guide/regions/providers/#manage-payment-providers) to learn how to add a payment provider like Paystack to a region.
+Refer to [this documentation in the user guide](https://docs.medusajs.com/v1/user-guide/regions/providers/#manage-payment-providers) to learn how to add a payment provider like Paystack to a region.
 
 ## Storefront Setup
 
-Follow Medusa's [Checkout Flow](https://docs.medusajs.com/advanced/storefront/how-to-implement-checkout-flow/) guide using `paystack` as the `provider_id` to add Paystack to your checkout flow.
+Follow Medusa's [Storefront Development Checkout Flow](https://docs.medusajs.com/resources/storefront-development/checkout/payment) guide using `pp_paystack` as the `provider_id` to add Paystack to your checkout flow.
 
-`medusa-payment-paystack` returns a transaction reference you should send to Paystack as the transaction's reference.
+### Email in `initiatePaymentSession` context
 
-Using this returned reference as the Paystack transaction's reference allows the plugin to confirm the status of the transaction, verify that the paid amount and currency are correct before authorizing the payment.
+Paystack requires the customer's email address to create a transaction.
 
-### Using Transaction Reference
+You **need** to pass the customer's email address in the `initiatePaymentSession` context to create a transaction.
 
-`medusa-payment-paystack` inserts a reference named `paystackTxRef` into the [`PaymentSession`](https://docs.medusajs.com/advanced/backend/payment/overview/#payment-session)'s data.
+If your storefront does not collect customer email addresses, you can provide a dummy email but be aware all transactions on your Paystack dashboard will be associated with that email address.
 
-```js
-const { paystackTxRef } = paymentSession.data;
+```ts
+await initiatePaymentSession(cart, {
+  provider_id: selectedPaymentMethod,
+  context: {
+    email: cart.email,
+  },
+});
 ```
 
-Provide this reference when initiating the Paystack [Popup](https://paystack.com/docs/guides/migrating-from-inlinejs-v1-to-v2/) payment flow.
+### Completing the Payment Flow
+
+`medusa-payment-paystack` returns an access code and authorization URL that you should use to complete the Paystack payment flow on the storefront.
+
+Using the returned access code and authorization URL allows the plugin to confirm the status of the transaction on your backend, and then relay that information to Medusa.
+
+`medusa-payment-paystack` inserts the access code (`paystackTxAccessCode`) and authorization URL (`paystackTxAuthorizationUrl`) into the [`PaymentSession`](https://docs.medusajs.com/advanced/backend/payment/overview/#payment-session)'s data.
+
+You can use the access code to resume the payment flow, or the authorization URL to redirect the customer to Paystack's hosted payment page.
+
+#### Using Access Code
+
+Extract the access code from the payment session's data:
 
 ```js
-const paymentForm = document.getElementById("paymentForm");
-paymentForm.addEventListener("submit", payWithPaystack, false);
+const { paystackTxAccessCode } = paymentSession.data;
+```
 
-function payWithPaystack(e) {
-  e.preventDefault();
+Provide this access code to the `resumeTransaction` method from Paystack's [InlineJS](https://paystack.com/docs/guides/migrating-from-inlinejs-v1-to-v2/) library.
 
-  const paystack = new PaystackPop();
+```ts
+import Paystack from "@paystack/inline-js"
 
-  paystack.newTransaction({
-    key: "pk_test_xxxxxxxxxx", // Your Paystack public key
-    email: document.getElementById("email-address").value,
-    amount: document.getElementById("amount").value, // Value in lowest denomination of currency to be paid
-    ref: paystackTxRef, // Reference gotten from plugin
-    onSuccess() {
-      // Call Medusa checkout complete here
-    },
-    onCancel() {
-      alert("Window closed.");
-    },
-  });
+const PaystackPaymentButton = ({
+  session,
+  notReady,
+}: {
+  session: HttpTypes.StorePaymentSession | undefined
+  notReady: boolean
+}) => {
+  const paystackRef = useRef<Paystack | null>(null)
+
+  // If the session is not ready, we don't want to render the button
+  if (notReady || !session) return null
+
+  // Get the accessCode added to the session data by the Paystack plugin
+  const accessCode = session.data.paystackTxAccessCode
+  if (!accessCode) throw new Error("Transaction access code is not defined")
+
+  return (
+    <button
+      onClick={() => {
+        if (!paystackRef.current) {
+          paystackRef.current = new Paystack()
+        }
+
+        const paystack = paystackRef.current
+
+        paystack.resumeTransaction(accessCode, {
+          async onSuccess() {
+            // Call Medusa checkout complete here
+            await placeOrder()
+          },
+          onError(error: unknown) {
+            // Handle error
+          },
+        })
+      }}
+    >
+      Pay with Paystack
+    </button>
+  )
 }
 ```
 
+#### Using Authorization URL
+
+As a pre-requisite, you must have configured a "Callback URL" in your Paystack dashboard. Follow [this guide](https://support.paystack.com/en/articles/2129538) to set it up.
+
+The callback URL can be a custom route on your Medusa backend, it can be a page in your storefront or a view in your mobile application. That route just needs to call the Medusa [Complete Cart](https://docs.medusajs.com/resources/storefront-development/checkout/complete-cart) method.
+
+Extract the authorization URL from the payment session's data:
+
+```ts
+const { paystackTxAuthorizationUrl } = session.data;
+```
+
+Redirect the customer to the authorization URL to complete the payment.
+
+```ts
+// Redirect the customer to Paystack's hosted payment page
+window.open(paystackTxAuthorizationUrl, "_self");
+```
+
+Once the payment is successful, the customer will be redirected back to the callback URL. This page can then call the Medusa [Complete Cart](https://docs.medusajs.com/resources/storefront-development/checkout/complete-cart) method to complete the checkout flow and show a success message to the customer.
+
 ### Verify Payment
 
-Call the Medusa [Complete Cart](https://docs.medusajs.com/advanced/storefront/how-to-implement-checkout-flow/#complete-cart) method in the payment completion callback of your chosen flow.
+Call the Medusa [Complete Cart](https://docs.medusajs.com/resources/storefront-development/checkout/complete-cart) method in the payment completion callback of your chosen flow as mentioned in [Completing the Payment Flow](#completing-the-payment-flow) above.
 
-`medusa-payment-paystack` will check the status of the transaction with the reference it provided you, verify the amount matches the cart total and mark the cart as paid for in Medusa.
+`medusa-payment-paystack` will verify the transaction with Paystack and mark the cart as paid for in Medusa.
+
+Even if the "Complete Cart" method is not called for any reason, with webhooks set up correctly, the transaction will still be marked as paid for in Medusa when the user pays for it.
 
 ## Refund Payments
 
@@ -121,20 +197,18 @@ You can refund captured payments made with Paystack from the Admin dashboard.
 
 `medusa-payment-paystack` handles refunding the given amount using Paystack and marks the order in Medusa as refunded.
 
+Partial refunds are also supported.
+
 # Configuration
 
-| Name            | Type      | Default     | Description                                                                                   |
-| --------------- | --------- | ----------- | --------------------------------------------------------------------------------------------- |
-| secret_key      | `string`  | `undefined` | Your Paystack secret key                                                                      |
-| disable_retries | `boolean` | `false`     | Disable retries for 5xx and failed idempotent requests to Paystack                            |
-| debug           | `boolean` | `false`     | Enable debug mode for the plugin. If true, helpful debug information is logged to the console |
+| Name            | Type      | Default | Description                                                                                                                                                                                            |
+| --------------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| secret_key      | `string`  | -       | Your Paystack secret key. Should be in the format sk_test-... or sk_live-... Obtainable from the Paystack dashboard - Settings -> API Keys & Webhooks.                                                 |
+| disable_retries | `boolean` | `false` | Disable retries on network errors and 5xx errors on idempotent requests to Paystack. Generally, you should not disable retries, these errors are usually temporary but it can be useful for debugging. |
+| debug           | `boolean` | `false` | Enable debug mode for the plugin. If true, logs helpful debug information to the console. Logs are prefixed with "PS_P_Debug".                                                                         |
 
-# Demo
+# Examples
 
-Try out the demo here: [Medusa store with Paystack Integration](https://storefront-production-ae6c.up.railway.app/)
+The [`examples`](https://github.com/a11rew/medusa-payment-paystack/blob/main/examples) directory contains a simple Medusa server with the Paystack plugin installed and configured.
 
-![Demo video](https://user-images.githubusercontent.com/87580113/211937892-d1a34735-78a5-451d-83f8-bc23185dd8ef.png)
-
-[Demo Video](https://vimeo.com/763132960)
-
-Clone the demo repository [a11rew/medusa-payment-paystack-demo](https://github.com/a11rew/medusa-paystack-demo) and follow the [setup instructions](https://github.com/a11rew/medusa-paystack-demo#set-up-project) to get started.
+It also contains a storefront built with Next.js that uses the inline-js Paystack library to complete the payment flow.

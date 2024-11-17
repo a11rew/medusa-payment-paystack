@@ -95,13 +95,28 @@ const handlers = [
   }),
 
   // Initialize transaction
-  http.post(`${PAYSTACK_API_PATH}/transaction/initialize`, () => {
+  http.post(`${PAYSTACK_API_PATH}/transaction/initialize`, async req => {
+    const { amount } = (await req.request.json()) as {
+      amount: number;
+    };
+
+    if (typeof amount !== "number") {
+      return HttpResponse.json(
+        {
+          status: false,
+          message: "Invalid amount",
+        },
+        { status: 400 },
+      );
+    }
+
     return HttpResponse.json({
       status: true,
       message: "Transaction initialized",
       data: {
         reference: `ref-${Math.random() * 1000}`,
         authorization_url: "https://paystack.com/123",
+        access_code: "123",
       },
     });
   }),
