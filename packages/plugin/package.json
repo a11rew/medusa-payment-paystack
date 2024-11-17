@@ -35,7 +35,6 @@
   "scripts": {
     "dev": "tsc --watch",
     "build": "rimraf dist && tsc",
-    "prepare": "pnpm run build",
     "test:watch": "jest --watch",
     "test": "jest --ci --coverage",
     "lint": "eslint --ignore-path .gitignore . && prettier --check .",
