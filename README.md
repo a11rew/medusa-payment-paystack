@@ -209,6 +209,6 @@ Partial refunds are also supported.
 
 # Examples
 
-The `examples` directory contains a simple Medusa server with the Paystack plugin installed and configured.
+The [`examples`](https://github.com/a11rew/medusa-payment-paystack/blob/main/examples) directory contains a simple Medusa server with the Paystack plugin installed and configured.
 
-It also contains a storefront built with Next.js that uses the Paystack plugin to complete the payment flow.
+It also contains a storefront built with Next.js that uses the inline-js Paystack library to complete the payment flow.
