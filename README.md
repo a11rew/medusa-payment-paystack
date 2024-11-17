@@ -125,17 +125,23 @@ const PaystackPaymentButton = ({
   session: HttpTypes.StorePaymentSession | undefined
   notReady: boolean
 }) => {
+  const paystackRef = useRef<Paystack | null>(null)
+
   // If the session is not ready, we don't want to render the button
   if (notReady || !session) return null
 
+  // Get the accessCode added to the session data by the Paystack plugin
   const accessCode = session.data.paystackTxAccessCode
-  // Payment was not initialised correctly
   if (!accessCode) throw new Error("Transaction access code is not defined")
 
   return (
     <button
       onClick={() => {
-        const paystack = new Paystack()
+        if (!paystackRef.current) {
+          paystackRef.current = new Paystack()
+        }
+
+        const paystack = paystackRef.current
 
         paystack.resumeTransaction(accessCode, {
           async onSuccess() {
@@ -144,6 +150,7 @@ const PaystackPaymentButton = ({
           },
           onError(error: unknown) {
             // Handle error
+            console.error(error)
           },
         })
       }}
