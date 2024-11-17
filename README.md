@@ -118,6 +118,8 @@ const { paystackTxAccessCode } = paymentSession.data;
 Provide this access code to the `resumeTransaction` method from Paystack's [InlineJS](https://paystack.com/docs/guides/migrating-from-inlinejs-v1-to-v2/) library.
 
 ```ts
+import Paystack from "@paystack/inline-js"
+
 const PaystackPaymentButton = ({
   session,
   notReady,
@@ -150,7 +152,6 @@ const PaystackPaymentButton = ({
           },
           onError(error: unknown) {
             // Handle error
-            console.error(error)
           },
         })
       }}
