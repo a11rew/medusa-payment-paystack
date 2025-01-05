@@ -31,6 +31,7 @@
     "@mikro-orm/migrations": "5.9.7",
     "@mikro-orm/postgresql": "5.9.7",
     "awilix": "^8.0.1",
+    "medusa-payment-paystack": "^2.0.0",
     "pg": "^8.13.0"
   },
   "devDependencies": {

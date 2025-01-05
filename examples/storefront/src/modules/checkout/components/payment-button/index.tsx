@@ -1,11 +1,13 @@
 "use client"
 
-import { isManual, isStripe } from "@lib/constants"
+import { isManual, isPaystack, isStripe } from "@lib/constants"
 import { placeOrder } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@medusajs/ui"
 import { useElements, useStripe } from "@stripe/react-stripe-js"
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
+import Paystack from "paystack-inline-ts"
+
 import ErrorMessage from "../error-message"
 
 type PaymentButtonProps = {
@@ -39,9 +41,56 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
       return (
         <ManualTestPaymentButton notReady={notReady} data-testid={dataTestId} />
       )
+    case isPaystack(paymentSession?.provider_id):
+      return (
+        <PaystackPaymentButton notReady={notReady} session={paymentSession} />
+      )
     default:
       return <Button disabled>Select a payment method</Button>
   }
+}
+
+const PaystackPaymentButton = ({
+  session,
+  notReady,
+}: {
+  session: HttpTypes.StorePaymentSession | undefined
+  notReady: boolean
+}) => {
+  const paystackRef = useRef<InstanceType<typeof Paystack>>(null)
+
+  // If the session is not ready, we don't want to render the button
+  if (notReady || !session) return null
+
+  // Get the accessCode added to the session data by the Paystack plugin
+  const accessCode = session.data.paystackTxAccessCode as string
+  if (!accessCode) throw new Error("Transaction access code is not defined")
+
+  return (
+    <button
+      onClick={() => {
+        if (!paystackRef.current) {
+          paystackRef.current = new Paystack()
+        }
+
+        const paystack = paystackRef.current
+
+        paystack.resumeTransaction({
+          accessCode,
+          async onSuccess() {
+            // Call Medusa checkout complete here
+            await placeOrder()
+          },
+          onError(error: unknown) {
+            // Handle error
+            console.error(error)
+          },
+        })
+      }}
+    >
+      Pay with Paystack
+    </button>
+  )
 }
 
 const StripePaymentButton = ({
