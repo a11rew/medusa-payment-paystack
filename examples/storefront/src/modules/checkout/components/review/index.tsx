@@ -1,38 +1,39 @@
-import { useCheckout } from "@lib/context/checkout-context"
-import { Heading, Text, clx } from "@medusajs/ui"
-import PaymentButton from "../payment-button"
+"use client"
 
-const Review = () => {
-  const {
-    cart,
-    editPayment: { state: isEditPayment },
-    editAddresses: { state: isEditAddresses },
-    editShipping: { state: isEditShipping },
-  } = useCheckout()
+import { Heading, Text, clx } from "@medusajs/ui"
+
+import PaymentButton from "../payment-button"
+import { useSearchParams } from "next/navigation"
+
+const Review = ({ cart }: { cart: any }) => {
+  const searchParams = useSearchParams()
+
+  const isOpen = searchParams.get("step") === "review"
+
+  const paidByGiftcard =
+    cart?.gift_cards && cart?.gift_cards?.length > 0 && cart?.total === 0
 
   const previousStepsCompleted =
-    !!cart?.shipping_address &&
-    !!cart.shipping_methods?.[0]?.shipping_option.id &&
-    !!cart?.payment_sessions
-
-  const editingOtherSteps = isEditAddresses || isEditShipping || isEditPayment
+    cart.shipping_address &&
+    cart.shipping_methods.length > 0 &&
+    (cart.payment_collection || paidByGiftcard)
 
   return (
-    <div className="bg-white px-4 small:px-8">
+    <div className="bg-white">
       <div className="flex flex-row items-center justify-between mb-6">
         <Heading
           level="h2"
           className={clx(
             "flex flex-row text-3xl-regular gap-x-2 items-baseline",
             {
-              "opacity-50 pointer-events-none select-none": editingOtherSteps,
+              "opacity-50 pointer-events-none select-none": !isOpen,
             }
           )}
         >
           Review
         </Heading>
       </div>
-      {!editingOtherSteps && previousStepsCompleted && (
+      {isOpen && previousStepsCompleted && (
         <>
           <div className="flex items-start gap-x-1 w-full mb-6">
             <div className="w-full">
@@ -44,7 +45,7 @@ const Review = () => {
               </Text>
             </div>
           </div>
-          <PaymentButton paymentSession={cart?.payment_session} />
+          <PaymentButton cart={cart} data-testid="submit-order-button" />
         </>
       )}
     </div>

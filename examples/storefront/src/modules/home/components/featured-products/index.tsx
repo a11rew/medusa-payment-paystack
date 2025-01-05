@@ -1,24 +1,16 @@
-import { ProductCollection } from "@medusajs/medusa"
-import ProductRail from "./product-rail"
+import { HttpTypes } from "@medusajs/types"
+import ProductRail from "@modules/home/components/featured-products/product-rail"
 
-const FeaturedProducts = ({
+export default async function FeaturedProducts({
   collections,
+  region,
 }: {
-  collections: ProductCollection[]
-}) => {
-  return (
-    <div className="py-12">
-      <div className="py-12">
-        <ul className="flex flex-col gap-x-6 gap-y-8">
-          {collections.map((collection) => (
-            <li key={collection.id}>
-              <ProductRail collection={collection} />
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  )
+  collections: HttpTypes.StoreCollection[]
+  region: HttpTypes.StoreRegion
+}) {
+  return collections.map((collection) => (
+    <li key={collection.id}>
+      <ProductRail collection={collection} region={region} />
+    </li>
+  ))
 }
-
-export default FeaturedProducts

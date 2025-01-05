@@ -1,93 +1,70 @@
-import { useAccount } from "@lib/context/account-context"
-import { Customer } from "@medusajs/medusa"
+"use client"
+
+import React, { useEffect, useActionState } from "react";
+
 import Input from "@modules/common/components/input"
-import { useUpdateMe } from "medusa-react"
-import React, { useEffect } from "react"
-import { useForm, useWatch } from "react-hook-form"
+
 import AccountInfo from "../account-info"
+import { HttpTypes } from "@medusajs/types"
+// import { updateCustomer } from "@lib/data/customer"
 
 type MyInformationProps = {
-  customer: Omit<Customer, "password_hash">
-}
-
-type UpdateCustomerEmailFormData = {
-  email: string
+  customer: HttpTypes.StoreCustomer
 }
 
 const ProfileEmail: React.FC<MyInformationProps> = ({ customer }) => {
-  const [errorMessage, setErrorMessage] = React.useState<string | undefined>(
-    undefined
-  )
+  const [successState, setSuccessState] = React.useState(false)
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    control,
-    formState: { errors },
-  } = useForm<UpdateCustomerEmailFormData>({
-    defaultValues: {
-      email: customer.email,
-    },
-  })
+  // TODO: It seems we don't support updating emails now?
+  const updateCustomerEmail = (
+    _currentState: Record<string, unknown>,
+    formData: FormData
+  ) => {
+    const customer = {
+      email: formData.get("email") as string,
+    }
 
-  const { refetchCustomer } = useAccount()
-
-  const {
-    mutate: update,
-    isLoading,
-    isSuccess,
-    isError,
-    reset: clearState,
-  } = useUpdateMe()
-
-  useEffect(() => {
-    reset({
-      email: customer.email,
-    })
-  }, [customer, reset])
-
-  const email = useWatch({
-    control,
-    name: "email",
-  })
-
-  const updateEmail = (data: UpdateCustomerEmailFormData) => {
-    return update(
-      {
-        id: customer.id,
-        ...data,
-      },
-      {
-        onSuccess: () => {
-          refetchCustomer()
-        },
-        onError: () => {
-          setErrorMessage("Email already in use")
-        },
-      }
-    )
+    try {
+      // await updateCustomer(customer)
+      return { success: true, error: null }
+    } catch (error: any) {
+      return { success: false, error: error.toString() }
+    }
   }
 
+  const [state, formAction] = useActionState(updateCustomerEmail, {
+    error: false,
+    success: false,
+  })
+
+  const clearState = () => {
+    setSuccessState(false)
+  }
+
+  useEffect(() => {
+    setSuccessState(state.success)
+  }, [state])
+
   return (
-    <form onSubmit={handleSubmit(updateEmail)} className="w-full">
+    <form action={formAction} className="w-full">
       <AccountInfo
         label="Email"
         currentInfo={`${customer.email}`}
-        isLoading={isLoading}
-        isSuccess={isSuccess}
-        isError={isError}
-        errorMessage={errorMessage}
+        isSuccess={successState}
+        isError={!!state.error}
+        errorMessage={state.error}
         clearState={clearState}
+        data-testid="account-email-editor"
       >
         <div className="grid grid-cols-1 gap-y-2">
           <Input
             label="Email"
-            {...register("email", {
-              required: true,
-            })}
-            defaultValue={email}
-            errors={errors}
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            defaultValue={customer.email}
+            data-testid="email-input"
           />
         </div>
       </AccountInfo>

@@ -1,24 +1,41 @@
-"use client"
+import { Suspense } from "react"
 
-import { StoreGetProductsParams } from "@medusajs/medusa"
-import InfiniteProducts from "@modules/products/components/infinite-products"
+import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
 import RefinementList from "@modules/store/components/refinement-list"
-import { useState } from "react"
-import { SortOptions } from "../components/refinement-list/sort-products"
+import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 
-const StoreTemplate = () => {
-  const [params, setParams] = useState<StoreGetProductsParams>({})
-  const [sortBy, setSortBy] = useState<SortOptions>("created_at")
+import PaginatedProducts from "./paginated-products"
+
+const StoreTemplate = ({
+  sortBy,
+  page,
+  countryCode,
+}: {
+  sortBy?: SortOptions
+  page?: string
+  countryCode: string
+}) => {
+  const pageNumber = page ? parseInt(page) : 1
+  const sort = sortBy || "created_at"
 
   return (
-    <div className="flex flex-col small:flex-row small:items-start py-6">
-      <RefinementList
-        refinementList={params}
-        setRefinementList={setParams}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-      />
-      <InfiniteProducts params={params} sortBy={sortBy} />
+    <div
+      className="flex flex-col small:flex-row small:items-start py-6 content-container"
+      data-testid="category-container"
+    >
+      <RefinementList sortBy={sort} />
+      <div className="w-full">
+        <div className="mb-8 text-2xl-semi">
+          <h1 data-testid="store-page-title">All products</h1>
+        </div>
+        <Suspense fallback={<SkeletonProductGrid />}>
+          <PaginatedProducts
+            sortBy={sort}
+            page={pageNumber}
+            countryCode={countryCode}
+          />
+        </Suspense>
+      </div>
     </div>
   )
 }

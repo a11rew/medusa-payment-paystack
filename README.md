@@ -209,6 +209,20 @@ Partial refunds are also supported.
 
 # Examples
 
-The [`examples`](https://github.com/a11rew/medusa-payment-paystack/blob/main/examples) directory contains a simple Medusa server with the Paystack plugin installed and configured.
+The [`examples`](https://github.com/a11rew/medusa-payment-paystack/blob/main/examples) directory contains an example Medusa installation with the Paystack plugin installed and configured. The backend can be found in the [`backend`](https://github.com/a11rew/medusa-payment-paystack/blob/main/examples/backend) directory and the storefront can be found in the [`storefront`](https://github.com/a11rew/medusa-payment-paystack/blob/main/examples/storefront) directory.
 
-It also contains a storefront built with Next.js that uses the inline-js Paystack library to complete the payment flow.
+The storefront is built with Next.js and uses the inline-js Paystack library to complete the payment flow.
+
+The examples are the default Medusa V2 storefront and backend starters. View all the changes made to the examples to add Paystack support in this commit: [feat: add paystack payment support](https://github.com/a11rew/medusa-payment-paystack/commit/3782286cb5693df1511d24bdaa2440efe6e747c5).
+
+# V1
+
+The [`v1` branch](https://github.com/a11rew/medusa-payment-paystack/tree/v1) contains the original version of this plugin with support for Medusa V1. The example storefront and backend for the v1 version can also be found in the [examples directory](https://github.com/a11rew/medusa-payment-paystack/tree/v1/examples) of the `v1` branch.
+
+It can be installed from npm using the `1` version tag:
+
+```bash
+yarn add medusa-payment-paystack@1
+```
+
+The `v1` branch is no longer maintained and is only kept for reference.

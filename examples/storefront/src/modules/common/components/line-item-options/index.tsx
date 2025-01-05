@@ -1,22 +1,25 @@
-import { ProductVariant } from "@medusajs/medusa"
+import { HttpTypes } from "@medusajs/types"
 import { Text } from "@medusajs/ui"
 
-type LineItemOptionsProps = { variant: ProductVariant }
+type LineItemOptionsProps = {
+  variant: HttpTypes.StoreProductVariant | undefined
+  "data-testid"?: string
+  "data-value"?: HttpTypes.StoreProductVariant
+}
 
-const LineItemOptions = ({ variant }: LineItemOptionsProps) => {
+const LineItemOptions = ({
+  variant,
+  "data-testid": dataTestid,
+  "data-value": dataValue,
+}: LineItemOptionsProps) => {
   return (
-    <>
-      {variant.options?.map((option) => {
-        const optionName =
-          variant.product.options.find((opt) => opt.id === option.option_id)
-            ?.title || "Option"
-        return (
-          <Text key={option.id} className="txt-medium text-ui-fg-subtle">
-            {optionName}: {option.value}
-          </Text>
-        )
-      })}
-    </>
+    <Text
+      data-testid={dataTestid}
+      data-value={dataValue}
+      className="inline-block txt-medium text-ui-fg-subtle w-full overflow-hidden text-ellipsis"
+    >
+      Variant: {variant?.title}
+    </Text>
   )
 }
 

@@ -1,30 +1,27 @@
-import { Tab } from "@headlessui/react"
-import { PricedProduct } from "@medusajs/medusa/dist/types/pricing"
+"use client"
+
 import Back from "@modules/common/icons/back"
 import FastDelivery from "@modules/common/icons/fast-delivery"
 import Refresh from "@modules/common/icons/refresh"
-import { ProgressAccordion, Text } from "@medusajs/ui"
-import clsx from "clsx"
-import { useMemo } from "react"
+
 import Accordion from "./accordion"
+import { HttpTypes } from "@medusajs/types"
 
 type ProductTabsProps = {
-  product: PricedProduct
+  product: HttpTypes.StoreProduct
 }
 
 const ProductTabs = ({ product }: ProductTabsProps) => {
-  const tabs = useMemo(() => {
-    return [
-      {
-        label: "Product Information",
-        component: <ProductInfoTab product={product} />,
-      },
-      {
-        label: "Shipping & Returns",
-        component: <ShippingInfoTab />,
-      },
-    ]
-  }, [product])
+  const tabs = [
+    {
+      label: "Product Information",
+      component: <ProductInfoTab product={product} />,
+    },
+    {
+      label: "Shipping & Returns",
+      component: <ShippingInfoTab />,
+    },
+  ]
 
   return (
     <div className="w-full">
@@ -77,11 +74,6 @@ const ProductInfoTab = ({ product }: ProductTabsProps) => {
           </div>
         </div>
       </div>
-      {product.tags?.length ? (
-        <div>
-          <span className="font-semibold">Tags</span>
-        </div>
-      ) : null}
     </div>
   )
 }
