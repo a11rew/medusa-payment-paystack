@@ -1,6 +1,6 @@
+import { Text, clx } from "@medusajs/ui"
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import React from "react"
-import { Heading, Text, clx } from "@medusajs/ui"
 
 type AccordionItemProps = AccordionPrimitive.AccordionItemProps & {
   title: string
@@ -14,14 +14,16 @@ type AccordionItemProps = AccordionPrimitive.AccordionItemProps & {
   complete?: boolean
   active?: boolean
   triggerable?: boolean
+  children: React.ReactNode
 }
 
-const Accordion: React.FC<
+type AccordionProps =
   | (AccordionPrimitive.AccordionSingleProps &
       React.RefAttributes<HTMLDivElement>)
   | (AccordionPrimitive.AccordionMultipleProps &
       React.RefAttributes<HTMLDivElement>)
-> & {
+
+const Accordion: React.FC<AccordionProps> & {
   Item: React.FC<AccordionItemProps>
 } = ({ children, ...props }) => {
   return (

@@ -1,23 +1,26 @@
-import { getPercentageDiff } from "@lib/util/get-precentage-diff"
-import { LineItem, Region } from "@medusajs/medusa"
-import clsx from "clsx"
-import { formatAmount } from "medusa-react"
-import { CalculatedVariant } from "types/medusa"
+import { getPricesForVariant } from "@lib/util/get-product-price"
+import { convertToLocale } from "@lib/util/money"
+import { HttpTypes } from "@medusajs/types"
+import { clx } from "@medusajs/ui"
 
 type LineItemUnitPriceProps = {
-  item: Omit<LineItem, "beforeInsert">
-  region: Region
+  item: HttpTypes.StoreCartLineItem | HttpTypes.StoreOrderLineItem
   style?: "default" | "tight"
+  currencyCode: string
 }
 
 const LineItemUnitPrice = ({
   item,
-  region,
   style = "default",
+  currencyCode,
 }: LineItemUnitPriceProps) => {
-  const originalPrice = (item.variant as CalculatedVariant).original_price
-  const hasReducedPrice = (originalPrice * item.quantity || 0) > item.total!
-  const reducedPrice = (item.total || 0) / item.quantity!
+  const { total, original_total, unit_price } = item
+
+  const hasReducedPrice = total < original_total
+
+  const percentage_diff = Math.round(
+    ((original_total - total) / original_total) * 100
+  )
 
   return (
     <div className="flex flex-col text-ui-fg-muted justify-center h-full">
@@ -27,30 +30,30 @@ const LineItemUnitPrice = ({
             {style === "default" && (
               <span className="text-ui-fg-muted">Original: </span>
             )}
-            <span className="line-through">
-              {formatAmount({
-                amount: originalPrice,
-                region: region,
-                includeTaxes: false,
+            <span
+              className="line-through"
+              data-testid="product-unit-original-price"
+            >
+              {convertToLocale({
+                amount: original_total / item.quantity,
+                currency_code: currencyCode,
               })}
             </span>
           </p>
           {style === "default" && (
-            <span className="text-ui-fg-interactive">
-              -{getPercentageDiff(originalPrice, reducedPrice || 0)}%
-            </span>
+            <span className="text-ui-fg-interactive">-{percentage_diff}%</span>
           )}
         </>
       )}
       <span
-        className={clsx("text-base-regular", {
+        className={clx("text-base-regular", {
           "text-ui-fg-interactive": hasReducedPrice,
         })}
+        data-testid="product-unit-price"
       >
-        {formatAmount({
-          amount: reducedPrice || item.unit_price || 0,
-          region: region,
-          includeTaxes: false,
+        {convertToLocale({
+          amount: unit_price,
+          currency_code: currencyCode,
         })}
       </span>
     </div>

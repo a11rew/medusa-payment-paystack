@@ -1,14 +1,12 @@
-import { Order } from "@medusajs/medusa"
-import { Heading, Text } from "@medusajs/ui"
+import { HttpTypes } from "@medusajs/types"
+import { Text } from "@medusajs/ui"
 
 type OrderDetailsProps = {
-  order: Order
+  order: HttpTypes.StoreOrder
   showStatus?: boolean
 }
 
 const OrderDetails = ({ order, showStatus }: OrderDetailsProps) => {
-  const items = order.items.reduce((acc, i) => acc + i.quantity, 0)
-
   const formatStatus = (str: string) => {
     const formatted = str.split("_").join(" ")
 
@@ -17,18 +15,24 @@ const OrderDetails = ({ order, showStatus }: OrderDetailsProps) => {
 
   return (
     <div>
-      <Text className="mt-8">
+      <Text>
         We have sent the order confirmation details to{" "}
-        <span className="text-ui-fg-medium-plus font-semibold">
+        <span
+          className="text-ui-fg-medium-plus font-semibold"
+          data-testid="order-email"
+        >
           {order.email}
         </span>
         .
       </Text>
       <Text className="mt-2">
-        Order date: {new Date(order.created_at).toDateString()}
+        Order date:{" "}
+        <span data-testid="order-date">
+          {new Date(order.created_at).toDateString()}
+        </span>
       </Text>
       <Text className="mt-2 text-ui-fg-interactive">
-        Order number: {order.display_id}
+        Order number: <span data-testid="order-id">{order.display_id}</span>
       </Text>
 
       <div className="flex items-center text-compact-small gap-x-4 mt-4">
@@ -36,14 +40,18 @@ const OrderDetails = ({ order, showStatus }: OrderDetailsProps) => {
           <>
             <Text>
               Order status:{" "}
-              <span className="text-ui-fg-subtle ">
-                {formatStatus(order.fulfillment_status)}
+              <span className="text-ui-fg-subtle " data-testid="order-status">
+                {/* TODO: Check where the statuses should come from */}
+                {/* {formatStatus(order.fulfillment_status)} */}
               </span>
             </Text>
             <Text>
               Payment status:{" "}
-              <span className="text-ui-fg-subtle ">
-                {formatStatus(order.payment_status)}
+              <span
+                className="text-ui-fg-subtle "
+                sata-testid="order-payment-status"
+              >
+                {/* {formatStatus(order.payment_status)} */}
               </span>
             </Text>
           </>

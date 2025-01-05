@@ -1,15 +1,23 @@
-const { withStoreConfig } = require("./store-config")
-const store = require("./store.config.json")
+const checkEnvVariables = require("./check-env-variables")
 
-module.exports = withStoreConfig({
-  experimental: {
-    serverComponentsExternalPackages: [
-      "@medusajs/product",
-      "@medusajs/modules-sdk",
-    ],
-  },
-  features: store.features,
+checkEnvVariables()
+
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
   reactStrictMode: true,
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   images: {
     remotePatterns: [
       {
@@ -22,10 +30,6 @@ module.exports = withStoreConfig({
       },
       {
         protocol: "https",
-        hostname: "i.imgur.com",
-      },
-      {
-        protocol: "https",
         hostname: "medusa-server-testing.s3.amazonaws.com",
       },
       {
@@ -34,6 +38,6 @@ module.exports = withStoreConfig({
       },
     ],
   },
-})
+}
 
-console.log("next.config.js", JSON.stringify(module.exports, null, 2))
+module.exports = nextConfig

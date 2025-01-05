@@ -1,8 +1,8 @@
-import { Order } from "@medusajs/medusa"
-import { formatAmount } from "medusa-react"
+import { convertToLocale } from "@lib/util/money"
+import { HttpTypes } from "@medusajs/types"
 
 type OrderSummaryProps = {
-  order: Order
+  order: HttpTypes.StoreOrder
 }
 
 const OrderSummary = ({ order }: OrderSummaryProps) => {
@@ -11,14 +11,17 @@ const OrderSummary = ({ order }: OrderSummaryProps) => {
       return
     }
 
-    return formatAmount({ amount, region: order.region, includeTaxes: false })
+    return convertToLocale({
+      amount,
+      currency_code: order.currency_code,
+    })
   }
 
   return (
     <div>
       <h2 className="text-base-semi">Order Summary</h2>
-      <div className="text-small-regular text-gray-700 my-2">
-        <div className="flex items-center justify-between text-base-regular text-gray-900 mb-2">
+      <div className="text-small-regular text-ui-fg-base my-2">
+        <div className="flex items-center justify-between text-base-regular text-ui-fg-base mb-2">
           <span>Subtotal</span>
           <span>{getAmount(order.subtotal)}</span>
         </div>
@@ -45,7 +48,7 @@ const OrderSummary = ({ order }: OrderSummaryProps) => {
           </div>
         </div>
         <div className="h-px w-full border-b border-gray-200 border-dashed my-4" />
-        <div className="flex items-center justify-between text-base-regular text-gray-900 mb-2">
+        <div className="flex items-center justify-between text-base-regular text-ui-fg-base mb-2">
           <span>Total</span>
           <span>{getAmount(order.total)}</span>
         </div>

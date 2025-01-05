@@ -1,101 +1,74 @@
-import { useAccount } from "@lib/context/account-context"
-import { Customer } from "@medusajs/medusa"
+"use client"
+
+import React, { useEffect, useActionState } from "react";
+
 import Input from "@modules/common/components/input"
-import { useUpdateMe } from "medusa-react"
-import React, { useEffect } from "react"
-import { useForm, useWatch } from "react-hook-form"
+
 import AccountInfo from "../account-info"
+import { HttpTypes } from "@medusajs/types"
+import { updateCustomer } from "@lib/data/customer"
 
 type MyInformationProps = {
-  customer: Omit<Customer, "password_hash">
-}
-
-type UpdateCustomerNameFormData = {
-  first_name: string
-  last_name: string
+  customer: HttpTypes.StoreCustomer
 }
 
 const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    control,
-    formState: { errors },
-  } = useForm<UpdateCustomerNameFormData>({
-    defaultValues: {
-      first_name: customer.first_name,
-      last_name: customer.last_name,
-    },
-  })
+  const [successState, setSuccessState] = React.useState(false)
 
-  const { refetchCustomer } = useAccount()
+  const updateCustomerName = async (
+    _currentState: Record<string, unknown>,
+    formData: FormData
+  ) => {
+    const customer = {
+      first_name: formData.get("first_name") as string,
+      last_name: formData.get("last_name") as string,
+    }
 
-  const {
-    mutate: update,
-    isLoading,
-    isSuccess,
-    isError,
-    reset: clearState,
-  } = useUpdateMe()
-
-  useEffect(() => {
-    reset({
-      first_name: customer.first_name,
-      last_name: customer.last_name,
-    })
-  }, [customer, reset])
-
-  const firstName = useWatch({
-    control,
-    name: "first_name",
-  })
-  const lastName = useWatch({
-    control,
-    name: "last_name",
-  })
-
-  const updateName = (data: UpdateCustomerNameFormData) => {
-    return update(
-      {
-        id: customer.id,
-        ...data,
-      },
-      {
-        onSuccess: () => {
-          refetchCustomer()
-        },
-      }
-    )
+    try {
+      await updateCustomer(customer)
+      return { success: true, error: null }
+    } catch (error: any) {
+      return { success: false, error: error.toString() }
+    }
   }
 
+  const [state, formAction] = useActionState(updateCustomerName, {
+    error: false,
+    success: false,
+  })
+
+  const clearState = () => {
+    setSuccessState(false)
+  }
+
+  useEffect(() => {
+    setSuccessState(state.success)
+  }, [state])
+
   return (
-    <form
-      onSubmit={handleSubmit(updateName)}
-      className="w-full overflow-visible"
-    >
+    <form action={formAction} className="w-full overflow-visible">
       <AccountInfo
         label="Name"
         currentInfo={`${customer.first_name} ${customer.last_name}`}
-        isLoading={isLoading}
-        isSuccess={isSuccess}
-        isError={isError}
+        isSuccess={successState}
+        isError={!!state?.error}
         clearState={clearState}
+        data-testid="account-name-editor"
       >
         <div className="grid grid-cols-2 gap-x-4">
           <Input
             label="First name"
-            {...register("first_name", {
-              required: true,
-            })}
-            defaultValue={firstName}
-            errors={errors}
+            name="first_name"
+            required
+            defaultValue={customer.first_name ?? ""}
+            data-testid="first-name-input"
           />
           <Input
             label="Last name"
-            {...register("last_name", { required: true })}
-            defaultValue={lastName}
-            errors={errors}
+            name="last_name"
+            required
+            defaultValue={customer.last_name ?? ""}
+            data-testid="last-name-input"
           />
         </div>
       </AccountInfo>
