@@ -19,7 +19,7 @@
   "devDependencies": {
     "@medusajs/framework": "^2.0.1",
     "@types/jest": "^29.5.12",
-    "@types/node": "^22.5.4",
+    "@types/node": "^22.13.5",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-prettier": "^9.1.0",
