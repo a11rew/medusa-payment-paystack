@@ -96,8 +96,8 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider {
       );
     }
 
-    const { context, amount, currency_code } = initiatePaymentData;
-    const { email, session_id } = context;
+    const { data, amount, currency_code } = initiatePaymentData;
+    const { email, session_id } = data;
 
     const validatedCurrencyCode = formatCurrencyCode(currency_code);
 
