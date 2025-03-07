@@ -13,7 +13,7 @@
     "@medusajs/framework": "^2.0.1"
   },
   "dependencies": {
-    "axios": "^1.7.7",
+    "axios": "^1.8.2",
     "axios-retry": "^4.1.0"
   },
   "devDependencies": {
