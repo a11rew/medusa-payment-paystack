@@ -43,7 +43,7 @@ function checkForPaymentProcessorError<T>(response: T | PaymentProviderError) {
 const demoCreatePaymentProviderSession = {
   amount: 100,
   currency_code: "GHS",
-  context: {
+  data: {
     email: "andrew@a11rew.dev",
   },
 } satisfies CreatePaymentProviderSession;
@@ -83,7 +83,7 @@ describe("initiatePayment", () => {
       await service.initiatePayment({
         amount: 100,
         currency_code: "GHS",
-        context: {
+        data: {
           email: "andrew@a11rew.dev",
         },
       }),
@@ -99,7 +99,7 @@ describe("initiatePayment", () => {
     const response = await service.initiatePayment({
       amount: 100,
       currency_code: "GHS",
-      context: {},
+      data: {},
     });
 
     expect(isPaymentProviderError(response)).toBeTruthy();
@@ -113,7 +113,7 @@ describe("initiatePayment", () => {
     const response = await service.initiatePayment({
       amount: "invalid-amount",
       currency_code: "GHS",
-      context: {
+      data: {
         email: "andrew@a11rew.dev",
       },
     });
