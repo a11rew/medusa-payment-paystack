@@ -98,7 +98,7 @@ export default class Paystack {
         path: "/transaction/verify/" + reference,
         method: "GET",
       }),
-    get: ({ id }: { id: string }) =>
+    get: ({ id }: { id: number }) =>
       this.requestPaystackAPI<
         PaystackResponse<{
           id: number;
