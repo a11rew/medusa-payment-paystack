@@ -1,5 +1,11 @@
 # medusa-payment-paystack
 
+## 2.1.0
+
+### Minor Changes
+
+- 76b9b94: Adds support for Medusa >2.5.0
+
 ## 2.0.0
 
 ### Major Changes
