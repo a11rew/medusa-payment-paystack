@@ -80,7 +80,7 @@ Refer to [this documentation in the user guide](https://docs.medusajs.com/v1/use
 
 Follow Medusa's [Storefront Development Checkout Flow](https://docs.medusajs.com/resources/storefront-development/checkout/payment) guide using `pp_paystack` as the `provider_id` to add Paystack to your checkout flow.
 
-### Email in `initiatePaymentSession` context
+### Email in `initiatePaymentSession` data
 
 Paystack requires the customer's email address to create a transaction.
 
@@ -91,7 +91,7 @@ If your storefront does not collect customer email addresses, you can provide a 
 ```ts
 await initiatePaymentSession(cart, {
   provider_id: selectedPaymentMethod,
-  context: {
+  data: {
     email: cart.email,
   },
 });
