@@ -10,6 +10,7 @@ module.exports = {
     ],
   },
   moduleFileExtensions: ["js", "ts", "json"],
+  modulePathIgnorePatterns: ["dist", "node_modules"],
   collectCoverage: true,
   collectCoverageFrom: ["src/**"],
 };
