@@ -115,56 +115,59 @@ Extract the access code from the payment session's data:
 const { paystackTxAccessCode } = paymentSession.data;
 ```
 
-Provide this access code to the `resumeTransaction` method from Paystack's [InlineJS](https://paystack.com/docs/guides/migrating-from-inlinejs-v1-to-v2/) library.
+Provide this access code to the `resumeTransaction` method from Paystack's [InlineJS](https://paystack.com/docs/guides/migrating-from-inlinejs-v1-to-v2/) library. This example uses the [Inline-TS](https://www.npmjs.com/package/paystack-inline-ts) wrapper around the InlineJS library.
 
-```ts
-import Paystack from "@paystack/inline-js"
+```tsx
+import Paystack from "@paystack/inline-ts";
 
 const PaystackPaymentButton = ({
   session,
   notReady,
 }: {
-  session: HttpTypes.StorePaymentSession | undefined
-  notReady: boolean
+  session: HttpTypes.StorePaymentSession | undefined;
+  notReady: boolean;
 }) => {
-  const paystackRef = useRef<Paystack | null>(null)
+  const paystackRef = useRef<Paystack | null>(null);
+
+  useEffect(() => {
+    if (!paystackRef.current) {
+      // Initialize Paystack
+      paystackRef.current = new Paystack();
+    }
+  }, []);
 
   // If the session is not ready, we don't want to render the button
-  if (notReady || !session) return null
+  if (notReady || !session || !paystackRef.current) return null;
 
   // Get the accessCode added to the session data by the Paystack plugin
-  const accessCode = session.data.paystackTxAccessCode
-  if (!accessCode) throw new Error("Transaction access code is not defined")
+  const accessCode = session.data.paystackTxAccessCode;
+  if (!accessCode) throw new Error("Transaction access code is not defined");
 
   return (
     <button
       onClick={() => {
-        if (!paystackRef.current) {
-          paystackRef.current = new Paystack()
-        }
-
-        const paystack = paystackRef.current
+        const paystack = paystackRef.current!;
 
         paystack.resumeTransaction(accessCode, {
           async onSuccess() {
             // Call Medusa checkout complete here
-            await placeOrder()
+            await placeOrder();
           },
           onError(error: unknown) {
             // Handle error
           },
-        })
+        });
       }}
     >
       Pay with Paystack
     </button>
-  )
-}
+  );
+};
 ```
 
 #### Using Authorization URL
 
-As a pre-requisite, you must have configured a "Callback URL" in your Paystack dashboard. Follow [this guide](https://support.paystack.com/en/articles/2129538) to set it up.
+As a prerequisite, you must have configured a "Callback URL" in your Paystack dashboard. Follow [this guide](https://support.paystack.com/en/articles/2129538) to set it up.
 
 The callback URL can be a custom route on your Medusa backend, it can be a page in your storefront or a view in your mobile application. That route just needs to call the Medusa [Complete Cart](https://docs.medusajs.com/resources/storefront-development/checkout/complete-cart) method.
 
