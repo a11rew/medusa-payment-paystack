@@ -20,7 +20,7 @@
     "@medusajs/framework": "^2.8.5",
     "@types/jest": "^29.5.12",
     "@types/node": "^22.5.4",
-    "eslint": "^8.57.0",
+    "eslint": "^9.30.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
