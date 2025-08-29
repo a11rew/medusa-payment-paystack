@@ -22,7 +22,7 @@
     "@stripe/react-stripe-js": "^1.7.2",
     "@stripe/stripe-js": "^1.29.0",
     "lodash": "^4.17.21",
-    "next": "15.0.3",
+    "next": "15.4.7",
     "paystack-inline-ts": "^1.0.3",
     "pg": "^8.11.3",
     "qs": "^6.12.1",
