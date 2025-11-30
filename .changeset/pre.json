@@ -1,0 +1,8 @@
+{
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "medusa-payment-paystack": "2.1.0"
+  },
+  "changesets": []
+}
