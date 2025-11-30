@@ -455,7 +455,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider<PaystackPaymentPr
       event: string;
       data: {
         amount: number;
-        metadata?: Record<string, any>;
+        metadata?: Record<string, unknown>;
       };
     };
     rawData: string | Buffer;
@@ -489,7 +489,9 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider<PaystackPaymentPr
       };
     }
 
-    const sessionId = data.metadata?.session_id;
+    const sessionId = data.metadata?.session_id
+      ? String(data.metadata.session_id)
+      : undefined;
 
     if (!sessionId) {
       if (this.debug) {
