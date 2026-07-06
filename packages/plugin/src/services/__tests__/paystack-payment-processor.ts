@@ -6,6 +6,7 @@ import {
   InitiatePaymentInput,
   UpdatePaymentInput,
 } from "@medusajs/framework/types";
+import { http, HttpResponse } from "msw";
 import crypto from "crypto";
 
 import PaystackPaymentProcessor, {
@@ -13,6 +14,7 @@ import PaystackPaymentProcessor, {
   type PaystackPaymentProviderSessionData,
 } from "../paystack-payment-processor";
 import { paystackMockServer } from "../../lib/__mocks__/paystack";
+import { PAYSTACK_API_PATH } from "../../lib/paystack";
 
 const TEST_SECRET_KEY = "sk_test_123";
 
@@ -86,9 +88,28 @@ describe("initiatePayment", () => {
 
   it("scales decimal amounts to an integer subunit", async () => {
     const service = createPaystackProviderService();
-    // 19.99 * 100 is 1998.9999999999998 in plain float math; Paystack rejects
-    // non-integers, so this resolves only when the subunit is rounded.
-    const { data } = await service.initiatePayment({
+
+    // Capture the amount Paystack receives. 19.99 * 100 is 1998.9999999999998
+    // in plain float math; it must arrive as the rounded subunit 1999.
+    let sentAmount: unknown;
+    paystackMockServer.use(
+      http.post(`${PAYSTACK_API_PATH}/transaction/initialize`, async req => {
+        ({ amount: sentAmount } = (await req.request.json()) as {
+          amount: unknown;
+        });
+        return HttpResponse.json({
+          status: true,
+          message: "Transaction initialized",
+          data: {
+            reference: "ref-decimal",
+            authorization_url: "https://paystack.com/123",
+            access_code: "123",
+          },
+        });
+      }),
+    );
+
+    await service.initiatePayment({
       amount: 19.99,
       currency_code: "GHS",
       data: {
@@ -96,9 +117,7 @@ describe("initiatePayment", () => {
       },
     });
 
-    expect((data as PaystackPaymentProviderSessionData).paystackTxRef).toEqual(
-      expect.any(String),
-    );
+    expect(sentAmount).toBe(1999);
   });
 
   it("errors out if email is not provided", async () => {
