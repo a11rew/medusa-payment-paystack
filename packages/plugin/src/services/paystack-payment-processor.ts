@@ -30,6 +30,7 @@ import {
   PaymentActions,
 } from "@medusajs/framework/utils";
 import { formatCurrencyCode } from "../utils/currencyCode";
+import { getPaystackAmount } from "../utils/amount";
 
 export type PaystackPaymentProviderSessionData = {
   paystackTxRef: string;
@@ -134,7 +135,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider<PaystackPaymentPr
         status,
         message,
       } = await this.paystack.transaction.initialize({
-        amount: Number(amount) * 100, // Paystack expects amount in lowest denomination - https://paystack.com/docs/api/#supported-currency
+        amount: getPaystackAmount(amount),
         email,
         currency: validatedCurrencyCode,
         metadata: {
@@ -360,7 +361,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider<PaystackPaymentPr
 
       const { data, status, message } = await this.paystack.refund.create({
         transaction: paystackTxId,
-        amount: Number(input.amount),
+        amount: getPaystackAmount(input.amount),
       });
 
       if (status === false) {
