@@ -84,6 +84,23 @@ describe("initiatePayment", () => {
     ).toEqual(expect.any(String));
   });
 
+  it("scales decimal amounts to an integer subunit", async () => {
+    const service = createPaystackProviderService();
+    // 19.99 * 100 is 1998.9999999999998 in plain float math; Paystack rejects
+    // non-integers, so this resolves only when the subunit is rounded.
+    const { data } = await service.initiatePayment({
+      amount: 19.99,
+      currency_code: "GHS",
+      data: {
+        email: "andrew@a11rew.dev",
+      },
+    });
+
+    expect((data as PaystackPaymentProviderSessionData).paystackTxRef).toEqual(
+      expect.any(String),
+    );
+  });
+
   it("errors out if email is not provided", async () => {
     const service = createPaystackProviderService();
     await expect(
@@ -191,16 +208,20 @@ describe("retrievePayment", () => {
 });
 
 describe("refundPayment", () => {
-  it("refunds payment, returns refunded amount and transaction", async () => {
+  it("refunds the amount as an integer subunit and returns the transaction", async () => {
     const service = createPaystackProviderService();
     const refund = await service.refundPayment({
       data: { paystackTxId: 1244 },
-      amount: 4000,
+      amount: 19.99,
     });
 
     expect(refund.data).toMatchObject({
       paystackTxId: 1244,
     });
+    expect(
+      (refund.data as { paystackTxData: { amount: number } }).paystackTxData
+        .amount,
+    ).toBe(1999);
   });
 });
 
