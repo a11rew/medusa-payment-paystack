@@ -134,7 +134,7 @@ class PaystackPaymentProcessor extends AbstractPaymentProvider<PaystackPaymentPr
         status,
         message,
       } = await this.paystack.transaction.initialize({
-        amount: Number(amount) * 100, // Paystack expects amount in lowest denomination - https://paystack.com/docs/api/#supported-currency
+        amount: Math.round(Number(amount) * 100), // Paystack expects amount in lowest denomination - https://paystack.com/docs/api/#supported-currency
         email,
         currency: validatedCurrencyCode,
         metadata: {
