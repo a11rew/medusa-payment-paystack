@@ -1,5 +1,12 @@
 # medusa-payment-paystack
 
+## 2.1.1
+
+### Patch Changes
+
+- 9d0efa3: Send integer subunit amounts to Paystack. Payment initiation no longer fails on decimal totals due to floating-point drift, and refunds now convert to the smallest currency unit instead of under-refunding by 100x.
+- 19fdfd5: Updates to dependencies
+
 ## 2.1.0
 
 ### Minor Changes

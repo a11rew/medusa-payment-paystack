@@ -3,6 +3,7 @@
   "private": true,
   "description": "Monorepo for medusa-payment-paystack package and starters",
   "license": "MIT",
+  "packageManager": "pnpm@11.10.0",
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",

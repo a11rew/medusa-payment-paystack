@@ -100,11 +100,13 @@ const handlers = [
       amount: number;
     };
 
-    if (typeof amount !== "number") {
+    if (!Number.isInteger(amount)) {
       return HttpResponse.json(
         {
           status: false,
-          message: "Invalid amount",
+          message: '"amount" must be an integer',
+          type: "validation_error",
+          code: "invalid_amount",
         },
         { status: 400 },
       );
@@ -164,6 +166,18 @@ const handlers = [
       transaction: string;
       amount: number;
     };
+
+    if (!Number.isInteger(amount)) {
+      return HttpResponse.json(
+        {
+          status: false,
+          message: '"amount" must be an integer',
+          type: "validation_error",
+          code: "invalid_amount",
+        },
+        { status: 400 },
+      );
+    }
 
     return HttpResponse.json({
       status: true,
